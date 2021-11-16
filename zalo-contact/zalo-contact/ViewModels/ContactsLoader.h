@@ -6,10 +6,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "../ViewModels/NSObject_ListDiffable.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsLoader : NSObject
+
+@property NSMutableArray* contactsArray;
+
+- (void) fetchContacts;
 
 @end
 

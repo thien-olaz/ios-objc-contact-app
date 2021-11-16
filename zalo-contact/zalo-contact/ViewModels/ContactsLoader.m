@@ -6,15 +6,36 @@
 //
 
 #import "ContactsLoader.h"
-//#import ""
-@implementation ContactsLoader  {
-    NSMutableArray* contactsArray;
-}
+#import "../Models/Contact.h"
+
+@implementation ContactsLoader
+
+@synthesize contactsArray;
 
 - (void) fetchContacts {
-//    contactsArray = [
-//                     [Contac]
-//                     ];
+    contactsArray = [[NSMutableArray alloc] initWithArray: @[
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
+        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
+    ]];
+    NSLog(@"contects array %lu", (unsigned long)contactsArray.count);
 }
 
 @end

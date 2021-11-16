@@ -13,7 +13,8 @@
     return [self initWith:@"" phoneNumber:@""];
 }
 
-- (id) initWith:(NSString *)name phoneNumber:(NSString *)phoneNumber {
+- (id) initWith:(NSString *)name
+    phoneNumber:(NSString *)phoneNumber {
     self = super.init;
     _name = name;
     _phoneNumber = phoneNumber;

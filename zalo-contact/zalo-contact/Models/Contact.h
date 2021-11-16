@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *name;
 @property NSString *phoneNumber;
 
+- (id) initWith:(NSString *)name phoneNumber:(NSString *)phoneNumber;
+                                              
 @end
 
 NS_ASSUME_NONNULL_END
