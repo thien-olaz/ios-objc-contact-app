@@ -10,11 +10,12 @@
 		960E4F6A4A0C73894DA88739 /* Pods_zalo_contact.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A81A57162EA4E48068C2D919 /* Pods_zalo_contact.framework */; };
 		AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4A27420F3800E17AEB /* AppDelegate.m */; };
 		AF368C4E27420F3800E17AEB /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4D27420F3800E17AEB /* SceneDelegate.m */; };
-		AF368C5127420F3800E17AEB /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C5027420F3800E17AEB /* ViewController.m */; };
-		AF368C5427420F3800E17AEB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF368C5227420F3800E17AEB /* Main.storyboard */; };
 		AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF368C5527420F3A00E17AEB /* Assets.xcassets */; };
 		AF368C5927420F3A00E17AEB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF368C5727420F3A00E17AEB /* LaunchScreen.storyboard */; };
 		AF368C5C27420F3A00E17AEB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C5B27420F3A00E17AEB /* main.m */; };
+		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
+		AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5B274284A500500137 /* ContactsLoader.m */; };
+		AFCDDE5F2742875200500137 /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5E2742875200500137 /* Contact.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,13 +27,16 @@
 		AF368C4A27420F3800E17AEB /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		AF368C4C27420F3800E17AEB /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
 		AF368C4D27420F3800E17AEB /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
-		AF368C4F27420F3800E17AEB /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		AF368C5027420F3800E17AEB /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		AF368C5327420F3800E17AEB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AF368C5527420F3A00E17AEB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AF368C5827420F3A00E17AEB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AF368C5A27420F3A00E17AEB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AF368C5B27420F3A00E17AEB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AFCDDE5527427A4E00500137 /* ContactViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactViewController.h; sourceTree = "<group>"; };
+		AFCDDE5627427A4E00500137 /* ContactViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactViewController.m; sourceTree = "<group>"; };
+		AFCDDE5A274284A500500137 /* ContactsLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactsLoader.h; sourceTree = "<group>"; };
+		AFCDDE5B274284A500500137 /* ContactsLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactsLoader.m; sourceTree = "<group>"; };
+		AFCDDE5D2742875200500137 /* Contact.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Contact.h; sourceTree = "<group>"; };
+		AFCDDE5E2742875200500137 /* Contact.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +57,6 @@
 				38143B1D5FA31A6618846018 /* Pods-zalo-contact.debug.xcconfig */,
 				03465D0CD09089C11F7B2E00 /* Pods-zalo-contact.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -78,19 +81,70 @@
 		AF368C4827420F3800E17AEB /* zalo-contact */ = {
 			isa = PBXGroup;
 			children = (
+				AF368C5B27420F3A00E17AEB /* main.m */,
 				AF368C4927420F3800E17AEB /* AppDelegate.h */,
 				AF368C4A27420F3800E17AEB /* AppDelegate.m */,
 				AF368C4C27420F3800E17AEB /* SceneDelegate.h */,
 				AF368C4D27420F3800E17AEB /* SceneDelegate.m */,
-				AF368C4F27420F3800E17AEB /* ViewController.h */,
-				AF368C5027420F3800E17AEB /* ViewController.m */,
-				AF368C5227420F3800E17AEB /* Main.storyboard */,
-				AF368C5527420F3A00E17AEB /* Assets.xcassets */,
-				AF368C5727420F3A00E17AEB /* LaunchScreen.storyboard */,
-				AF368C5A27420F3A00E17AEB /* Info.plist */,
-				AF368C5B27420F3A00E17AEB /* main.m */,
+				AFCDDE50274279C600500137 /* Models */,
+				AFCDDE54274279FC00500137 /* Views */,
+				AFCDDE59274283F100500137 /* ViewModels */,
+				AFCDDE53274279EF00500137 /* ViewControllers */,
+				AFCDDE52274279E300500137 /* SectionControllers */,
+				AFCDDE51274279D700500137 /* Resources */,
 			);
 			path = "zalo-contact";
+			sourceTree = "<group>";
+		};
+		AFCDDE50274279C600500137 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AFCDDE5D2742875200500137 /* Contact.h */,
+				AFCDDE5E2742875200500137 /* Contact.m */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AFCDDE51274279D700500137 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AF368C5A27420F3A00E17AEB /* Info.plist */,
+				AF368C5527420F3A00E17AEB /* Assets.xcassets */,
+				AF368C5727420F3A00E17AEB /* LaunchScreen.storyboard */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		AFCDDE52274279E300500137 /* SectionControllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = SectionControllers;
+			sourceTree = "<group>";
+		};
+		AFCDDE53274279EF00500137 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				AFCDDE5527427A4E00500137 /* ContactViewController.h */,
+				AFCDDE5627427A4E00500137 /* ContactViewController.m */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		AFCDDE54274279FC00500137 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AFCDDE59274283F100500137 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AFCDDE5A274284A500500137 /* ContactsLoader.h */,
+				AFCDDE5B274284A500500137 /* ContactsLoader.m */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		F79D14F36C5D8279141E7A57 /* Frameworks */ = {
@@ -112,6 +166,7 @@
 				AF368C4227420F3800E17AEB /* Sources */,
 				AF368C4327420F3800E17AEB /* Frameworks */,
 				AF368C4427420F3800E17AEB /* Resources */,
+				59B42A35F5B0B052F4E4A56E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -161,7 +216,6 @@
 			files = (
 				AF368C5927420F3A00E17AEB /* LaunchScreen.storyboard in Resources */,
 				AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */,
-				AF368C5427420F3800E17AEB /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +244,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		59B42A35F5B0B052F4E4A56E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-zalo-contact/Pods-zalo-contact-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-zalo-contact/Pods-zalo-contact-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-zalo-contact/Pods-zalo-contact-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -197,9 +268,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF368C5127420F3800E17AEB /* ViewController.m in Sources */,
+				AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */,
+				AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */,
 				AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */,
 				AF368C5C27420F3A00E17AEB /* main.m in Sources */,
+				AFCDDE5F2742875200500137 /* Contact.m in Sources */,
 				AF368C4E27420F3800E17AEB /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -207,14 +280,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		AF368C5227420F3800E17AEB /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				AF368C5327420F3800E17AEB /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		AF368C5727420F3A00E17AEB /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -348,10 +413,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 89X4CM9ZK4;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "zalo-contact/Info.plist";
+				INFOPLIST_FILE = "zalo-contact/Resources/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIMainStoryboardFile = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -376,10 +441,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 89X4CM9ZK4;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "zalo-contact/Info.plist";
+				INFOPLIST_FILE = "zalo-contact/Resources/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIMainStoryboardFile = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

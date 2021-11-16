@@ -8,5 +8,6 @@ target 'zalo-contact' do
   # Pods for zalo-contact
  
   pod 'PureLayout'
-
+  pod 'IGListKit', '~> 4.0.0'
+  
 end
