@@ -9,15 +9,13 @@
 #import "../ViewModels/NSObject_ListDiffable.h"
 #import "../Ultilities/UserContacts.h"
 #import "../Models/ContactAdapter.h"
-
+#import "../Models/ContactGroup.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsLoader : NSObject
 
-@property NSMutableArray* contactsArray;
-
-- (void) fetchContacts;
-
+-(NSMutableArray *) contactGroup;
+-(void) update;
 @end
 
 NS_ASSUME_NONNULL_END

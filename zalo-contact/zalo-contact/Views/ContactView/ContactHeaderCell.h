@@ -8,10 +8,11 @@
 @import Foundation;
 @import UIKit;
 @import PureLayout;
+#import "../../Ultilities/UIConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactSectionCell : UICollectionViewCell
+@interface ContactHeaderCell : UICollectionViewCell
 
 - (void) setSectionTitle:(NSString *)title;
     

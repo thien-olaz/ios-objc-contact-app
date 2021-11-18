@@ -10,12 +10,18 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Contact : NSObject
-@property NSString *header;
 - (id) initWithFirstName:(NSString *)firstName
                 lastName:(NSString *)lastName
              phoneNumber:(NSString *)phoneNumber;
 
+- (id) initWithFirstName:(NSString *)firstName
+                lastName:(NSString *)lastName
+    phoneNumber:(NSString *)phoneNumber
+                imageUrl:(NSString *)url;
+
+- (NSString *) header;
 - (NSString *) fullName;
+- (NSString * __nullable) imageUrl;
 
 @end
 

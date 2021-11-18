@@ -7,8 +7,11 @@
 
 #import <IGListKit/IGListKit.h>
 #import "../Models/Contact.h"
-#import "../Views/ContactCell.h"
-#import "../Views/ContactSectionCell.h"
+#import "../Models/ContactGroup.h"
+#import "../Views/ContactView/ContactCell.h"
+#import "../Views/ContactView/ContactHeaderCell.h"
+#import "../Views/ContactView/ContactFooter.h"
+#import "../Ultilities/UIConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

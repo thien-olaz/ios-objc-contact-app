@@ -17,8 +17,8 @@
     UICollectionView *collection;
     IGListAdapter *_adapter;
     ContactsLoader *loader;
+    BOOL didSetupConstraints;
 }
-
 @end
 
 
@@ -45,47 +45,46 @@
 }
 
 - (void) fetchData {
-    [loader fetchContacts];
+    
 }
 
 - (void) addView {
     [self.view addSubview:collection];
 }
 
+- (void) checkPermissionAndFetchData {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UserContacts checkAccessContactPermission];
+        [UserContacts.sharedInstance fetchLocalContacts];
+        [self->loader update];
+        [self->_adapter performUpdatesAnimated:YES completion:nil];
+    });
+}
+
 - (void) viewDidLoad {
     [super viewDidLoad];
-        
-    [self fetchData];
+    
+    [self checkPermissionAndFetchData];
     
     [self addView];
     
     [self.adapter setCollectionView: collection];
     [self.adapter setDataSource: self];
     
-  
+    [self.view setNeedsUpdateConstraints];
+    
 }
 
-- (void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    [collection setFrame:self.view.bounds];
+- (void)updateViewConstraints {
+    if (!didSetupConstraints) {
+        [collection autoPinEdgesToSuperviewEdges];
+        didSetupConstraints = YES;
+    }
+    [super updateViewConstraints];
 }
 
 - (NSArray<id<IGListDiffable>> *)objectsForListAdapter:(IGListAdapter *)listAdapter {
-    NSMutableArray<id<IGListDiffable>> *items = loader.contactsArray;
-    
-    NSMutableDictionary *result = [NSMutableDictionary new];
-
-    NSArray *distinctNames;
-
-    distinctNames = [items valueForKeyPath:@"@distinctUnionOfObjects.header"];
-    
-    for (NSString *charactor in distinctNames) {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"header = %@", charactor];
-        NSArray *persons = [items filteredArrayUsingPredicate:predicate];
-        [result setObject:persons forKey:charactor];
-    }
-
-    NSLog(@"%lu", (unsigned long)items.count);
+    NSMutableArray<id<IGListDiffable>> *items = loader.contactGroup;
     return items;
 }
 
@@ -94,7 +93,7 @@
 }
 
 - (IGListSectionController *)listAdapter:(IGListAdapter *)listAdapter sectionControllerForObject:(id)object {
-    if ([object isKindOfClass:Contact.class]) {
+    if ([object isKindOfClass:ContactGroup.class]) {
         return [ContactSectionController new];
     } else {
         return [ContactSectionController new];

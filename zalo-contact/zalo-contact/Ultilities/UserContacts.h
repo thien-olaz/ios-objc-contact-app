@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 +(UserContacts *)sharedInstance;
 +(void) checkAccessContactPermission;
 
--(void) fetchContacts;
+-(void) fetchLocalContacts;
 - (NSArray<CNContact *> *) getContactList;
 
 @end

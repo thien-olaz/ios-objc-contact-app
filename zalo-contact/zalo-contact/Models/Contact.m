@@ -11,8 +11,10 @@
 
 @property NSString *firstName;
 @property NSString *lastName;
-@property NSString *phoneNumber;
+@property (nonatomic) NSString *phoneNumber;
+@property (nullable) NSString *imageUrl;
 @end
+
 @implementation Contact
 
 - (id) init {
@@ -21,13 +23,20 @@
 
 - (id) initWithFirstName:(NSString *)firstName
                 lastName:(NSString *)lastName
-    phoneNumber:(NSString *)phoneNumber {
+             phoneNumber:(NSString *)phoneNumber {
     self = super.init;
-    _header = lastName && lastName.length > 0 ? [lastName substringToIndex:1] : [firstName substringToIndex:1];
-    
     _firstName = firstName;
     _lastName = lastName;
     _phoneNumber = phoneNumber;
+    return self;
+}
+
+- (id) initWithFirstName:(NSString *)firstName
+                lastName:(NSString *)lastName
+             phoneNumber:(NSString *)phoneNumber
+                imageUrl:(NSString *)url {
+    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber];
+    _imageUrl = url;
     return self;
 }
 
@@ -37,6 +46,14 @@
 
 - (NSString *) phoneNumber{
     return _phoneNumber;
+}
+
+- (NSString *) header{
+    return _lastName && _lastName.length > 0 ? [_lastName substringToIndex:1] : [_firstName substringToIndex:1];;
+}
+
+- (NSString * __nullable) imageUrl {
+    return _imageUrl;
 }
 
 @end

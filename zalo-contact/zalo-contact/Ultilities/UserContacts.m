@@ -33,23 +33,23 @@ static UserContacts *sharedInstance = nil;
     }];
 }
 
--(void) fetchContacts {
+-(void) fetchLocalContacts {
     CNContactStore *store = [CNContactStore new];
     NSArray *keysToFetch = @[CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPhoneNumbersKey];
     NSError *error = nil;
-
+    
     NSError *containerError = nil;
     NSArray<CNContainer *> *allContainer = [store containersMatchingPredicate:nil error: &containerError];
     if (containerError) {
         NSLog(@"%s %@", __PRETTY_FUNCTION__, containerError.description);
         return;
     }
-
+    
     NSMutableArray<CNContact *> *results = [NSMutableArray new];
     
     for (CNContainer *container in allContainer) {
         NSPredicate *fetchPredicate = [CNContact predicateForContactsInContainerWithIdentifier:container.identifier];
-        NSLog(@"identi %@", container.identifier);
+        
         NSArray<CNContact*> *containerResult = [store unifiedContactsMatchingPredicate:fetchPredicate keysToFetch:keysToFetch error:&error];
         if (error) {
             NSLog(@"%s %@", __PRETTY_FUNCTION__, error.description);
@@ -60,7 +60,6 @@ static UserContacts *sharedInstance = nil;
     
     self.contactList = results;
     NSLog(@"%s load complete - %lu contacts founded", __PRETTY_FUNCTION__, (unsigned long)results.count);
-    NSLog(@"%@", results);
     
 }
 

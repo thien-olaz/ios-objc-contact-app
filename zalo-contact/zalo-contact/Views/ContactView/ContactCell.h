@@ -4,10 +4,12 @@
 //
 //  Created by Thiện on 16/11/2021.
 //
+#import "../../Ultilities/UIConstants.h"
 
 @import Foundation;
 @import UIKit;
 @import PureLayout;
+@import SDWebImage;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) setNameWith:(NSString *)name;
 - (void) setAvatarImage:(nonnull UIImage*)image;
+- (void) setAvatarImageUrl:(NSString * __nullable)url;
+
 @end
 
 NS_ASSUME_NONNULL_END

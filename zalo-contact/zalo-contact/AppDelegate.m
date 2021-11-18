@@ -15,8 +15,6 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [UserContacts checkAccessContactPermission];
-    [UserContacts.sharedInstance fetchContacts];
     return YES;
 }
 

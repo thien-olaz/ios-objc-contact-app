@@ -5,32 +5,29 @@
 //  Created by Thiện on 16/11/2021.
 //
 
-#import "ContactSectionCell.h"
+#import "ContactHeaderCell.h"
 
-@interface ContactSectionCell ()
+@interface ContactHeaderCell ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UILabel *sectionHeaderLabel;
 
 @end
 
-@implementation ContactSectionCell
-
-@synthesize didSetupConstraints = _didSetupConstraints;
+@implementation ContactHeaderCell
 
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     [self addSubview:self.sectionHeaderLabel];
-    
+    [self setNeedsUpdateConstraints];
     return self;
 }
 
 -(void) updateConstraints {
     if (!_didSetupConstraints) {
-        [self.sectionHeaderLabel autoSetDimension:ALDimensionHeight toSize:40];
         [self.sectionHeaderLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
-        [self.sectionHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:20];
-        
+        [self.sectionHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft
+                                                  withInset:UIConstants.contactCellMinHorizontalInset];
         _didSetupConstraints = YES;
     }
     [super updateConstraints];
