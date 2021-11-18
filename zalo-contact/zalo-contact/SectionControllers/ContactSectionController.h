@@ -6,6 +6,9 @@
 //
 
 #import <IGListKit/IGListKit.h>
+#import "../Models/Contact.h"
+#import "../Views/ContactCell.h"
+#import "../Views/ContactSectionCell.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

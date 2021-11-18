@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 #import "../ViewModels/NSObject_ListDiffable.h"
+#import "../Ultilities/UserContacts.h"
+#import "../Models/ContactAdapter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

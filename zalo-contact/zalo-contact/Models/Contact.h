@@ -10,12 +10,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface Contact : NSObject
+@property NSString *header;
+- (id) initWithFirstName:(NSString *)firstName
+                lastName:(NSString *)lastName
+             phoneNumber:(NSString *)phoneNumber;
 
-@property NSString *name;
-@property NSString *phoneNumber;
+- (NSString *) fullName;
 
-- (id) initWith:(NSString *)name phoneNumber:(NSString *)phoneNumber;
-                                              
 @end
 
 NS_ASSUME_NONNULL_END

@@ -11,6 +11,8 @@
 		AF0BFBEE2743A071006E072B /* ContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBED2743A071006E072B /* ContactCell.m */; };
 		AF0BFBF12743A0A6006E072B /* ContactSectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBF02743A0A6006E072B /* ContactSectionCell.m */; };
 		AF0BFBF42743B971006E072B /* FriendRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBF32743B971006E072B /* FriendRequest.m */; };
+		AF0BFBF727456B88006E072B /* ContactAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBF627456B88006E072B /* ContactAdapter.m */; };
+		AF0BFBFB27456EC4006E072B /* UserContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBFA27456EC4006E072B /* UserContacts.m */; };
 		AF21A9E6274371BB00849D63 /* ContactSectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF21A9E5274371BB00849D63 /* ContactSectionController.m */; };
 		AF21A9EA2743772500849D63 /* NSObject_ListDiffable.m in Sources */ = {isa = PBXBuildFile; fileRef = AF21A9E92743772500849D63 /* NSObject_ListDiffable.m */; };
 		AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4A27420F3800E17AEB /* AppDelegate.m */; };
@@ -33,6 +35,10 @@
 		AF0BFBF02743A0A6006E072B /* ContactSectionCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactSectionCell.m; sourceTree = "<group>"; };
 		AF0BFBF22743B971006E072B /* FriendRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendRequest.h; sourceTree = "<group>"; };
 		AF0BFBF32743B971006E072B /* FriendRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendRequest.m; sourceTree = "<group>"; };
+		AF0BFBF527456B88006E072B /* ContactAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactAdapter.h; sourceTree = "<group>"; };
+		AF0BFBF627456B88006E072B /* ContactAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactAdapter.m; sourceTree = "<group>"; };
+		AF0BFBF927456EC4006E072B /* UserContacts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserContacts.h; sourceTree = "<group>"; };
+		AF0BFBFA27456EC4006E072B /* UserContacts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserContacts.m; sourceTree = "<group>"; };
 		AF21A9E4274371BB00849D63 /* ContactSectionController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactSectionController.h; sourceTree = "<group>"; };
 		AF21A9E5274371BB00849D63 /* ContactSectionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactSectionController.m; sourceTree = "<group>"; };
 		AF21A9E82743772500849D63 /* NSObject_ListDiffable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSObject_ListDiffable.h; sourceTree = "<group>"; };
@@ -75,6 +81,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		AF0BFBF827456E63006E072B /* Ultilities */ = {
+			isa = PBXGroup;
+			children = (
+				AF0BFBF927456EC4006E072B /* UserContacts.h */,
+				AF0BFBFA27456EC4006E072B /* UserContacts.m */,
+			);
+			path = Ultilities;
+			sourceTree = "<group>";
+		};
 		AF368C3D27420F3800E17AEB = {
 			isa = PBXGroup;
 			children = (
@@ -101,6 +116,7 @@
 				AF368C4A27420F3800E17AEB /* AppDelegate.m */,
 				AF368C4C27420F3800E17AEB /* SceneDelegate.h */,
 				AF368C4D27420F3800E17AEB /* SceneDelegate.m */,
+				AF0BFBF827456E63006E072B /* Ultilities */,
 				AFCDDE50274279C600500137 /* Models */,
 				AFCDDE54274279FC00500137 /* Views */,
 				AFCDDE59274283F100500137 /* ViewModels */,
@@ -118,6 +134,8 @@
 				AFCDDE5E2742875200500137 /* Contact.m */,
 				AF0BFBF22743B971006E072B /* FriendRequest.h */,
 				AF0BFBF32743B971006E072B /* FriendRequest.m */,
+				AF0BFBF527456B88006E072B /* ContactAdapter.h */,
+				AF0BFBF627456B88006E072B /* ContactAdapter.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -293,6 +311,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF0BFBF727456B88006E072B /* ContactAdapter.m in Sources */,
 				AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */,
 				AF21A9E6274371BB00849D63 /* ContactSectionController.m in Sources */,
 				AF21A9EA2743772500849D63 /* NSObject_ListDiffable.m in Sources */,
@@ -303,6 +322,7 @@
 				AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */,
 				AF368C5C27420F3A00E17AEB /* main.m in Sources */,
 				AFCDDE5F2742875200500137 /* Contact.m in Sources */,
+				AF0BFBFB27456EC4006E072B /* UserContacts.m in Sources */,
 				AF368C4E27420F3800E17AEB /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

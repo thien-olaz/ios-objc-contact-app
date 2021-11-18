@@ -10,4 +10,11 @@ target 'zalo-contact' do
   #insane performance for tableview
   pod 'IGListKit', '~> 4.0.0'
   
+  
+  # array operation
+  pod 'FunctionalObjC', '~> 1.0'
+  
+  #image cache
+  pod 'SDWebImage'
+  
 end

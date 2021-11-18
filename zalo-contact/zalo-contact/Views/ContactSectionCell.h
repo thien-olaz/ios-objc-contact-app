@@ -7,12 +7,14 @@
 
 @import Foundation;
 @import UIKit;
+@import PureLayout;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactSectionCell : UICollectionViewCell
-// use for A, B, C ... section
-@property UILabel *sectionHeaderLabel;
+
+- (void) setSectionTitle:(NSString *)title;
+    
 @end
 
 NS_ASSUME_NONNULL_END

@@ -7,18 +7,36 @@
 
 #import "Contact.h"
 
+@interface Contact ()
+
+@property NSString *firstName;
+@property NSString *lastName;
+@property NSString *phoneNumber;
+@end
 @implementation Contact
 
 - (id) init {
-    return [self initWith:@"" phoneNumber:@""];
+    return [self initWithFirstName:@"" lastName:@"" phoneNumber:@""];
 }
 
-- (id) initWith:(NSString *)name
+- (id) initWithFirstName:(NSString *)firstName
+                lastName:(NSString *)lastName
     phoneNumber:(NSString *)phoneNumber {
     self = super.init;
-    _name = name;
+    _header = lastName && lastName.length > 0 ? [lastName substringToIndex:1] : [firstName substringToIndex:1];
+    
+    _firstName = firstName;
+    _lastName = lastName;
     _phoneNumber = phoneNumber;
     return self;
+}
+
+- (NSString *) fullName {
+    return [NSString stringWithFormat:@"%@ %@", _lastName, _firstName];
+}
+
+- (NSString *) phoneNumber{
+    return _phoneNumber;
 }
 
 @end

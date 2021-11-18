@@ -6,16 +6,17 @@
 //
 
 #import "ContactViewController.h"
+#import "../Models/Contact.h"
 #import "../ViewModels/ContactsLoader.h"
 #import "../SectionControllers/ContactSectionController.h"
 @import IGListKit;
-
+@import FBLFunctional;
 
 
 @interface ContactViewController () <IGListAdapterDataSource> {
     UICollectionView *collection;
     IGListAdapter *_adapter;
-    ContactsLoader *loader;    
+    ContactsLoader *loader;
 }
 
 @end
@@ -26,6 +27,7 @@
 
 - (id) init {
     self = [super init];
+    
     loader = [[ContactsLoader alloc] init];
     collection = [[UICollectionView alloc] initWithFrame: CGRectZero collectionViewLayout: [UICollectionViewFlowLayout new]];
     return self;
@@ -69,7 +71,20 @@
 }
 
 - (NSArray<id<IGListDiffable>> *)objectsForListAdapter:(IGListAdapter *)listAdapter {
-    NSArray<id<IGListDiffable>> *items = loader.contactsArray;
+    NSMutableArray<id<IGListDiffable>> *items = loader.contactsArray;
+    
+    NSMutableDictionary *result = [NSMutableDictionary new];
+
+    NSArray *distinctNames;
+
+    distinctNames = [items valueForKeyPath:@"@distinctUnionOfObjects.header"];
+    
+    for (NSString *charactor in distinctNames) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"header = %@", charactor];
+        NSArray *persons = [items filteredArrayUsingPredicate:predicate];
+        [result setObject:persons forKey:charactor];
+    }
+
     NSLog(@"%lu", (unsigned long)items.count);
     return items;
 }
@@ -79,7 +94,12 @@
 }
 
 - (IGListSectionController *)listAdapter:(IGListAdapter *)listAdapter sectionControllerForObject:(id)object {
-    return [ContactSectionController new];
+    if ([object isKindOfClass:Contact.class]) {
+        return [ContactSectionController new];
+    } else {
+        return [ContactSectionController new];
+    }
+    
 }
 
 @end

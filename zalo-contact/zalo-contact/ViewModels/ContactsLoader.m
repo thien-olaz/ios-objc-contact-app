@@ -13,29 +13,47 @@
 @synthesize contactsArray;
 
 - (void) fetchContacts {
-    contactsArray = [[NSMutableArray alloc] initWithArray: @[
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 1" phoneNumber:@"0123456789"],
-        [[Contact alloc] initWith:@"Thien 2" phoneNumber:@"0123456789"],
-    ]];
-    NSLog(@"contects array %lu", (unsigned long)contactsArray.count);
+    
+    contactsArray = [[NSMutableArray alloc] initWithArray: @[]];
+    //sample data
+    [contactsArray addObjectsFromArray:[[NSMutableArray alloc] initWithArray: @[
+                [[Contact alloc] initWithFirstName:@"Thien"
+                                          lastName:@"Nguyen"
+                                       phoneNumber:@"0123456789"],
+                [[Contact alloc] initWithFirstName:@"Thien"
+                                          lastName:@"Ho"
+                                       phoneNumber:@"0123456789"],
+                [[Contact alloc] initWithFirstName:@"Tinh"
+                                          lastName:@"Thien"
+                                       phoneNumber:@"0123456789"],
+                [[Contact alloc] initWithFirstName:@"Nhung"
+                                          lastName:@"Ho"
+                                       phoneNumber:@"0123456789"],
+                [[Contact alloc] initWithFirstName:@"Van"
+                                          lastName:@"Ho"
+                                       phoneNumber:@"0123456789"],
+                [[Contact alloc] initWithFirstName:@"Van"
+                                          lastName:@"Le"
+                                       phoneNumber:@"0123456789"],
+            ]]];
+    
+    //add
+    for (CNContact *contact in UserContacts.sharedInstance.getContactList) {
+        [contactsArray addObject:[ContactAdapter.alloc initWithCNContact: contact]];
+    }
+    
+///stress test the list
+//    for (int i = 0; i < 10000; i++) {
+//        [contactsArray addObjectsFromArray:[[NSMutableArray alloc] initWithArray: @[
+//            [[Contact alloc] initWithFirstName:@"Thien"
+//                                      lastName:@"Nguyen"
+//                                   phoneNumber:@"0123456789"],
+//            [[Contact alloc] initWithFirstName:@"Thien"
+//                                      lastName:@"Ho"
+//                                   phoneNumber:@"0123456789"],
+//        ]]];
+//    }
+
 }
 
 @end

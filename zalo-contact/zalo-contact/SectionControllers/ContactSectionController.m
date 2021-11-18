@@ -6,12 +6,9 @@
 //
 
 #import "ContactSectionController.h"
-#import "../Models/Contact.h"
-#import "../Views/ContactCell.h"
 
 @implementation ContactSectionController {
     Contact *entry;
-    
 }
 
 - (id) init {
@@ -21,7 +18,7 @@
 }
 
 - (NSInteger)numberOfItems {
-    return 1;
+    return 2;
 }
 
 - (CGSize)sizeForItemAtIndex:(NSInteger)index {
@@ -34,11 +31,14 @@
 }
 
 - (__kindof UICollectionViewCell *)cellForItemAtIndex:(NSInteger)index {
-    Class cellClass = index == 0 ? ContactCell.class : UICollectionViewCell.class;
+    Class cellClass = index == 0 ? ContactSectionCell.class : ContactCell.class;
     
     UICollectionViewCell *cell = [self.collectionContext dequeueReusableCellOfClass:cellClass forSectionController:self atIndex:index];
     if ([cell isKindOfClass: ContactCell.class]) {
-        [(ContactCell *)cell setNameWith: entry.name];
+        [(ContactCell *)cell setNameWith: entry.fullName];
+        [(ContactCell *)cell setAvatarImage: [UIImage imageNamed:@"test_avt"]];
+    } else {
+        [(ContactSectionCell *)cell setSectionTitle:entry.header];
     }
     
     return cell;

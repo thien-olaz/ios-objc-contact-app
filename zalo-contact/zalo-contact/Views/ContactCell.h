@@ -7,13 +7,14 @@
 
 @import Foundation;
 @import UIKit;
+@import PureLayout;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactCell : UICollectionViewCell
 
 - (void) setNameWith:(NSString *)name;
-
+- (void) setAvatarImage:(nonnull UIImage*)image;
 @end
 
 NS_ASSUME_NONNULL_END
