@@ -24,7 +24,7 @@
     return 60.0;
 }
 
-+ (CGFloat) contactFooterHeight {
++ (CGFloat)contactFooterHeight {
     return 16.0;
 }
 

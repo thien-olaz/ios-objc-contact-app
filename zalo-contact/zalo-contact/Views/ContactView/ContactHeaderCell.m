@@ -29,6 +29,7 @@
         [self.sectionHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft
                                                   withInset:UIConstants.contactCellMinHorizontalInset];
         _didSetupConstraints = YES;
+        
     }
     [super updateConstraints];
 }

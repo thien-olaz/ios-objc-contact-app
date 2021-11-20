@@ -13,22 +13,22 @@
 @import FBLFunctional;
 
 
+
 @interface ContactViewController () <IGListAdapterDataSource> {
     UICollectionView *collection;
-    IGListAdapter *_adapter;
-    ContactsLoader *loader;
     BOOL didSetupConstraints;
 }
+@property IGListAdapter *adapter;
+@property ContactsLoader *loader;
+
 @end
-
-
 
 @implementation ContactViewController
 
 - (id) init {
     self = [super init];
     
-    loader = [[ContactsLoader alloc] init];
+    _loader = [[ContactsLoader alloc] init];
     collection = [[UICollectionView alloc] initWithFrame: CGRectZero collectionViewLayout: [UICollectionViewFlowLayout new]];
     return self;
 }
@@ -53,11 +53,12 @@
 }
 
 - (void) checkPermissionAndFetchData {
+    ContactsLoader *loader = _loader;
     dispatch_async(dispatch_get_main_queue(), ^{
         [UserContacts checkAccessContactPermission];
         [UserContacts.sharedInstance fetchLocalContacts];
-        [self->loader update];
-        [self->_adapter performUpdatesAnimated:YES completion:nil];
+        [loader update];
+        [_adapter performUpdatesAnimated:YES completion:nil];
     });
 }
 
@@ -84,14 +85,14 @@
 }
 
 - (NSArray<id<IGListDiffable>> *)objectsForListAdapter:(IGListAdapter *)listAdapter {
-    NSMutableArray<id<IGListDiffable>> *items = loader.contactGroup;
+    NSMutableArray<id<IGListDiffable>> *items = _loader.contactGroup;
     return items;
 }
 
 - (nullable UIView *)emptyViewForListAdapter:(IGListAdapter *)listAdapter {
     return nil;
 }
-
+// MARK: - đọc IGListAdapter
 - (IGListSectionController *)listAdapter:(IGListAdapter *)listAdapter sectionControllerForObject:(id)object {
     if ([object isKindOfClass:ContactGroup.class]) {
         return [ContactSectionController new];

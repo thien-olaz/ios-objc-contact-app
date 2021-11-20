@@ -27,13 +27,16 @@ static UserContacts *sharedInstance = nil;
     return self;
 }
 
+//MARK: - trang thai
 +(void) checkAccessContactPermission {
     [[[CNContactStore alloc] init] requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
         NSLog(@"%s Granted contacts permission [%d]", __PRETTY_FUNCTION__, granted);
     }];
 }
 
+// MARK: - check
 -(void) fetchLocalContacts {
+    //MARK: - background - 
     CNContactStore *store = [CNContactStore new];
     NSArray *keysToFetch = @[CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPhoneNumbersKey];
     NSError *error = nil;
@@ -64,6 +67,7 @@ static UserContacts *sharedInstance = nil;
 }
 
 - (NSArray<CNContact *> *) getContactList {
+//    if ()
     return self.contactList;
 }
 

@@ -19,11 +19,44 @@
     UIWindowScene *windowScene = (UIWindowScene *)scene;
     window = [[UIWindow alloc] initWithWindowScene: windowScene];
     window.backgroundColor = UIColor.blackColor;
+
+    NSMutableArray *tabItems = [[NSMutableArray alloc] init];
     
-    UINavigationController * nav = [[UINavigationController alloc] init];
-    [nav pushViewController: ContactViewController.alloc.init animated:NO];
-    window.rootViewController = nav;
-    [window makeKeyAndVisible];
+    //MARK: - Home
+    UINavigationController * homeNav = [[UINavigationController alloc] init];
+    homeNav.tabBarItem.title = @"Home";
+    homeNav.tabBarItem.image = [UIImage imageNamed:@"tb_home"];
+    [homeNav pushViewController: UIViewController.alloc.init animated:NO];
+
+    [tabItems addObject: homeNav];
+    
+    
+    //MARK: - Contact
+    UINavigationController * contactNav = [[UINavigationController alloc] init];
+    contactNav.tabBarItem.title = @"Contact";
+    contactNav.tabBarItem.image = [UIImage imageNamed:@"tb_contact"];
+    [contactNav pushViewController: ContactViewController.alloc.init animated:NO];
+
+    [tabItems addObject: contactNav];
+    
+    //MARK: - Contact
+    UINavigationController * userNav = [[UINavigationController alloc] init];
+    userNav.tabBarItem.title = @"User";
+    userNav.tabBarItem.image = [UIImage imageNamed:@"tb_user"];
+    [userNav pushViewController: UIViewController.alloc.init animated:NO];
+
+    [tabItems addObject: userNav];
+                                
+    UITabBarController *tabbar = [[UITabBarController alloc] init];
+         
+    [tabbar setViewControllers:tabItems animated:YES];
+    
+    self.tabbarController = tabbar;
+    self.tabbarController.selectedIndex = 1;
+        
+    
+    [self.window setRootViewController:self.tabbarController];
+       [self.window makeKeyAndVisible];
     
 }
 

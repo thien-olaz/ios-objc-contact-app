@@ -33,12 +33,14 @@ extern NSString *image6 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9
     _contactGroups = [self contactGroupFromContactsList: self.fetchAllContacts];
 }
 
+//MARK: - performance - warning
 - (NSMutableArray<ContactGroup *> *) contactGroupFromContactsList:(NSArray<Contact *> *)list {
     NSArray *distinctHeader;
     
     NSMutableDictionary *result = [NSMutableDictionary new];
     distinctHeader = [list valueForKeyPath:@"@distinctUnionOfObjects.header"];
     
+    //MARK: - performance - warning
     for (NSString *charactor in distinctHeader) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"header = %@", charactor];
         NSArray *persons = [list filteredArrayUsingPredicate:predicate];
@@ -60,43 +62,17 @@ extern NSString *image6 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9
     return groups;
 }
 
+//MARK: - background
 -(NSArray<Contact *>*) fetchAllContacts {
     NSMutableArray<Contact *> *contactsArray = [[NSMutableArray alloc] initWithArray: @[]];
-    //sample data
-    [contactsArray addObjectsFromArray:[[NSMutableArray alloc] initWithArray: @[
-        [[Contact alloc] initWithFirstName:@"Thiện "
-                                  lastName:@"Nguyễn"
-                               phoneNumber:@"0123456789"
-                                  imageUrl:image1],
-        [[Contact alloc] initWithFirstName:@"Thiện"
-                                  lastName:@"Công"
-                               phoneNumber:@"0123456789"
-                                  imageUrl:image2],
-        [[Contact alloc] initWithFirstName:@"Tính"
-                                  lastName:@"Thiên"
-                               phoneNumber:@"0123456789"
-                                  imageUrl:image3],
-        [[Contact alloc] initWithFirstName:@"Vũ"
-                                  lastName:@"Hoàng"
-                               phoneNumber:@"0123456789"
-                                  imageUrl:image4],
-        [[Contact alloc] initWithFirstName:@"Vân"
-                                  lastName:@"Hồ"
-                               phoneNumber:@"0123456789"
-                                  imageUrl:image5],
-        [[Contact alloc] initWithFirstName:@"Vân"
-                                  lastName:@"Lê"
-                               phoneNumber:@"0123456789"
-                                  imageUrl:image6],
-    ]]];
-    
+
     for (CNContact *contact in UserContacts.sharedInstance.getContactList) {
         [contactsArray addObject:[ContactAdapter.alloc initWithCNContact: contact]];
     }
     
     //sort if
     //stress test the list
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 4000; i++) {
         [contactsArray addObjectsFromArray:[[NSMutableArray alloc] initWithArray: @[
             [[Contact alloc] initWithFirstName:@"Thiện "
                                       lastName:@"Nguyễn"

@@ -54,15 +54,8 @@
     //        UIGraphicsEndImageContext();
     //    }
     
-    //    NSDate *start = [NSDate date];
-    
-    
+    //MARK :- resize - mask - cache
     [self.avatarImageView setImage:image];
-    
-    //    NSDate *end = [NSDate date];
-    
-    //    NSLog(@"time: %f", (end.timeIntervalSince1970 - start.timeIntervalSince1970) * 100000 );
-    
 }
 
 - (void) setAvatarImageUrl:(NSString * __nullable)url {

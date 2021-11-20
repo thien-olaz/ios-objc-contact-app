@@ -4,7 +4,7 @@
 //
 //  Created by Thiện on 16/11/2021.
 //
-#import "../../Ultilities/UIConstants.h"
+#import "UIConstants.h"
 
 @import Foundation;
 @import UIKit;

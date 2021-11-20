@@ -9,6 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+//MARK: - rename - entity - model ...
 @interface Contact : NSObject
 - (id) initWithFirstName:(NSString *)firstName
                 lastName:(NSString *)lastName
