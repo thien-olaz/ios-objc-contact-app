@@ -10,12 +10,12 @@
 #import "../Models/ContactGroup.h"
 #import "../Views/ContactView/ContactCell.h"
 #import "../Views/ContactView/ContactHeaderCell.h"
-#import "../Views/ContactView/ContactFooter.h"
+#import "../Views/ContactView/ContactFooterCell.h"
 #import "../Ultilities/UIConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactSectionController : IGListSectionController
+@interface ContactSectionController : IGListSectionController<IGListSupplementaryViewSource>
 
 @end
 

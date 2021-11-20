@@ -30,6 +30,9 @@
     
     _loader = [[ContactsLoader alloc] init];
     collection = [[UICollectionView alloc] initWithFrame: CGRectZero collectionViewLayout: [UICollectionViewFlowLayout new]];
+//    collection.
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collection.collectionViewLayout;
+    layout.sectionHeadersPinToVisibleBounds = YES;
     return self;
 }
 

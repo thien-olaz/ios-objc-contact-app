@@ -15,48 +15,53 @@
 @implementation SceneDelegate
 @synthesize window;
 
-- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-    UIWindowScene *windowScene = (UIWindowScene *)scene;
-    window = [[UIWindow alloc] initWithWindowScene: windowScene];
-    window.backgroundColor = UIColor.blackColor;
-
+- (UITabBarController *) getTabbarController {
     NSMutableArray *tabItems = [[NSMutableArray alloc] init];
     
-    //MARK: - Home
+    //- Home
     UINavigationController * homeNav = [[UINavigationController alloc] init];
     homeNav.tabBarItem.title = @"Home";
     homeNav.tabBarItem.image = [UIImage imageNamed:@"tb_home"];
     [homeNav pushViewController: UIViewController.alloc.init animated:NO];
-
+    
     [tabItems addObject: homeNav];
     
     
-    //MARK: - Contact
+    //- Contact
     UINavigationController * contactNav = [[UINavigationController alloc] init];
     contactNav.tabBarItem.title = @"Contact";
     contactNav.tabBarItem.image = [UIImage imageNamed:@"tb_contact"];
     [contactNav pushViewController: ContactViewController.alloc.init animated:NO];
-
+    
     [tabItems addObject: contactNav];
     
-    //MARK: - Contact
+    //- User
     UINavigationController * userNav = [[UINavigationController alloc] init];
     userNav.tabBarItem.title = @"User";
     userNav.tabBarItem.image = [UIImage imageNamed:@"tb_user"];
     [userNav pushViewController: UIViewController.alloc.init animated:NO];
-
+    
     [tabItems addObject: userNav];
-                                
+    
+    // Config tabbar
     UITabBarController *tabbar = [[UITabBarController alloc] init];
-         
+    
     [tabbar setViewControllers:tabItems animated:YES];
-    
-    self.tabbarController = tabbar;
-    self.tabbarController.selectedIndex = 1;
         
+    tabbar.selectedIndex = 1;
     
+    return tabbar;
+}
+
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
+    window = [[UIWindow alloc] initWithWindowScene: windowScene];
+    window.backgroundColor = UIColor.blackColor;
+    
+    self.tabbarController = self.getTabbarController;
+            
     [self.window setRootViewController:self.tabbarController];
-       [self.window makeKeyAndVisible];
+    [self.window makeKeyAndVisible];
     
 }
 

@@ -5,16 +5,16 @@
 //  Created by Thiện on 18/11/2021.
 //
 
-#import "ContactFooter.h"
+#import "ContactFooterCell.h"
 
-@interface ContactFooter ()
+@interface ContactFooterCell ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UIView *separateLineview;
 
 @end
 
-@implementation ContactFooter
+@implementation ContactFooterCell
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     

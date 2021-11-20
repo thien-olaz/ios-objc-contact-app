@@ -72,7 +72,7 @@ extern NSString *image6 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9
     
     //sort if
     //stress test the list
-    for (int i = 0; i < 4000; i++) {
+    for (int i = 0; i < 10; i++) {
         [contactsArray addObjectsFromArray:[[NSMutableArray alloc] initWithArray: @[
             [[Contact alloc] initWithFirstName:@"Thiện "
                                       lastName:@"Nguyễn"

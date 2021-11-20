@@ -11,40 +11,45 @@
     ContactGroup *entry;
 }
 
+- (instancetype)init {
+    self = [super init];
+    [self setSupplementaryViewSource:self];
+    return self;
+}
+
 // Header Cell + Contacts Cell + Footer Cell
 - (NSInteger)numberOfItems {
-    return 1 + entry.contacts.count + 1;
+    return entry.contacts.count;
+}
+
+-(CGFloat) width {
+    if (self.collectionContext.containerSize.width) {
+        return self.collectionContext.containerSize.width;
+    }
+    return 0;
+    
 }
 
 - (CGSize)sizeForItemAtIndex:(NSInteger)index {
     if (![self collectionContext] || !entry) {
         return CGSizeZero;
     }
-    
-    CGFloat width = self.collectionContext.containerSize.width;
-    
-    if (index == 0)
-        return CGSizeMake(width, UIConstants.contactHeaderHeight);
-    else if (index == self.numberOfItems - 1)
-        return CGSizeMake(width, UIConstants.contactFooterHeight);
-    else
-        return CGSizeMake(width, UIConstants.contactCellHeight);
+
+    return CGSizeMake(self.width, UIConstants.contactCellHeight);
     
     
 }
 
 - (__kindof UICollectionViewCell *)cellForItemAtIndex:(NSInteger)index {
-    Class cellClass = index == 0 ? ContactHeaderCell.class :
-    index == self.numberOfItems - 1 ? ContactFooter.class : ContactCell.class;
+    Class cellClass = ContactCell.class;
     
-    UICollectionViewCell *cell = [self.collectionContext dequeueReusableCellOfClass:cellClass forSectionController:self atIndex:index];
+    UICollectionViewCell *cell = [self.collectionContext
+                                  dequeueReusableCellOfClass:cellClass
+                                  forSectionController:self
+                                  atIndex:index];
     
-    if ([cell isKindOfClass: ContactCell.class]) {
-        [(ContactCell *)cell setNameWith: entry.contacts[index - 1].fullName];
-        [(ContactCell *)cell setAvatarImageUrl: entry.contacts[index - 1].imageUrl];
-    } else if ([cell isKindOfClass: ContactHeaderCell.class]) {
-        [(ContactHeaderCell *)cell setSectionTitle:entry.header];
-    }
+    [(ContactCell *)cell setNameWith: entry.contacts[index].fullName];
+    [(ContactCell *)cell setAvatarImageUrl: entry.contacts[index].imageUrl];
     
     return cell;
 }
@@ -53,4 +58,45 @@
     entry = (ContactGroup *)object;
 }
 
+- (CGSize)sizeForSupplementaryViewOfKind:(nonnull NSString *)elementKind
+                                 atIndex:(NSInteger)index {
+    if ([elementKind isEqualToString:UICollectionElementKindSectionHeader])
+        return CGSizeMake(self.width, UIConstants.contactHeaderHeight);
+    else if ([elementKind isEqualToString:UICollectionElementKindSectionFooter])
+        return CGSizeMake(self.width, UIConstants.contactFooterHeight);
+    return CGSizeZero;
+}
+
+- (nonnull NSArray<NSString *> *)supportedElementKinds {
+    return @[UICollectionElementKindSectionHeader, UICollectionElementKindSectionFooter];
+}
+
+- (nonnull __kindof UICollectionReusableView *)viewForSupplementaryElementOfKind:(nonnull NSString *)elementKind
+                                                                         atIndex:(NSInteger)index {
+    if ([elementKind isEqualToString:UICollectionElementKindSectionHeader])
+        return [self headerViewFor:(int)index];
+    else if ([elementKind isEqualToString:UICollectionElementKindSectionFooter])
+        return [self footerViewFor:(int)index];
+    
+    return UICollectionReusableView.new;
+}
+
+- (UICollectionReusableView *)headerViewFor:(int)index {
+    ContactHeaderCell *view = [self.collectionContext
+                               dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                               forSectionController:self
+                               class:ContactHeaderCell.class
+                               atIndex:index];
+    [view setSectionTitle:entry.header];
+    return view;
+}
+
+- (UICollectionReusableView *)footerViewFor:(int)index {
+    ContactFooterCell *view = [self.collectionContext
+                               dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter
+                               forSectionController:self
+                               class:ContactFooterCell.class
+                               atIndex:index];
+    return view;
+}
 @end

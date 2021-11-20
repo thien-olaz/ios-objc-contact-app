@@ -18,6 +18,7 @@
 
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
+    [self setBackgroundColor: UIColor.systemBackgroundColor];
     [self addSubview:self.sectionHeaderLabel];
     [self setNeedsUpdateConstraints];
     return self;
