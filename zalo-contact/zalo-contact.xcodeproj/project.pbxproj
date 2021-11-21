@@ -15,6 +15,7 @@
 		AF0BFBFB27456EC4006E072B /* UserContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBFA27456EC4006E072B /* UserContacts.m */; };
 		AF21A9E6274371BB00849D63 /* ContactSectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF21A9E5274371BB00849D63 /* ContactSectionController.m */; };
 		AF21A9EA2743772500849D63 /* NSObject_ListDiffable.m in Sources */ = {isa = PBXBuildFile; fileRef = AF21A9E92743772500849D63 /* NSObject_ListDiffable.m */; };
+		AF24F4B92749FD7A00A71E07 /* UIColorExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4B82749FD7A00A71E07 /* UIColorExt.m */; };
 		AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4A27420F3800E17AEB /* AppDelegate.m */; };
 		AF368C4E27420F3800E17AEB /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4D27420F3800E17AEB /* SceneDelegate.m */; };
 		AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF368C5527420F3A00E17AEB /* Assets.xcassets */; };
@@ -46,6 +47,8 @@
 		AF21A9E5274371BB00849D63 /* ContactSectionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactSectionController.m; sourceTree = "<group>"; };
 		AF21A9E82743772500849D63 /* NSObject_ListDiffable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSObject_ListDiffable.h; sourceTree = "<group>"; };
 		AF21A9E92743772500849D63 /* NSObject_ListDiffable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSObject_ListDiffable.m; sourceTree = "<group>"; };
+		AF24F4B72749FD7A00A71E07 /* UIColorExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIColorExt.h; sourceTree = "<group>"; };
+		AF24F4B82749FD7A00A71E07 /* UIColorExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIColorExt.m; sourceTree = "<group>"; };
 		AF368C4627420F3800E17AEB /* zalo-contact.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "zalo-contact.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF368C4927420F3800E17AEB /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		AF368C4A27420F3800E17AEB /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -97,6 +100,8 @@
 				AF0BFBFA27456EC4006E072B /* UserContacts.m */,
 				AF9201B627460EB300E1581C /* UIConstants.h */,
 				AF9201B727460EB300E1581C /* UIConstants.m */,
+				AF24F4B72749FD7A00A71E07 /* UIColorExt.h */,
+				AF24F4B82749FD7A00A71E07 /* UIColorExt.m */,
 			);
 			path = Ultilities;
 			sourceTree = "<group>";
@@ -334,6 +339,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF24F4B92749FD7A00A71E07 /* UIColorExt.m in Sources */,
 				AF0BFBF727456B88006E072B /* ContactAdapter.m in Sources */,
 				AF9201B827460EB300E1581C /* UIConstants.m in Sources */,
 				AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */,

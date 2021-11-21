@@ -15,6 +15,7 @@
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIButton *callButton;
 @property (nonatomic, strong) UIButton *videoCallButton;
+@property (nonatomic, strong) UIView *newFriendMarkView;
 
 @end
 
@@ -29,6 +30,7 @@
     [self addSubview:self.avatarImageView];
     [self addSubview:self.callButton];
     [self addSubview:self.videoCallButton];
+    [self addSubview:self.newFriendMarkView];
     
     [self setNeedsUpdateConstraints];
     
@@ -86,6 +88,11 @@
                              ofView:self.avatarImageView
                          withOffset:UIConstants.contactMinHorizontalSpacing];
         
+        [self.newFriendMarkView autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+        [self.newFriendMarkView autoPinEdge:ALEdgeLeft
+                                     toEdge:ALEdgeRight
+                                     ofView:self.nameLabel
+                                 withOffset:UIConstants.contactMinHorizontalSpacing];
         
         [self.callButton autoPinEdgeToSuperviewEdge:ALEdgeRight
                                           withInset:UIConstants.contactCellMinHorizontalInset];
@@ -106,6 +113,35 @@
         _nameLabel = [UILabel new];
     }
     return _nameLabel;
+}
+
+- (UIView *) newFriendMarkView {
+    if (!_newFriendMarkView) {
+        _newFriendMarkView = [UIView new];
+        [_newFriendMarkView setBackgroundColor:UIColor.grayColor];
+        [_newFriendMarkView.layer setCornerRadius:5];
+        
+        UILabel *label = UILabel.new;
+        [label setText:@"Mới"];
+        [label setTextColor:UIColor.neonGreen];
+        
+        UIImageView *icon = [UIImageView new];
+        icon.image =  [[UIImage imageNamed:@"tb_user"]
+                       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        [icon setTintColor:UIColor.neonGreen];
+        
+        [_newFriendMarkView addSubview:icon];
+        [_newFriendMarkView addSubview:label];
+        
+        [label autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(2, 6, 2, 0) excludingEdge:ALEdgeRight];
+        
+        [icon autoSetDimensionsToSize:CGSizeMake(20, 20)];
+        [icon autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:label withOffset:6];
+        [icon autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+        [icon autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:6];
+        
+    }
+    return _newFriendMarkView;
 }
 
 - (UIImageView *) avatarImageView {
