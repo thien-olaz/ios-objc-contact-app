@@ -30,7 +30,7 @@
     
     _loader = [[ContactsLoader alloc] init];
     collection = [[UICollectionView alloc] initWithFrame: CGRectZero collectionViewLayout: [UICollectionViewFlowLayout new]];
-//    collection.
+    //    collection.
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collection.collectionViewLayout;
     layout.sectionHeadersPinToVisibleBounds = YES;
     return self;
@@ -57,23 +57,34 @@
 
 - (void) checkPermissionAndFetchData {
     ContactsLoader *loader = _loader;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [UserContacts checkAccessContactPermission];
-        [UserContacts.sharedInstance fetchLocalContacts];
-        [loader update];
-        [_adapter performUpdatesAnimated:YES completion:nil];
-    });
+    
+    [UserContacts checkAccessContactPermission:^(BOOL complete) {
+        if (complete) {
+            [UserContacts.sharedInstance fetchLocalContacts];
+            [loader update];
+            dispatch_async(dispatch_get_main_queue(),
+                           ^{
+                [self->_adapter performUpdatesAnimated:YES completion:nil];
+            });
+        };
+    }];
 }
 
 - (void) viewDidLoad {
     [super viewDidLoad];
     
-    [self checkPermissionAndFetchData];
     
     [self addView];
     
     [self.adapter setCollectionView: collection];
     [self.adapter setDataSource: self];
+    
+    //Load the cached contacts list
+    [_loader update];
+    [_adapter performUpdatesAnimated:YES completion:nil];
+    
+    //Check for contact access permission and update the list if YES
+    [self checkPermissionAndFetchData];
     
     [self.view setNeedsUpdateConstraints];
     

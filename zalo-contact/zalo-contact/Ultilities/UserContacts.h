@@ -9,10 +9,12 @@
 @import Contacts;
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^PermissionCompletion) (BOOL);
+
 @interface UserContacts : NSObject
 
 +(UserContacts *)sharedInstance;
-+(void) checkAccessContactPermission;
++(void) checkAccessContactPermission:(PermissionCompletion)block;
 
 -(void) fetchLocalContacts;
 - (NSArray<CNContact *> *) getContactList;

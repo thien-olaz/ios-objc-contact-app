@@ -14,6 +14,7 @@
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIButton *callButton;
+@property (nonatomic, strong) UIButton *videoCallButton;
 
 @end
 
@@ -27,6 +28,7 @@
     [self addSubview:self.nameLabel];
     [self addSubview:self.avatarImageView];
     [self addSubview:self.callButton];
+    [self addSubview:self.videoCallButton];
     
     [self setNeedsUpdateConstraints];
     
@@ -90,6 +92,10 @@
         [self.callButton autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.callButton autoSetDimensionsToSize:UIConstants.contactCellButtonSize];
         
+        [self.videoCallButton autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:self.callButton];
+        [self.videoCallButton autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+        [self.videoCallButton autoSetDimensionsToSize:UIConstants.contactCellButtonSize];
+        
         self.didSetupConstraints = YES;
     }
     [super updateConstraints];
@@ -116,9 +122,17 @@
     if (!_callButton) {
         _callButton = [UIButton new];
         [_callButton setImage:[UIImage imageNamed:@"ct_call"]  forState:UIControlStateNormal];
-        //add call action
+        //add action
     }
     return  _callButton;
 }
 
+- (UIButton *) videoCallButton {
+    if (!_videoCallButton) {
+        _videoCallButton = [UIButton new];
+        [_videoCallButton setImage:[UIImage imageNamed:@"ct_videoCall"]  forState:UIControlStateNormal];
+        //add action
+    }
+    return  _videoCallButton;
+}
 @end
