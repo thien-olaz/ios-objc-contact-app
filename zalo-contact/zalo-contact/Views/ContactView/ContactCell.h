@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ContactCell : UICollectionViewCell
 
 - (void) setNameWith:(NSString *)name;
+- (void) setSubtitleWith:(NSString *)subtitle;
 - (void) setAvatarImage:(nonnull UIImage*)image;
 - (void) setAvatarImageUrl:(NSString * __nullable)url;
 

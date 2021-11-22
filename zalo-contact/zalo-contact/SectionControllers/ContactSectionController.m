@@ -49,6 +49,7 @@
                                   atIndex:index];
     
     [(ContactCell *)cell setNameWith: entry.contacts[index].fullName];
+    [(ContactCell *)cell setSubtitleWith: entry.contacts[index].fullName];
     [(ContactCell *)cell setAvatarImageUrl: entry.contacts[index].imageUrl];
     
     return cell;

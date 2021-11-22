@@ -13,10 +13,11 @@
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameLabel;
+@property (nonatomic, strong) UILabel *subtitleLabel;
 @property (nonatomic, strong) UIButton *callButton;
 @property (nonatomic, strong) UIButton *videoCallButton;
 @property (nonatomic, strong) UIView *newFriendMarkView;
-
+@property (nonatomic, strong) UIStackView *nameView;
 @end
 
 @implementation ContactCell
@@ -26,7 +27,7 @@
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     
-    [self addSubview:self.nameLabel];
+    [self addSubview:self.nameView];
     [self addSubview:self.avatarImageView];
     [self addSubview:self.callButton];
     [self addSubview:self.videoCallButton];
@@ -39,6 +40,10 @@
 
 - (void) setNameWith:(NSString *)name {
     [self.nameLabel setText:name];
+}
+
+- (void) setSubtitleWith:(NSString *)subtitle {
+    [self.subtitleLabel setText:subtitle];
 }
 
 - (void) setAvatarImage:(nonnull UIImage*)image {
@@ -80,13 +85,17 @@
         [self.avatarImageView autoPinEdgeToSuperviewEdge:ALEdgeLeft
                                                withInset:UIConstants.contactCellMinHorizontalInset];
         [self.avatarImageView autoSetDimensionsToSize:UIConstants.contactCellAvatarSize];
+                
+        [self.nameView addArrangedSubview:self.nameLabel];
+        [self.nameView addArrangedSubview:self.subtitleLabel];
         
-        
-        [self.nameLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
-        [self.nameLabel autoPinEdge:ALEdgeLeft
+        [self.nameView autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+        [self.nameView autoPinEdge:ALEdgeLeft
                              toEdge:ALEdgeRight
                              ofView:self.avatarImageView
                          withOffset:UIConstants.contactMinHorizontalSpacing];
+        
+        //subtitle label here
         
         [self.newFriendMarkView autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.newFriendMarkView autoPinEdge:ALEdgeLeft
@@ -108,11 +117,29 @@
     [super updateConstraints];
 }
 
+- (UIStackView *) nameView {
+    if (!_nameView) {
+        _nameView = [UIStackView new];
+        [_nameView setAxis:UILayoutConstraintAxisVertical];
+        [_nameView setSpacing:4];
+    }
+    return _nameView;
+}
+
 - (UILabel *) nameLabel {
     if (!_nameLabel) {
         _nameLabel = [UILabel new];
     }
     return _nameLabel;
+}
+
+- (UILabel *) subtitleLabel {
+    if (!_subtitleLabel) {
+        _subtitleLabel = [UILabel new];
+        [_subtitleLabel setFont: [_subtitleLabel.font fontWithSize:14]];
+        [_subtitleLabel setTextColor:UIColor.lightGrayColor];
+    }
+    return _subtitleLabel;
 }
 
 - (UIView *) newFriendMarkView {
