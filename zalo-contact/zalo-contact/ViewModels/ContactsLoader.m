@@ -23,8 +23,9 @@ extern NSString *image6 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9
 }
 
 -(NSMutableArray<ContactGroup *> *) contactGroup {
-    if (_contactGroups) {
-        [self update];
+    if (!_contactGroups) {
+//        [self update];
+        return @[];
     }
     return _contactGroups;
 }
@@ -42,6 +43,7 @@ extern NSString *image6 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9
     
     //MARK: - performance - warning
     for (NSString *charactor in distinctHeader) {
+//        Nặng
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"header = %@", charactor];
         NSArray *persons = [list filteredArrayUsingPredicate:predicate];
         [result setObject:persons forKey:charactor];
@@ -72,7 +74,7 @@ extern NSString *image6 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9
     
     //sort if
     //stress test the list
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 8; i++) {
         [contactsArray addObjectsFromArray:[[NSMutableArray alloc] initWithArray: @[
             [[Contact alloc] initWithFirstName:@"Thiện "
                                       lastName:@"Nguyễn"

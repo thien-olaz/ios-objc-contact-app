@@ -18,4 +18,12 @@
     return self;
 }
 
+- (Contact * _Nullable) getContactForIndex:(long)index {
+    if (_contacts.count > index) {
+        return _contacts[index];
+    }
+    return nil;
+    
+}
+
 @end

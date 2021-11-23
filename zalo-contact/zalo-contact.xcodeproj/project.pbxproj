@@ -16,6 +16,8 @@
 		AF21A9E6274371BB00849D63 /* ContactSectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF21A9E5274371BB00849D63 /* ContactSectionController.m */; };
 		AF21A9EA2743772500849D63 /* NSObject_ListDiffable.m in Sources */ = {isa = PBXBuildFile; fileRef = AF21A9E92743772500849D63 /* NSObject_ListDiffable.m */; };
 		AF24F4B92749FD7A00A71E07 /* UIColorExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4B82749FD7A00A71E07 /* UIColorExt.m */; };
+		AF24F4C5274C9D5300A71E07 /* OnlineFriendsSectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4C4274C9D5300A71E07 /* OnlineFriendsSectionController.m */; };
+		AF24F4C8274C9E5900A71E07 /* ContactViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4C7274C9E5900A71E07 /* ContactViewModel.m */; };
 		AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4A27420F3800E17AEB /* AppDelegate.m */; };
 		AF368C4E27420F3800E17AEB /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4D27420F3800E17AEB /* SceneDelegate.m */; };
 		AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF368C5527420F3A00E17AEB /* Assets.xcassets */; };
@@ -49,6 +51,10 @@
 		AF21A9E92743772500849D63 /* NSObject_ListDiffable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSObject_ListDiffable.m; sourceTree = "<group>"; };
 		AF24F4B72749FD7A00A71E07 /* UIColorExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIColorExt.h; sourceTree = "<group>"; };
 		AF24F4B82749FD7A00A71E07 /* UIColorExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIColorExt.m; sourceTree = "<group>"; };
+		AF24F4C3274C9D5300A71E07 /* OnlineFriendsSectionController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OnlineFriendsSectionController.h; sourceTree = "<group>"; };
+		AF24F4C4274C9D5300A71E07 /* OnlineFriendsSectionController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OnlineFriendsSectionController.m; sourceTree = "<group>"; };
+		AF24F4C6274C9E5900A71E07 /* ContactViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactViewModel.h; sourceTree = "<group>"; };
+		AF24F4C7274C9E5900A71E07 /* ContactViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactViewModel.m; sourceTree = "<group>"; };
 		AF368C4627420F3800E17AEB /* zalo-contact.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "zalo-contact.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF368C4927420F3800E17AEB /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		AF368C4A27420F3800E17AEB /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -152,6 +158,8 @@
 				AF0BFBF02743A0A6006E072B /* ContactHeaderCell.m */,
 				AF9201B927461A2900E1581C /* ContactFooterCell.h */,
 				AF9201BA27461A2900E1581C /* ContactFooterCell.m */,
+				AF24F4C6274C9E5900A71E07 /* ContactViewModel.h */,
+				AF24F4C7274C9E5900A71E07 /* ContactViewModel.m */,
 			);
 			path = ContactView;
 			sourceTree = "<group>";
@@ -186,6 +194,8 @@
 			children = (
 				AF21A9E4274371BB00849D63 /* ContactSectionController.h */,
 				AF21A9E5274371BB00849D63 /* ContactSectionController.m */,
+				AF24F4C3274C9D5300A71E07 /* OnlineFriendsSectionController.h */,
+				AF24F4C4274C9D5300A71E07 /* OnlineFriendsSectionController.m */,
 			);
 			path = SectionControllers;
 			sourceTree = "<group>";
@@ -340,6 +350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF24F4B92749FD7A00A71E07 /* UIColorExt.m in Sources */,
+				AF24F4C8274C9E5900A71E07 /* ContactViewModel.m in Sources */,
 				AF0BFBF727456B88006E072B /* ContactAdapter.m in Sources */,
 				AF9201B827460EB300E1581C /* UIConstants.m in Sources */,
 				AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */,
@@ -349,6 +360,7 @@
 				AF0BFBF42743B971006E072B /* FriendRequest.m in Sources */,
 				AF0BFBEE2743A071006E072B /* ContactCell.m in Sources */,
 				AF0BFBF12743A0A6006E072B /* ContactHeaderCell.m in Sources */,
+				AF24F4C5274C9D5300A71E07 /* OnlineFriendsSectionController.m in Sources */,
 				AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */,
 				AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */,
 				AF368C5C27420F3A00E17AEB /* main.m in Sources */,

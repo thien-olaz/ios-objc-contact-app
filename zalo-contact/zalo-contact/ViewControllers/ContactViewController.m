@@ -6,20 +6,12 @@
 //
 
 #import "ContactViewController.h"
-#import "../Models/Contact.h"
-#import "../ViewModels/ContactsLoader.h"
-#import "../SectionControllers/ContactSectionController.h"
-@import IGListKit;
-@import FBLFunctional;
 
-
-
-@interface ContactViewController () <IGListAdapterDataSource> {
-    UICollectionView *collection;
+@interface ContactViewController () {
+    UITableView *tableView;
+    ContactViewModel *viewModel;
     BOOL didSetupConstraints;
 }
-@property IGListAdapter *adapter;
-@property ContactsLoader *loader;
 
 @end
 
@@ -27,43 +19,28 @@
 
 - (id) init {
     self = [super init];
+    // MARK: change to inject
+    viewModel = ContactViewModel.alloc.init;
     
-    _loader = [[ContactsLoader alloc] init];
-    collection = [[UICollectionView alloc] initWithFrame: CGRectZero collectionViewLayout: [UICollectionViewFlowLayout new]];
-    //    collection.
-    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)collection.collectionViewLayout;
-    layout.sectionHeadersPinToVisibleBounds = YES;
     return self;
 }
 
 // MARK: - Lazy var
-- (IGListAdapter *) adapter {
-    if (!_adapter) {
-        _adapter = [[IGListAdapter alloc]
-                    initWithUpdater: [IGListAdapterUpdater new]
-                    viewController: self
-                    workingRangeSize: 0];
-    }
-    return _adapter;
-}
-
-- (void) fetchData {
-    
-}
 
 - (void) addView {
-    [self.view addSubview:collection];
+    [self.view addSubview:tableView];
 }
 
+- (void) registerCell {
+    [tableView registerClass:ContactCell.class forCellReuseIdentifier:@"contactCell"];
+}
+//MARK: Move to ViewModel
 - (void) checkPermissionAndFetchData {
-    ContactsLoader *loader = _loader;
-    
     [UserContacts checkAccessContactPermission:^(BOOL complete) {
         if (complete) {
             [UserContacts.sharedInstance fetchLocalContacts];
-            [loader update];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self->_adapter performUpdatesAnimated:YES completion:nil];
+                
             });
         } else {
             UIAlertController *alertController = [UIAlertController
@@ -85,55 +62,37 @@
             [alertController addAction:action];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self presentViewController:alertController animated:true completion:nil];
-            });            
+            });
         }
     }];
 }
 
 - (void) viewDidLoad {
     [super viewDidLoad];
+
+    tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    [tableView setDataSource:viewModel];
+    [tableView setDelegate:viewModel];
+    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     
-    
+    if (@available(iOS 15, *)) {
+        [tableView setSectionHeaderTopPadding:0];
+    }
+            
     [self addView];
+    [self registerCell];
     
-    [self.adapter setCollectionView: collection];
-    [self.adapter setDataSource: self];
-    
-    //Load the cached contacts list
-    [_loader update];
-    [_adapter performUpdatesAnimated:YES completion:nil];
-    
-    //Check for contact access permission and update the list if YES
-    [self checkPermissionAndFetchData];
-    
+//        [self checkPermissionAndFetchData];
     [self.view setNeedsUpdateConstraints];
-    
+ 
 }
 
 - (void)updateViewConstraints {
     if (!didSetupConstraints) {
-        [collection autoPinEdgesToSuperviewEdges];
+        [tableView autoPinEdgesToSuperviewEdges];
         didSetupConstraints = YES;
     }
     [super updateViewConstraints];
-}
-
-- (NSArray<id<IGListDiffable>> *)objectsForListAdapter:(IGListAdapter *)listAdapter {
-    NSMutableArray<id<IGListDiffable>> *items = _loader.contactGroup;
-    return items;
-}
-
-- (nullable UIView *)emptyViewForListAdapter:(IGListAdapter *)listAdapter {
-    return nil;
-}
-// MARK: - đọc IGListAdapter
-- (IGListSectionController *)listAdapter:(IGListAdapter *)listAdapter sectionControllerForObject:(id)object {
-    if ([object isKindOfClass:ContactGroup.class]) {
-        return [ContactSectionController new];
-    } else {
-        return [ContactSectionController new];
-    }
-    
 }
 
 @end

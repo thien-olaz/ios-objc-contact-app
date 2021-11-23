@@ -38,6 +38,20 @@
     return self;
 }
 
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    [self addSubview:self.nameView];
+    [self addSubview:self.avatarImageView];
+    [self addSubview:self.callButton];
+    [self addSubview:self.videoCallButton];
+    [self addSubview:self.newFriendMarkView];
+    
+    [self setNeedsUpdateConstraints];
+    
+    return self;
+}
+
 - (void) setNameWith:(NSString *)name {
     [self.nameLabel setText:name];
 }
@@ -151,6 +165,7 @@
         UILabel *label = UILabel.new;
         [label setText:@"Mới"];
         [label setTextColor:UIColor.neonGreen];
+        [label setFont: [label.font fontWithSize:12]];
         
         UIImageView *icon = [UIImageView new];
         icon.image =  [[UIImage imageNamed:@"tb_user"]
@@ -160,12 +175,12 @@
         [_newFriendMarkView addSubview:icon];
         [_newFriendMarkView addSubview:label];
         
-        [label autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(2, 6, 2, 0) excludingEdge:ALEdgeRight];
+        [label autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:6];
+        [label autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:icon withOffset:-2];
         
         [icon autoSetDimensionsToSize:CGSizeMake(20, 20)];
-        [icon autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:label withOffset:6];
-        [icon autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
-        [icon autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:6];
+        [icon autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(2, 6, 2, 6) excludingEdge:ALEdgeLeft];
         
     }
     return _newFriendMarkView;

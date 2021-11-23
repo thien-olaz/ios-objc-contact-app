@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactHeaderCell : UICollectionViewCell
+@interface ContactHeaderCell : UITableViewCell
 
 - (void) setSectionTitle:(NSString *)title;
     

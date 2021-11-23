@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactCell : UICollectionViewCell
+@interface ContactCell : UITableViewCell
 
 - (void) setNameWith:(NSString *)name;
 - (void) setSubtitleWith:(NSString *)subtitle;

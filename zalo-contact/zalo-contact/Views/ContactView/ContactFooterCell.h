@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactFooterCell : UICollectionViewCell
+@interface ContactFooterCell : UITableViewCell
 
 @end
 
