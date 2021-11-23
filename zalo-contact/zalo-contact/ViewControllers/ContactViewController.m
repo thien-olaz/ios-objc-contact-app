@@ -62,11 +62,31 @@
         if (complete) {
             [UserContacts.sharedInstance fetchLocalContacts];
             [loader update];
-            dispatch_async(dispatch_get_main_queue(),
-                           ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [self->_adapter performUpdatesAnimated:YES completion:nil];
             });
-        };
+        } else {
+            UIAlertController *alertController = [UIAlertController
+                                                  alertControllerWithTitle:@"No permission"
+                                                  message:@"Please go to setting and turn on contact access permission"
+                                                  preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *action = [UIAlertAction
+                                     actionWithTitle:@"Open setting"
+                                     style:UIAlertActionStyleDefault
+                                     handler:^(UIAlertAction * _Nonnull action)
+                                     {
+                // Open setting
+                [UIApplication.sharedApplication
+                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
+                 options:@{}
+                 completionHandler:^(BOOL Success){}];
+            }];
+            
+            [alertController addAction:action];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self presentViewController:alertController animated:true completion:nil];
+            });            
+        }
     }];
 }
 
