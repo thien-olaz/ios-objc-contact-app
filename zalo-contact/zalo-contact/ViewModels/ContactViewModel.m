@@ -91,7 +91,7 @@
 }
 
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return @[@"",@"C",@"H",@"L",@"N",@"T"];
+    return @[@"",@"",@"",@"",@"C",@"H",@"L",@"N",@"T"];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
