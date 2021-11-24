@@ -13,6 +13,7 @@
 #import "ContactHeaderCell.h"
 #import "FriendRequestsCell.h"
 #import "GrayFooterCell.h"
+#import "UpdateContactCell.h"
 
 @import UIKit;
 

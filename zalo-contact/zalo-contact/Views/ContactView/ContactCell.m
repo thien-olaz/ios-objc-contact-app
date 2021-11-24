@@ -18,6 +18,9 @@
 @property (nonatomic, strong) UIButton *videoCallButton;
 @property (nonatomic, strong) UIView *newFriendMarkView;
 @property (nonatomic, strong) UIStackView *nameView;
+@property (nonatomic, strong) UILabel *isNewLabel;
+@property (nonatomic, strong) UIImageView *isNewImageView;
+
 @end
 
 @implementation ContactCell
@@ -27,11 +30,11 @@
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     
-    [self addSubview:self.nameView];
-    [self addSubview:self.avatarImageView];
-    [self addSubview:self.callButton];
-    [self addSubview:self.videoCallButton];
-    [self addSubview:self.newFriendMarkView];
+    [self.contentView addSubview:self.nameView];
+    [self.contentView addSubview:self.avatarImageView];
+    [self.contentView addSubview:self.callButton];
+    [self.contentView addSubview:self.videoCallButton];
+    [self.contentView addSubview:self.newFriendMarkView];
     
     [self setNeedsUpdateConstraints];
     
@@ -42,11 +45,11 @@
     
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     [self setBackgroundColor: UIColor.darkGrayColor];
-    [self addSubview:self.nameView];
-    [self addSubview:self.avatarImageView];
-    [self addSubview:self.callButton];
-    [self addSubview:self.videoCallButton];
-    [self addSubview:self.newFriendMarkView];
+    [self.contentView addSubview:self.nameView];
+    [self.contentView addSubview:self.avatarImageView];
+    [self.contentView addSubview:self.callButton];
+    [self.contentView addSubview:self.videoCallButton];
+    [self.contentView addSubview:self.newFriendMarkView];
     
     [self setNeedsUpdateConstraints];
     
@@ -117,6 +120,12 @@
                                      toEdge:ALEdgeRight
                                      ofView:self.nameLabel
                                  withOffset:UIConstants.contactMinHorizontalSpacing];
+        [_isNewLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+        [_isNewLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:6];
+        [_isNewLabel autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:_isNewImageView withOffset:-2];
+        
+        [_isNewImageView autoSetDimensionsToSize:CGSizeMake(20, 20)];
+        [_isNewImageView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(2, 6, 2, 6) excludingEdge:ALEdgeLeft];
         
         [self.callButton autoPinEdgeToSuperviewEdge:ALEdgeRight
                                           withInset:UIConstants.contactCellMinHorizontalInset];
@@ -160,28 +169,21 @@
 - (UIView *) newFriendMarkView {
     if (!_newFriendMarkView) {
         _newFriendMarkView = [UIView new];
-        [_newFriendMarkView setBackgroundColor:UIColor.grayColor];
+        [_newFriendMarkView setBackgroundColor:UIColor.systemBackgroundColor];
         [_newFriendMarkView.layer setCornerRadius:5];
         
-        UILabel *label = UILabel.new;
-        [label setText:@"Mới"];
-        [label setTextColor:UIColor.neonGreen];
-        [label setFont: [label.font fontWithSize:12]];
+        _isNewLabel = UILabel.new;
+        [_isNewLabel setText:@"Mới"];
+        [_isNewLabel setTextColor:UIColor.neonGreen];
+        [_isNewLabel setFont: [_isNewLabel.font fontWithSize:13]];
         
-        UIImageView *icon = [UIImageView new];
-        icon.image =  [[UIImage imageNamed:@"tb_user"]
+        _isNewImageView = [UIImageView new];
+        _isNewImageView.image =  [[UIImage imageNamed:@"tb_user"]
                        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        [icon setTintColor:UIColor.neonGreen];
+        [_isNewImageView setTintColor:UIColor.neonGreen];
         
-        [_newFriendMarkView addSubview:icon];
-        [_newFriendMarkView addSubview:label];
-        
-        [label autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
-        [label autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:6];
-        [label autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:icon withOffset:-2];
-        
-        [icon autoSetDimensionsToSize:CGSizeMake(20, 20)];
-        [icon autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(2, 6, 2, 6) excludingEdge:ALEdgeLeft];
+        [_newFriendMarkView addSubview:_isNewImageView];
+        [_newFriendMarkView addSubview:_isNewLabel];
         
     }
     return _newFriendMarkView;
@@ -201,17 +203,30 @@
     if (!_callButton) {
         _callButton = [UIButton new];
         [_callButton setImage:[UIImage imageNamed:@"ct_call"]  forState:UIControlStateNormal];
-        //add action
+        [_callButton addTarget:self
+                        action:@selector(phoneCallClicked)
+              forControlEvents:UIControlEventTouchUpInside];
     }
     return  _callButton;
+}
+
+- (void) phoneCallClicked {
+    if (_phoneBlock) _phoneBlock();
 }
 
 - (UIButton *) videoCallButton {
     if (!_videoCallButton) {
         _videoCallButton = [UIButton new];
         [_videoCallButton setImage:[UIImage imageNamed:@"ct_videoCall"]  forState:UIControlStateNormal];
-        //add action
+        [_videoCallButton addTarget:self
+                        action:@selector(videoCallClicked)
+              forControlEvents:UIControlEventTouchUpInside];
     }
     return  _videoCallButton;
 }
+
+- (void) videoCallClicked {
+    if (_videoBlock) _videoBlock();
+}
+
 @end

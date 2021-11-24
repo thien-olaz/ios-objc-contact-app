@@ -12,7 +12,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^ActionBlock)(void);
+
 @interface FriendRequestsCell : UITableViewCell
+
+@property (copy) ActionBlock block;
 
 - (void) setTitle:(NSString *)title;
 - (void) setIconImage:(nonnull UIImage*)image;

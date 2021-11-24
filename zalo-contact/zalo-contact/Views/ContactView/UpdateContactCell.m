@@ -6,7 +6,7 @@
 //
 
 #import "UpdateContactCell.h"
-#import "UIConstants.h"
+
 @interface UpdateContactCell ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
@@ -21,8 +21,8 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     [self setSelectionStyle:(UITableViewCellSelectionStyleNone)];
     [self setBackgroundColor: UIColor.darkGrayColor];
-    [self addSubview:self.sectionHeaderLabel];
-    [self addSubview:self.updateButton];
+    [self.contentView addSubview:self.sectionHeaderLabel];
+    [self.contentView addSubview:self.updateButton];
     [self setNeedsUpdateConstraints];
     return self;
 }
@@ -35,7 +35,7 @@
         
         [self.updateButton autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.updateButton autoPinEdgeToSuperviewEdge:ALEdgeRight
-                                                  withInset:UIConstants.contactCellMinHorizontalInset];
+                                            withInset:UIConstants.contactCellMinHorizontalInset];
         
         _didSetupConstraints = YES;
         
@@ -63,8 +63,15 @@
         _updateButton = [UIButton buttonWithType:UIButtonTypeSystem];
         [_updateButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
         [_updateButton setTintColor:UIColor.systemBlueColor];
-        // add action block
+        [_updateButton addTarget:self
+                          action:@selector(didClick)
+                forControlEvents:UIControlEventTouchUpInside];
     }
     return _updateButton;
 }
+
+- (void) didClick {
+    if (_block) _block();
+}
+
 @end

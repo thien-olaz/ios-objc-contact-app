@@ -20,10 +20,10 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     
-    [self setBackgroundColor: UIColor.systemBackgroundColor];
-    [self addSubview:self.iconImageView];
-    [self addSubview:self.titleLabel];
-    [self setNeedsUpdateConstraints];
+    [self setBackgroundColor: UIColor.darkGrayColor];
+    [self.contentView addSubview:self.iconImageView];
+    [self.contentView addSubview:self.titleLabel];
+    [self.contentView setNeedsUpdateConstraints];
     return self;
 }
 
@@ -71,6 +71,13 @@
         [_iconImageView layer].masksToBounds = YES;
     }
     return  _iconImageView;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+    if (self.selected) {
+        if (_block) _block();
+    }
 }
 
 @end

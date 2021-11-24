@@ -5,11 +5,18 @@
 //  Created by Thiện on 24/11/2021.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 @import PureLayout;
+#import "UIConstants.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^ActionBlock)(void);
+
 @interface UpdateContactCell : UITableViewCell
+
+@property (copy) ActionBlock block;
+
 - (void) setSectionTitle:(NSString *)title;
 - (void) setButtonTitle:(NSString *)title;
 

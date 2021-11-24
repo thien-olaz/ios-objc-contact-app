@@ -5,7 +5,7 @@
 //  Created by Thiện on 23/11/2021.
 //
 #import "ContactViewModel.h"
-#import "UpdateContactCell.h"
+
 @implementation ContactViewModel {
     ContactsLoader *loader;
     NSMutableArray<NSObject *> *data;
@@ -17,26 +17,38 @@
     loader =  [[ContactsLoader alloc] init];
     [loader update];
     data = NSMutableArray.alloc.init;
+    
+    // Mock data - replace later
     [data addObject:@"friendRequest"];
     [data addObject:@"addFriendFromDevice"];
     [data addObject:@"header"];
     [data addObjectsFromArray:loader.contactGroup];
+    
     return self;
 }
 
 // MARK: UITableViewDataSource
+
+// MARK: Need to turn all of this to use switch or enum base to manage the cell
 - (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     
     if ([data[indexPath.section] isKindOfClass:NSString.class]) {
+        //MARK: These two cell must be in the same section
         if ([(NSString *)data[indexPath.section] isEqual:@"friendRequest"]) {
             FriendRequestsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"actionCell" forIndexPath: indexPath];
             [cell setTitle:@"Lời mời kết bạn"];
             [cell setIconImage:[UIImage imageNamed:@"ct_people"]];
+            [cell setBlock:^{
+                NSLog(@"Perform present view controller here!");
+            }];
             return cell;
         } else if ([(NSString *)data[indexPath.section] isEqual:@"addFriendFromDevice"]) {
             FriendRequestsCell *cell = [tableView dequeueReusableCellWithIdentifier:@"actionCell" forIndexPath: indexPath];
             [cell setTitle:@"Thêm bạn từ danh bạ máy"];
             [cell setIconImage:[UIImage imageNamed:@"ct_people"]];
+            [cell setBlock:^{
+                NSLog(@"Perform present view controller here!");
+            }];
             return cell;
         }
         UpdateContactCell *cell = [tableView dequeueReusableCellWithIdentifier:@"updateContactHeaderCell" forIndexPath: indexPath];
@@ -49,10 +61,15 @@
     
     Contact *contact = ((ContactGroup *)data[indexPath.section]).contacts[indexPath.row];
     
-    [(ContactCell *)cell setNameWith: contact.fullName];
-    [(ContactCell *)cell setSubtitleWith: contact.fullName];
-    [(ContactCell *)cell setAvatarImageUrl: contact.imageUrl];
-    
+    [cell setNameWith: contact.fullName];
+    [cell setSubtitleWith: contact.fullName];
+    [cell setAvatarImageUrl: contact.imageUrl];
+    [cell setPhoneBlock:^{
+        NSLog(@"Phone call");
+    }];
+    [cell setVideoBlock:^{
+        NSLog(@"Video call");
+    }];
     return cell;
 }
 
@@ -118,6 +135,7 @@
     }
     return 20;
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if ([data[section] isKindOfClass:NSString.class]) {
         if ([(NSString *)data[section] isEqual:@"friendRequest"]) {

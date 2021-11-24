@@ -170,8 +170,6 @@
 				AF0BFBF02743A0A6006E072B /* ContactHeaderCell.m */,
 				AF9201B927461A2900E1581C /* ContactFooterCell.h */,
 				AF9201BA27461A2900E1581C /* ContactFooterCell.m */,
-				AF24F4C6274C9E5900A71E07 /* ContactViewModel.h */,
-				AF24F4C7274C9E5900A71E07 /* ContactViewModel.m */,
 				AF24F4C9274DDFBD00A71E07 /* UpdateContactCell.h */,
 				AF24F4CA274DDFBD00A71E07 /* UpdateContactCell.m */,
 				AF24F4CC274DE4A900A71E07 /* FriendRequestsCell.h */,
@@ -240,6 +238,8 @@
 		AFCDDE59274283F100500137 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				AF24F4C6274C9E5900A71E07 /* ContactViewModel.h */,
+				AF24F4C7274C9E5900A71E07 /* ContactViewModel.m */,
 				AFCDDE5A274284A500500137 /* ContactsLoader.h */,
 				AFCDDE5B274284A500500137 /* ContactsLoader.m */,
 				AF21A9E82743772500849D63 /* NSObject_ListDiffable.h */,

@@ -13,8 +13,11 @@
 
 
 NS_ASSUME_NONNULL_BEGIN
-
+typedef void (^PhoneCallBlock)(void);
+typedef void (^VideoCallBlock)(void);
 @interface ContactCell : UITableViewCell
+@property (copy) PhoneCallBlock phoneBlock;
+@property (copy) VideoCallBlock videoBlock;
 
 - (void) setNameWith:(NSString *)name;
 - (void) setSubtitleWith:(NSString *)subtitle;
