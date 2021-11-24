@@ -11,6 +11,9 @@
 #import "ContactCell.h"
 #import "ContactFooterCell.h"
 #import "ContactHeaderCell.h"
+#import "FriendRequestsCell.h"
+#import "GrayFooterCell.h"
+
 @import UIKit;
 
 NS_ASSUME_NONNULL_BEGIN

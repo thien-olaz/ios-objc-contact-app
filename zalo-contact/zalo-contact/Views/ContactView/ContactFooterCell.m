@@ -19,7 +19,7 @@
     self = [super initWithFrame:frame];
     
     [self addSubview:self.separateLineview];
-    
+    [self setBackgroundColor: UIColor.darkGrayColor];
     [self setNeedsUpdateConstraints];
     return self;
 }

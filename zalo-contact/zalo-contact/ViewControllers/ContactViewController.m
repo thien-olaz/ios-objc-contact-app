@@ -6,6 +6,7 @@
 //
 
 #import "ContactViewController.h"
+#import "UpdateContactCell.h"
 
 @interface ContactViewController () {
     UITableView *tableView;
@@ -33,6 +34,10 @@
 
 - (void) registerCell {
     [tableView registerClass:ContactCell.class forCellReuseIdentifier:@"contactCell"];
+    [tableView registerClass:UpdateContactCell.class forCellReuseIdentifier:@"updateContactHeaderCell"];
+    [tableView registerClass:FriendRequestsCell.class forCellReuseIdentifier:@"actionCell"];
+    [tableView registerClass:GrayFooterCell.class forCellReuseIdentifier:@"grayFooterCell"];
+    
 }
 //MARK: Move to ViewModel
 - (void) checkPermissionAndFetchData {

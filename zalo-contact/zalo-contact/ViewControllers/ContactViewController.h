@@ -15,6 +15,9 @@
 #import "ContactSectionController.h"
 #import "OnlineFriendsSectionController.h"
 #import "ContactViewModel.h"
+#import "FriendRequestsCell.h"
+#import "GrayFooterCell.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 

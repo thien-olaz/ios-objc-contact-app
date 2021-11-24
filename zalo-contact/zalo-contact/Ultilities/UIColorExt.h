@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)grayColor;
 
++ (UIColor *)darkGrayColor;
+
 @end
 
 NS_ASSUME_NONNULL_END
