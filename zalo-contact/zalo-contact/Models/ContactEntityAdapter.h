@@ -6,11 +6,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "../Models/Contact.h"
+#import "ContactEntity.h"
 @import Contacts;
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactAdapter : Contact
+@interface ContactEntityAdapter : ContactEntity
 
 -(id)initWithCNContact:(CNContact *)contact;
 

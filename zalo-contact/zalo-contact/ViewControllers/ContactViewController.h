@@ -10,19 +10,19 @@
 @import IGListKit;
 @import FBLFunctional;
 #import "ContactViewController.h"
-#import "Contact.h"
+#import "ContactEntity.h"
 #import "ContactsLoader.h"
 #import "ContactSectionController.h"
 #import "OnlineFriendsSectionController.h"
 #import "ContactViewModel.h"
-#import "FriendRequestsCell.h"
-#import "GrayFooterCell.h"
+#import "ActionCell.h"
+#import "BlankFooterCell.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactViewController : UIViewController
-
+- (id) initWithViewModel:(ContactViewModel *)vm;
 @end
 
 NS_ASSUME_NONNULL_END

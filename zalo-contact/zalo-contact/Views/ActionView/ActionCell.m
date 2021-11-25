@@ -5,9 +5,9 @@
 //  Created by Thiện on 24/11/2021.
 //
 
-#import "FriendRequestsCell.h"
+#import "ActionCell.h"
 
-@interface FriendRequestsCell ()
+@interface ActionCell ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UIImageView *iconImageView;
@@ -15,12 +15,17 @@
 
 @end
 
-@implementation FriendRequestsCell
+@implementation ActionCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     
-    [self setBackgroundColor: UIColor.darkGrayColor];
+    UIView *bgView = [UIView.alloc init];
+    [bgView setBackgroundColor:UIColor.cellHighlightColor];
+    [self setSelectedBackgroundView:bgView];
+    [self setSelectionStyle:(UITableViewCellSelectionStyleGray)];
+    
+    [self setBackgroundColor:UIColor.darkGrayColor];
     [self.contentView addSubview:self.iconImageView];
     [self.contentView addSubview:self.titleLabel];
     [self.contentView setNeedsUpdateConstraints];
@@ -48,6 +53,17 @@
     [super updateConstraints];
 }
 
+- (void) prepareForReuse {
+    [super prepareForReuse];
+    [self.titleLabel setTextColor:nil];
+    [self.iconImageView setTintColor:nil];
+}
+
+- (void) setTitleTintColor:(UIColor *)color {
+    [self.titleLabel setTextColor:color];
+    [self.iconImageView setTintColor:color];
+}
+
 - (void) setTitle:(NSString *)title {
     [self.titleLabel setText:title];
 }
@@ -66,16 +82,18 @@
 - (UIImageView *) iconImageView {
     if (!_iconImageView) {
         _iconImageView = [UIImageView new];
-        _iconImageView.backgroundColor = UIColor.clearColor;
-        [[_iconImageView layer] setCornerRadius:UIConstants.cornerRadius];
-        [_iconImageView layer].masksToBounds = YES;
+        _iconImageView.backgroundColor = UIColor.buttonGrayColor;
+        [_iconImageView setContentMode:(UIViewContentModeScaleAspectFit)];
+        [_iconImageView.layer setCornerRadius:UIConstants.cornerRadius];
+        [_iconImageView.layer setMasksToBounds:YES];
     }
     return  _iconImageView;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
+    [super setSelected:selected animated:NO];
     if (self.selected) {
+        
         if (_block) _block();
     }
 }

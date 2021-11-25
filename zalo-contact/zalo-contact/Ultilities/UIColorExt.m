@@ -21,5 +21,16 @@
     return [UIColor.alloc initWithRed:17.0f/255.0f green:17.0f/255.0f blue:17.0f/255.0f alpha:1.0f];
 }
 
++ (UIColor *)buttonGrayColor {
+    return [UIColor.alloc initWithRed:74.0f/255.0f green:74.0f/255.0f blue:74.0f/255.0f alpha:1.0f];
+}
+
++ (UIColor *)cellHighlightColor {
+    return [UIColor.alloc initWithRed:12.0f/255.0f green:107.0f/255.0f blue:255.0f/255.0f alpha:0.4f];
+}
+
++ (UIColor *)badgeColor {
+    return [UIColor.alloc initWithRed:29.0f/255.0f green:199.0f/255.0f blue:90.0f/255.0f alpha:1.0f];
+}
 
 @end

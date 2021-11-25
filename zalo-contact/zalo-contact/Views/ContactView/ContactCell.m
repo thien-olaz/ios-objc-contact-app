@@ -20,7 +20,7 @@
 @property (nonatomic, strong) UIStackView *nameView;
 @property (nonatomic, strong) UILabel *isNewLabel;
 @property (nonatomic, strong) UIImageView *isNewImageView;
-
+@property (nonatomic, strong) UIView *badgeView;
 @end
 
 @implementation ContactCell
@@ -32,10 +32,10 @@
     
     [self.contentView addSubview:self.nameView];
     [self.contentView addSubview:self.avatarImageView];
+    [self.contentView addSubview:self.badgeView];
     [self.contentView addSubview:self.callButton];
     [self.contentView addSubview:self.videoCallButton];
     [self.contentView addSubview:self.newFriendMarkView];
-    
     [self setNeedsUpdateConstraints];
     
     return self;
@@ -47,6 +47,7 @@
     [self setBackgroundColor: UIColor.darkGrayColor];
     [self.contentView addSubview:self.nameView];
     [self.contentView addSubview:self.avatarImageView];
+    [self.contentView addSubview:self.badgeView];
     [self.contentView addSubview:self.callButton];
     [self.contentView addSubview:self.videoCallButton];
     [self.contentView addSubview:self.newFriendMarkView];
@@ -54,6 +55,10 @@
     [self setNeedsUpdateConstraints];
     
     return self;
+}
+
+- (void) setOnline {
+    [self.badgeView setBackgroundColor:UIColor.badgeColor];
 }
 
 - (void) setNameWith:(NSString *)name {
@@ -104,6 +109,12 @@
                                                withInset:UIConstants.contactCellMinHorizontalInset];
         [self.avatarImageView autoSetDimensionsToSize:UIConstants.contactCellAvatarSize];
                 
+        //badge
+        [self.badgeView autoSetDimensionsToSize:CGSizeMake(12, 12)];
+        [self.badgeView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.avatarImageView];
+        [self.badgeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarImageView];
+        
+        //name
         [self.nameView addArrangedSubview:self.nameLabel];
         [self.nameView addArrangedSubview:self.subtitleLabel];
         
@@ -189,6 +200,16 @@
     return _newFriendMarkView;
 }
 
+- (UIView *) badgeView {
+    if (!_badgeView) {
+        _badgeView = UIView.new;
+        [_badgeView setBackgroundColor:UIColor.badgeColor];
+        [_badgeView.layer setCornerRadius:6];
+    }
+    return _badgeView;
+}
+
+
 - (UIImageView *) avatarImageView {
     if (!_avatarImageView) {
         _avatarImageView = [UIImageView new];
@@ -227,6 +248,11 @@
 
 - (void) videoCallClicked {
     if (_videoBlock) _videoBlock();
+}
+
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    [self.badgeView setBackgroundColor:UIColor.clearColor];
 }
 
 @end

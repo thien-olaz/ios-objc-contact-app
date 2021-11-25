@@ -23,7 +23,7 @@ typedef void (^VideoCallBlock)(void);
 - (void) setSubtitleWith:(NSString *)subtitle;
 - (void) setAvatarImage:(nonnull UIImage*)image;
 - (void) setAvatarImageUrl:(NSString * __nullable)url;
-
+- (void) setOnline;
 @end
 
 NS_ASSUME_NONNULL_END

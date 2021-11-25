@@ -6,12 +6,12 @@
 //
 
 #import <IGListKit/IGListKit.h>
-#import "../Models/Contact.h"
-#import "../Models/ContactGroup.h"
-#import "../Views/ContactView/ContactCell.h"
-#import "../Views/ContactView/ContactHeaderCell.h"
-#import "../Views/ContactView/ContactFooterCell.h"
-#import "../Ultilities/UIConstants.h"
+#import "ContactEntity.h"
+#import "ContactGroupEntity.h"
+#import "ContactCell.h"
+#import "HeaderCell.h"
+#import "ContactFooterCell.h"
+#import "UIConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

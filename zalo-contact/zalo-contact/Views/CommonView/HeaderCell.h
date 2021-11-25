@@ -13,8 +13,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactHeaderCell : UITableViewCell
+@interface HeaderCell : UITableViewCell
 
+- (instancetype)initWithTitle:(NSString *)title;
 - (void) setSectionTitle:(NSString *)title;
     
 @end

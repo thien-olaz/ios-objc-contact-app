@@ -1,5 +1,5 @@
 //
-//  FriendsFromDeviceCell.h
+//  GrayFooterCell.h
 //  zalo-contact
 //
 //  Created by Thiện on 24/11/2021.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FriendsFromDeviceCell : UITableViewCell
+@interface BlankFooterCell : UITableViewCell
 
 @end
 

@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^ActionBlock)(void);
 
-@interface UpdateContactCell : UITableViewCell
+@interface UpdateContactHeaderCell : UITableViewCell
 
 @property (copy) ActionBlock block;
 

@@ -8,7 +8,7 @@
 #import "ContactSectionController.h"
 
 @implementation ContactSectionController {
-    ContactGroup *entry;
+    ContactGroupEntity *entry;
 }
 
 - (instancetype)init {
@@ -56,7 +56,7 @@
 }
 
 - (void)didUpdateToObject:(id)object {
-    entry = (ContactGroup *)object;
+    entry = (ContactGroupEntity *)object;
 }
 
 - (CGSize)sizeForSupplementaryViewOfKind:(nonnull NSString *)elementKind
@@ -83,10 +83,10 @@
 }
 
 - (UICollectionReusableView *)headerViewFor:(int)index {
-    ContactHeaderCell *view = [self.collectionContext
+    HeaderCell *view = [self.collectionContext
                                dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                                forSectionController:self
-                               class:ContactHeaderCell.class
+                               class:HeaderCell.class
                                atIndex:index];
     [view setSectionTitle:entry.header];
     return view;

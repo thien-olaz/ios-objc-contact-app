@@ -10,10 +10,11 @@
 #import "ContactsLoader.h"
 #import "ContactCell.h"
 #import "ContactFooterCell.h"
-#import "ContactHeaderCell.h"
-#import "FriendRequestsCell.h"
-#import "GrayFooterCell.h"
-#import "UpdateContactCell.h"
+#import "HeaderCell.h"
+#import "ActionCell.h"
+#import "BlankFooterCell.h"
+#import "UpdateContactHeaderCell.h"
+#import "CellItem.h"
 
 @import UIKit;
 

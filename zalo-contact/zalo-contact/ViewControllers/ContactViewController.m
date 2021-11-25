@@ -6,7 +6,8 @@
 //
 
 #import "ContactViewController.h"
-#import "UpdateContactCell.h"
+#import "UpdateContactHeaderCell.h"
+#import "UIAlertControllerExt.h"
 
 @interface ContactViewController () {
     UITableView *tableView;
@@ -18,25 +19,25 @@
 
 @implementation ContactViewController
 
-- (id) init {
+- (id) initWithViewModel:(ContactViewModel *)vm {
     self = [super init];
-    // MARK: change to inject
-    viewModel = ContactViewModel.alloc.init;
-    
+    viewModel = vm;
     return self;
 }
-
-// MARK: - Lazy var
 
 - (void) addView {
     [self.view addSubview:tableView];
 }
 
 - (void) registerCell {
-    [tableView registerClass:ContactCell.class forCellReuseIdentifier:@"contactCell"];
-    [tableView registerClass:UpdateContactCell.class forCellReuseIdentifier:@"updateContactHeaderCell"];
-    [tableView registerClass:FriendRequestsCell.class forCellReuseIdentifier:@"actionCell"];
-    [tableView registerClass:GrayFooterCell.class forCellReuseIdentifier:@"grayFooterCell"];
+    [tableView registerClass:ContactCell.class
+      forCellReuseIdentifier:@"contactCell"];
+    [tableView registerClass:UpdateContactHeaderCell.class
+      forCellReuseIdentifier:@"updateContactHeaderCell"];
+    [tableView registerClass:ActionCell.class
+      forCellReuseIdentifier:@"actionCell"];
+    [tableView registerClass:BlankFooterCell.class
+      forCellReuseIdentifier:@"grayFooterCell"];
     
 }
 //MARK: Move to ViewModel
@@ -45,51 +46,39 @@
         if (complete) {
             [UserContacts.sharedInstance fetchLocalContacts];
             dispatch_async(dispatch_get_main_queue(), ^{
-                
+                // reload the table
             });
         } else {
-            UIAlertController *alertController = [UIAlertController
-                                                  alertControllerWithTitle:@"No permission"
-                                                  message:@"Please go to setting and turn on contact access permission"
-                                                  preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *action = [UIAlertAction
-                                     actionWithTitle:@"Open setting"
-                                     style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction * _Nonnull action)
-                                     {
-                // Open setting
-                [UIApplication.sharedApplication
-                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                 options:@{}
-                 completionHandler:^(BOOL Success){}];
-            }];
-            
-            [alertController addAction:action];
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentViewController:alertController animated:true completion:nil];
+                [self presentViewController:[UIAlertController contactPermisisonAlert]
+                                   animated:true
+                                 completion:nil];
             });
         }
     }];
 }
 
-- (void) viewDidLoad {
-    [super viewDidLoad];
-
-    tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+- (void) configTableView {
+    tableView = [UITableView.alloc initWithFrame:CGRectZero
+                                           style:UITableViewStylePlain];
     [tableView setDataSource:viewModel];
     [tableView setDelegate:viewModel];
     [tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-    
     if (@available(iOS 15, *)) {
         [tableView setSectionHeaderTopPadding:0];
     }
-            
+}
+
+- (void) viewDidLoad {
+    [super viewDidLoad];
+    [self configTableView];
+        
     [self addView];
     [self registerCell];
     
-//        [self checkPermissionAndFetchData];
+    
     [self.view setNeedsUpdateConstraints];
- 
+    
 }
 
 - (void)updateViewConstraints {

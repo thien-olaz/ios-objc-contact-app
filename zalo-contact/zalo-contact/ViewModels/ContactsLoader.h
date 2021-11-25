@@ -6,16 +6,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "../ViewModels/NSObject_ListDiffable.h"
-#import "../Ultilities/UserContacts.h"
-#import "../Models/ContactAdapter.h"
-#import "../Models/ContactGroup.h"
+#import "NSObject_ListDiffable.h"
+#import "UserContacts.h"
+#import "ContactEntityAdapter.h"
+#import "ContactGroupEntity.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactsLoader : NSObject
 
--(NSMutableArray *) contactGroup;
--(void) update;
+- (NSMutableArray *) contactGroup;
+- (ContactGroupEntity *) mockOnlineFriends;
+- (void) update;
 @end
 
 NS_ASSUME_NONNULL_END

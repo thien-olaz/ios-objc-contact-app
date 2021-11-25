@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FriendRequest : NSObject
+@interface FriendRequestEntity : NSObject
 
 @property NSString *fistName;
 @property NSString *lastName;

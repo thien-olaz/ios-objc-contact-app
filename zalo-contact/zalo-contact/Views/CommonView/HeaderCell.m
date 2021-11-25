@@ -5,23 +5,39 @@
 //  Created by Thiện on 16/11/2021.
 //
 
-#import "ContactHeaderCell.h"
+#import "HeaderCell.h"
 
-@interface ContactHeaderCell ()
+@interface HeaderCell ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UILabel *sectionHeaderLabel;
 
 @end
 
-@implementation ContactHeaderCell
+@implementation HeaderCell
+
+- (instancetype)initWithTitle:(NSString *)title {
+    self = [super init];
+    [self commonInit];
+    [self setSectionTitle:title];
+    return self;
+}
 
 - (instancetype) initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
+    [self commonInit];
+    return self;
+}
+
+- (void) commonInit {
     [self setBackgroundColor: UIColor.darkGrayColor];
     [self.contentView addSubview:self.sectionHeaderLabel];
     [self setNeedsUpdateConstraints];
-    return self;
+}
+
+- (void) prepareForReuse {
+    [super prepareForReuse];
+    [self setSectionTitle:@""];
 }
 
 -(void) updateConstraints {

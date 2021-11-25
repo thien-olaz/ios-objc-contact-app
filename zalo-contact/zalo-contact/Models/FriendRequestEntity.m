@@ -5,9 +5,9 @@
 //  Created by Thiện on 16/11/2021.
 //
 
-#import "FriendRequest.h"
+#import "FriendRequestEntity.h"
 
-@implementation FriendRequest
+@implementation FriendRequestEntity
 - (id) init {
     return [self initWithFirstName: @""
                           lastName: @""

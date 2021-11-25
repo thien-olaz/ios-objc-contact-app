@@ -1,13 +1,13 @@
 //
-//  Contact.m
+//  ContactEntity.m
 //  zalo-contact
 //
 //  Created by LAp14886 on 15/11/2021.
 //
 
-#import "Contact.h"
+#import "ContactEntity.h"
 
-@interface Contact ()
+@interface ContactEntity ()
 
 @property NSString *firstName;
 @property NSString *lastName;
@@ -15,7 +15,7 @@
 @property (nullable) NSString *imageUrl;
 @end
 
-@implementation Contact
+@implementation ContactEntity
 
 - (id) init {
     return [self initWithFirstName:@"" lastName:@"" phoneNumber:@""];

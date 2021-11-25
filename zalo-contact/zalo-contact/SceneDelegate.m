@@ -6,7 +6,8 @@
 //
 
 #import "SceneDelegate.h"
-#import "ViewControllers/ContactViewController.h"
+#import "ContactViewController.h"
+#import "ContactViewModel.h"
 
 @interface SceneDelegate ()
 
@@ -31,7 +32,9 @@
     UINavigationController * contactNav = [[UINavigationController alloc] init];
     contactNav.tabBarItem.title = @"Contact";
     contactNav.tabBarItem.image = [UIImage imageNamed:@"tb_contact"];
-    [contactNav pushViewController: ContactViewController.alloc.init animated:NO];
+    
+    ContactViewModel *contactVM = ContactViewModel.new;
+    [contactNav pushViewController: [ContactViewController.alloc initWithViewModel: contactVM] animated:NO];
     
     [tabItems addObject: contactNav];
     
@@ -47,7 +50,7 @@
     UITabBarController *tabbar = [[UITabBarController alloc] init];
     
     [tabbar setViewControllers:tabItems animated:YES];
-        
+    
     tabbar.selectedIndex = 1;
     
     return tabbar;
@@ -59,7 +62,7 @@
     window.backgroundColor = UIColor.blackColor;
     
     self.tabbarController = self.getTabbarController;
-            
+    
     [self.window setRootViewController:self.tabbarController];
     [self.window makeKeyAndVisible];
     

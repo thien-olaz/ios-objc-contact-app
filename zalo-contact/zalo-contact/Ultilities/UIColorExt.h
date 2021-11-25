@@ -10,13 +10,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface UIColor ()
+@interface UIColor (Common)
 
 + (UIColor *)neonGreen;
 
 + (UIColor *)grayColor;
 
 + (UIColor *)darkGrayColor;
+
++ (UIColor *)buttonGrayColor;
+
++ (UIColor *)cellHighlightColor;
+
++ (UIColor *)badgeColor;
 
 @end
 

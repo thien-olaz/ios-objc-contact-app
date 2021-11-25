@@ -5,9 +5,9 @@
 //  Created by Thiện on 24/11/2021.
 //
 
-#import "UpdateContactCell.h"
+#import "UpdateContactHeaderCell.h"
 
-@interface UpdateContactCell ()
+@interface UpdateContactHeaderCell ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UILabel *sectionHeaderLabel;
@@ -15,7 +15,7 @@
 
 @end
 
-@implementation UpdateContactCell
+@implementation UpdateContactHeaderCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];

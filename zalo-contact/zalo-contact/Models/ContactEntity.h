@@ -1,5 +1,5 @@
 //
-//  Contact.h
+//  ContactEntity.h
 //  zalo-contact
 //
 //  Created by LAp14886 on 15/11/2021.
@@ -9,8 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-//MARK: - rename - entity - model ...
-@interface Contact : NSObject
+@interface ContactEntity : NSObject
 - (id) initWithFirstName:(NSString *)firstName
                 lastName:(NSString *)lastName
              phoneNumber:(NSString *)phoneNumber;
