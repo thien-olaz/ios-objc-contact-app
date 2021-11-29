@@ -7,7 +7,6 @@
 
 #import "ContactCell.h"
 
-
 @interface ContactCell ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
@@ -26,20 +25,6 @@
 @implementation ContactCell
 
 @synthesize didSetupConstraints = _didSetupConstraints;
-
-- (instancetype) initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    
-    [self.contentView addSubview:self.nameView];
-    [self.contentView addSubview:self.avatarImageView];
-    [self.contentView addSubview:self.badgeView];
-    [self.contentView addSubview:self.callButton];
-    [self.contentView addSubview:self.videoCallButton];
-    [self.contentView addSubview:self.newFriendMarkView];
-    [self setNeedsUpdateConstraints];
-    
-    return self;
-}
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     
@@ -108,7 +93,7 @@
         [self.avatarImageView autoPinEdgeToSuperviewEdge:ALEdgeLeft
                                                withInset:UIConstants.contactCellMinHorizontalInset];
         [self.avatarImageView autoSetDimensionsToSize:UIConstants.contactCellAvatarSize];
-                
+        
         //badge
         [self.badgeView autoSetDimensionsToSize:CGSizeMake(12, 12)];
         [self.badgeView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.avatarImageView];
@@ -120,9 +105,9 @@
         
         [self.nameView autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.nameView autoPinEdge:ALEdgeLeft
-                             toEdge:ALEdgeRight
-                             ofView:self.avatarImageView
-                         withOffset:UIConstants.contactMinHorizontalSpacing];
+                            toEdge:ALEdgeRight
+                            ofView:self.avatarImageView
+                        withOffset:UIConstants.contactMinHorizontalSpacing];
         
         //subtitle label here
         
@@ -190,7 +175,7 @@
         
         _isNewImageView = [UIImageView new];
         _isNewImageView.image =  [[UIImage imageNamed:@"tb_user"]
-                       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [_isNewImageView setTintColor:UIColor.neonGreen];
         
         [_newFriendMarkView addSubview:_isNewImageView];
@@ -203,7 +188,7 @@
 - (UIView *) badgeView {
     if (!_badgeView) {
         _badgeView = UIView.new;
-        [_badgeView setBackgroundColor:UIColor.badgeColor];
+        [_badgeView setBackgroundColor:UIColor.clearColor];
         [_badgeView.layer setCornerRadius:6];
     }
     return _badgeView;
@@ -240,8 +225,8 @@
         _videoCallButton = [UIButton new];
         [_videoCallButton setImage:[UIImage imageNamed:@"ct_videoCall"]  forState:UIControlStateNormal];
         [_videoCallButton addTarget:self
-                        action:@selector(videoCallClicked)
-              forControlEvents:UIControlEventTouchUpInside];
+                             action:@selector(videoCallClicked)
+                   forControlEvents:UIControlEventTouchUpInside];
     }
     return  _videoCallButton;
 }
@@ -255,4 +240,11 @@
     [self.badgeView setBackgroundColor:UIColor.clearColor];
 }
 
+- (void)setNeedsObject:(ContactObject *)object {
+    [self setNameWith:object.contact.fullName];
+    [self setAvatarImageUrl:object.contact.imageUrl];
+    [self setSubtitleWith:[NSString.alloc initWithFormat:@"%@@%@", object.contact.fullName, @"gmail.com"]];
+}
+
 @end
+

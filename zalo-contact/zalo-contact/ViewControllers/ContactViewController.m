@@ -28,18 +28,6 @@
 - (void) addView {
     [self.view addSubview:tableView];
 }
-
-- (void) registerCell {
-    [tableView registerClass:ContactCell.class
-      forCellReuseIdentifier:@"contactCell"];
-    [tableView registerClass:UpdateContactHeaderCell.class
-      forCellReuseIdentifier:@"updateContactHeaderCell"];
-    [tableView registerClass:ActionCell.class
-      forCellReuseIdentifier:@"actionCell"];
-    [tableView registerClass:BlankFooterCell.class
-      forCellReuseIdentifier:@"grayFooterCell"];
-    
-}
 //MARK: Move to ViewModel
 - (void) checkPermissionAndFetchData {
     [UserContacts checkAccessContactPermission:^(BOOL complete) {
@@ -71,13 +59,9 @@
 
 - (void) viewDidLoad {
     [super viewDidLoad];
+    
     [self configTableView];
-        
     [self addView];
-    [self registerCell];
-    
-    
-    [self.view setNeedsUpdateConstraints];
     
 }
 

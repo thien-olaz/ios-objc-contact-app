@@ -6,6 +6,8 @@
 //
 #import "UIConstants.h"
 #import "UIColorExt.h"
+#import "CellObject.h"
+#import "ContactObject.h"
 @import Foundation;
 @import UIKit;
 @import PureLayout;
@@ -15,7 +17,7 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef void (^PhoneCallBlock)(void);
 typedef void (^VideoCallBlock)(void);
-@interface ContactCell : UITableViewCell
+@interface ContactCell : UITableViewCell<ZaloCell>
 @property (copy) PhoneCallBlock phoneBlock;
 @property (copy) VideoCallBlock videoBlock;
 
