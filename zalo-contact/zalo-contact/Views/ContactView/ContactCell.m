@@ -29,7 +29,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    [self setBackgroundColor: UIColor.darkGrayColor];
+    [self setBackgroundColor: UIColor.zaloBackgroundColor];
     [self.contentView addSubview:self.nameView];
     [self.contentView addSubview:self.avatarImageView];
     [self.contentView addSubview:self.badgeView];
@@ -165,7 +165,7 @@
 - (UIView *) newFriendMarkView {
     if (!_newFriendMarkView) {
         _newFriendMarkView = [UIView new];
-        [_newFriendMarkView setBackgroundColor:UIColor.systemBackgroundColor];
+        [_newFriendMarkView setBackgroundColor:UIColor.zaloLightGrayColor];
         [_newFriendMarkView.layer setCornerRadius:5];
         
         _isNewLabel = UILabel.new;
@@ -244,6 +244,10 @@
     [self setNameWith:object.contact.fullName];
     [self setAvatarImageUrl:object.contact.imageUrl];
     [self setSubtitleWith:[NSString.alloc initWithFormat:@"%@@%@", object.contact.fullName, @"gmail.com"]];
+}
+
++ (CGFloat)heightForRowWithObject:(CellObject *)object {
+    return 60;
 }
 
 @end

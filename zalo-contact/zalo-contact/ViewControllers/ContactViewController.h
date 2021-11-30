@@ -14,15 +14,15 @@
 #import "ContactsLoader.h"
 #import "ContactSectionController.h"
 #import "OnlineFriendsSectionController.h"
-#import "ContactViewModel.h"
-#import "ActionCell.h"
+#import "ContactTableViewDataSource.h"
+#import "CommonCell.h"
 #import "BlankFooterCell.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactViewController : UIViewController
-- (id) initWithViewModel:(ContactViewModel *)vm;
+- (id) initWithViewModel:(ContactTableViewDataSource *)vm;
 @end
 
 NS_ASSUME_NONNULL_END

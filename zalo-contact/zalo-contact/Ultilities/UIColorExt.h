@@ -12,7 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIColor (Common)
 
++ (UIColor *)zaloBackgroundColor;
+
 + (UIColor *)neonGreen;
+
++ (UIColor *)zaloLightGrayColor;
 
 + (UIColor *)grayColor;
 

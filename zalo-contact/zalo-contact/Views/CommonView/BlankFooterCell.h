@@ -6,10 +6,10 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "FooterObject.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BlankFooterCell : UITableViewCell
+@interface BlankFooterCell : UIView<ZaloFooter>
 
 @end
 

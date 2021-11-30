@@ -20,7 +20,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     [self setSelectionStyle:(UITableViewCellSelectionStyleNone)];
-    [self setBackgroundColor: UIColor.darkGrayColor];
+    [self setBackgroundColor: UIColor.zaloBackgroundColor];
     [self.contentView addSubview:self.sectionHeaderLabel];
     [self.contentView addSubview:self.updateButton];
     [self setNeedsUpdateConstraints];

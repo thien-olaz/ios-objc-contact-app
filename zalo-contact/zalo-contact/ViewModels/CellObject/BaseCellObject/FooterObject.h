@@ -5,8 +5,8 @@
 //  Created by Thiện on 29/11/2021.
 //
 
-#import <Foundation/Foundation.h>
-
+@import Foundation;
+@import CoreGraphics;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FooterObject : NSObject
@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 - (void)setNeedsObject:(FooterObject *)object;
++ (CGFloat)heightForFooterWithObject:(FooterObject *)object;
 
 @end
 

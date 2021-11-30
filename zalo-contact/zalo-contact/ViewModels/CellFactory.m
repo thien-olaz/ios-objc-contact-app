@@ -12,11 +12,11 @@
 @implementation CellFactory
 
 // Config cell
-- (UITableViewCell *) cellForTableView:(UITableView *)tableView
-                           atIndexPath:(NSIndexPath *)indexPath
-                            withObject:(CellObject *)cellObject {
+- (UITableViewCell *)cellForTableView:(UITableView *)tableView
+                          atIndexPath:(NSIndexPath *)indexPath
+                           withObject:(CellObject *)cellObject {
     UITableViewCell *cell = nil;
-            
+    
     NSString* identifier = NSStringFromClass(cellObject.cellClass);
     
     cell = [tableView dequeueReusableCellWithIdentifier:identifier];
@@ -33,33 +33,14 @@
     }
     
     return cell;
-    return cell;
 }
 
-// Config header
-- (UIView *) headerForTableView:(UITableView *)tableView
-                      inSection:(NSInteger)section
-                     withObject:(HeaderObject *)object {
-    UIView *header = object.headerClass.new;
-    
-    if ([header respondsToSelector:@selector(setNeedsObject:)]) {
-        [(id<ZaloHeader>)header setNeedsObject:object];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowWithObject:(CellObject *)object {
+    Class cellClass = object.cellClass;
+    if ([cellClass respondsToSelector:@selector(heightForRowWithObject:)]) {
+        return [cellClass heightForRowWithObject:object];
     }
-    
-    return UIView.new;
-}
-
-// Config footer
-- (UIView *) footerForTableView:(UITableView *)tableView
-                      inSection:(NSInteger)section
-                     withObject:(FooterObject *)object {
-    UIView *footer = object.footerClass.new;
-    
-    if ([footer respondsToSelector:@selector(setNeedsObject:)]) {
-        [(id<ZaloHeader>)footer setNeedsObject:object];
-    }
-    
-    return UIView.new;
+    return tableView.rowHeight;
 }
 
 @end

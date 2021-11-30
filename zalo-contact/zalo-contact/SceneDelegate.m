@@ -7,7 +7,7 @@
 
 #import "SceneDelegate.h"
 #import "ContactViewController.h"
-#import "ContactViewModel.h"
+#import "ContactTableViewDataSource.h"
 
 @interface SceneDelegate ()
 
@@ -33,7 +33,7 @@
     contactNav.tabBarItem.title = @"Contact";
     contactNav.tabBarItem.image = [UIImage imageNamed:@"tb_contact"];
     
-    ContactViewModel *contactVM = ContactViewModel.new;
+    ContactTableViewDataSource *contactVM = ContactTableViewDataSource.new;
     [contactNav pushViewController: [ContactViewController.alloc initWithViewModel: contactVM] animated:NO];
     
     [tabItems addObject: contactNav];

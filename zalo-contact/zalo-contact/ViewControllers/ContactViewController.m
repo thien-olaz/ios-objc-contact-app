@@ -9,11 +9,13 @@
 #import "UpdateContactHeaderCell.h"
 #import "UIAlertControllerExt.h"
 #import "ContactTableViewAction.h"
+#import "CommonHeaderAndFooterViews.h"
+
 
 @interface ContactViewController () {
     UITableView *tableView;
     ContactTableViewAction *tableViewAction;
-    ContactViewModel *viewModel;
+    ContactTableViewDataSource *viewModel;
     ContactsLoader *loader;
     BOOL didSetupConstraints;
 }
@@ -22,7 +24,7 @@
 
 @implementation ContactViewController
 
-- (id)initWithViewModel:(ContactViewModel *)vm {
+- (id)initWithViewModel:(ContactTableViewDataSource *)vm {
     self = [super init];
     viewModel = vm;
     return self;
@@ -60,33 +62,67 @@
     }
     
     tableViewAction = ContactTableViewAction.new;
-    
-//    [tableView setDataSource:tableViewAction];
-    
-    
+
     NSMutableArray *data = NSMutableArray.alloc.init;
     
-    // Mock data - replace later
-    //    [data addObject:[CellItem initWithType:@"friendRequest" data:@[]]];
-    //    [data addObject:[CellItem initWithType:@"addFriendFromDevice" data:@[]]];
-    //    [data addObject:[CellItem initWithType:@"closeFriends" data:@[]]];
-    //
-    //    [data addObject:[CellItem initWithType:@"onlineFriends" data: loader.mockOnlineFriends]];
-    //    [data addObject:[CellItem initWithType:@"updateContactHeaderCell" data:@[]]];
-    //    for (ContactGroupEntity *group in loader.contactGroup) {
-    //        [data addObject:[CellItem initWithType:@"contacts" data:group]];
-    //    }
+    [data addObject:NullHeaderObject.new];
+    [data addObject:
+         [tableViewAction attachToObject:
+          [CommonCellObject.alloc initWithTitle:@"Lời mời kết bạn"
+                                          image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
+                                  action:^{
+        NSLog(@"Tapped");
+    } ]
+    ];
+    [data addObject:
+         [tableViewAction attachToObject:
+          [CommonCellObject.alloc initWithTitle:@"Bạn từ danh bạ máy"
+                                          image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
+                                  action:^{
+        NSLog(@"Tapped");
+    } ]
+    ];
+    
+    [data addObject:BlankFooterObject.new];
+    
+    
+    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn thân"]];
+    [data addObject:
+         [tableViewAction attachToObject:
+          [CommonCellObject.alloc initWithTitle:@"Chọn bạn thường liên lạc"
+                                          image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.blueColor]
+                                  action:^{
+        NSLog(@"Tapped");
+    } ]
+    ];
+    
+    
+    [data addObject:BlankFooterObject.new];
+    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Danh bạ"]];
+    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"A"]];
+    
+    for (ContactEntity *contact in ((ContactGroupEntity *)loader.contactGroup[0]).contacts) {
+        [data addObject:
+             [tableViewAction attachToObject: [ContactObject.alloc initWithContactEntity:contact]
+                                      action:^{
+            NSLog(@"Tapped");
+        } ]
+        ];
+    }
+
+    [data addObject:BlankFooterObject.new];
     [data addObject:HeaderObject.new];
+    
     for (ContactEntity *contact in ((ContactGroupEntity *)loader.contactGroup[0]).contacts) {
         [data addObject:[ContactObject.alloc initWithContactEntity:contact]];
     }
-    [data addObject:HeaderObject.new];
-    for (ContactEntity *contact in ((ContactGroupEntity *)loader.contactGroup[0]).contacts) {
-        [data addObject:[ContactObject.alloc initWithContactEntity:contact]];
-    }
+    
+    [data addObject:[FooterObject.alloc initWithFooterClass:ContactFooterCell.class]];
+    
     [viewModel compileDatasource:data];
     
     [tableView setDataSource:viewModel];
+    [tableView setDelegate:tableViewAction];
 }
 
 - (void)viewDidLoad {

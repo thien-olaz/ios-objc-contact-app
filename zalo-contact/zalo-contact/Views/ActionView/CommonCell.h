@@ -8,20 +8,13 @@
 #import <UIKit/UIKit.h>
 #import "UIConstants.h"
 #import "UIColorExt.h"
+#import "CommonCellObject.h"
 @import PureLayout;
 @import UIKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^ActionBlock)(void);
-
-@interface ActionCell: UITableViewCell
-
-@property (copy) ActionBlock block;
-
-- (void) setTitle:(NSString *)title;
-- (void) setIconImage:(nonnull UIImage*)image;
-- (void) setTitleTintColor:(UIColor *)color;
+@interface CommonCell: UITableViewCell<ZaloCell>
 
 @end
 

@@ -1,0 +1,39 @@
+//
+//  ContactViewModel.h
+//  zalo-contact
+//
+//  Created by Thiện on 23/11/2021.
+//
+
+#import <Foundation/Foundation.h>
+#import "ContactTableViewDataSource.h"
+#import "ContactsLoader.h"
+#import "ContactCell.h"
+#import "ContactFooterCell.h"
+#import "HeaderCell.h"
+#import "CommonCell.h"
+#import "BlankFooterCell.h"
+#import "UpdateContactHeaderCell.h"
+#import "CellItem.h"
+#import "CellFactory.h"
+#import "ContactObject.h"
+@import UIKit;
+@import CoreGraphics;
+
+@protocol ZaloDataSource <NSObject>
+
+@required
+
+- (id _Nonnull )objectAtIndexPath:(NSIndexPath *_Nonnull)indexPath;
+- (nullable HeaderObject *)headerObjectInSection:(NSInteger)index;
+- (nullable FooterObject *)footerObjectInSection:(NSInteger)index;
+- (CGFloat)tableView:(UITableView *_Nonnull)tableView heightForRowAtIndexPath:(NSIndexPath *_Nonnull)indexPath;
+
+@end
+
+@interface ContactTableViewDataSource : NSObject<UITableViewDataSource, ZaloDataSource>
+
+- (void)compileDatasource:(NSArray *_Nonnull)dataArray;
+
+@end
+

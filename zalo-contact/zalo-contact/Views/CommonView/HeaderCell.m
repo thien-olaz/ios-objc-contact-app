@@ -30,14 +30,9 @@
 }
 
 - (void) commonInit {
-    [self setBackgroundColor: UIColor.darkGrayColor];
-    [self.contentView addSubview:self.sectionHeaderLabel];
+    [self setBackgroundColor: UIColor.zaloBackgroundColor];
+    [self addSubview:self.sectionHeaderLabel];
     [self setNeedsUpdateConstraints];
-}
-
-- (void) prepareForReuse {
-    [super prepareForReuse];
-    [self setSectionTitle:@""];
 }
 
 -(void) updateConstraints {
@@ -60,6 +55,14 @@
         _sectionHeaderLabel = [UILabel new];
     }
     return _sectionHeaderLabel;
+}
+
+- (void)setNeedsObject:(nonnull ShortHeaderObject *)object {
+    [self setSectionTitle:object.title];
+}
+
++ (CGFloat)heightForHeaderWithObject:(ShortHeaderObject *)object {
+    return 20;
 }
 
 @end

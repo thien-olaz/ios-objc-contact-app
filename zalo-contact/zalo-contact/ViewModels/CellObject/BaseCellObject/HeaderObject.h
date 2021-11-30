@@ -6,7 +6,7 @@
 //
 
 @import Foundation;
-
+@import CoreGraphics;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface HeaderObject : NSObject
@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 - (void)setNeedsObject:(HeaderObject *)object;
++ (CGFloat)heightForHeaderWithObject:(HeaderObject *)object;
 
 @end
 

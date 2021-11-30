@@ -5,14 +5,16 @@
 //  Created by Thiện on 18/11/2021.
 //
 
-#import <Foundation/Foundation.h>
-#import "../../Ultilities/UIConstants.h"
 @import UIKit;
+@import Foundation;
 @import PureLayout;
+#import "FooterObject.h"
+#import "UIConstants.h"
+#import "UIColorExt.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactFooterCell : UITableViewCell
+@interface ContactFooterCell : UIView<ZaloFooter>
 
 @end
 

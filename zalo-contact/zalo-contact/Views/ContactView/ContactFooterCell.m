@@ -18,8 +18,8 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     
-    [self.contentView addSubview:self.separateLineview];
-    [self setBackgroundColor: UIColor.darkGrayColor];
+    [self addSubview:self.separateLineview];
+    [self setBackgroundColor: UIColor.zaloBackgroundColor];
     [self setNeedsUpdateConstraints];
     return self;
 }
@@ -45,4 +45,9 @@
     }
     [super updateConstraints];
 }
+
++ (CGFloat)heightForFooterWithObject:(FooterObject *)object {
+    return 20;
+}
+
 @end

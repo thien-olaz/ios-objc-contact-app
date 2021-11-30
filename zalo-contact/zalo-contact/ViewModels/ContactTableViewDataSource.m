@@ -4,10 +4,10 @@
 //
 //  Created by Thiện on 23/11/2021.
 //
-#import "ContactViewModel.h"
+#import "ContactTableViewDataSource.h"
 #import "SectionObject.h"
 extern actionCellRepeatTime = 0;
-@implementation ContactViewModel {
+@implementation ContactTableViewDataSource {
     
     NSMutableArray<SectionObject *> *sections;
     CellFactory *cellFactory;
@@ -55,6 +55,17 @@ extern actionCellRepeatTime = 0;
     SectionObject *section = sections[indexPath.section];
     return [section getObjectForRow:indexPath.row];
 }
+
+- (nullable HeaderObject *)headerObjectInSection:(NSInteger)index {
+    SectionObject *section = sections[index];
+    return section.header;
+}
+
+- (nullable FooterObject *)footerObjectInSection:(NSInteger)index {
+    SectionObject *section = sections[index];
+    return section.footer;
+}
+
 
 // MARK: UITableViewDataSource
 
@@ -176,66 +187,8 @@ extern actionCellRepeatTime = 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    // MARK: Check by section pleaseee
-    return 60;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    
-    //    return [cellFactory headerForTableView:tableView inSection:section withObject:[HeaderObject.alloc init]];
-    
-    
-    return [HeaderCell.alloc initWithTitle:@"title"];
-    
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
-    //    return [cellFactory footerForTableView:tableView inSection:section withObject:[FooterObject.alloc init]];
-    //        return BlankFooterCell.alloc.init;
-    
-    // contacts
-    ContactFooterCell *footer = [ContactFooterCell.alloc
-                                 initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 20)];
-    return footer;
-    
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 20;
-    //    if ([data[section].cellType isEqual:@"friendRequest"]) {
-    //        return 0;
-    //    } else if ([data[section].cellType isEqual:@"addFriendFromDevice"]) {
-    //        return 0;
-    //    } else if ([data[section].cellType isEqual:@"closeFriends"]) {
-    //        return 30;
-    //    } else if ([data[section].cellType isEqual:@"onlineFriends"]) {
-    //        return 30;
-    //    } else if ([data[section].cellType isEqual:@"updateContactHeaderCell"]) {
-    //        return 0;
-    //    } else {
-    //        return 20;
-    //    }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    return 20;
-    //    if ([data[section].cellType isEqual:@"friendRequest"]) {
-    //        return 8;
-    //    } else if ([data[section].cellType isEqual:@"addFriendFromDevice"]) {
-    //        return 8;
-    //    } else if ([data[section].cellType isEqual:@"closeFriends"]) {
-    //        return 8;
-    //    } else if ([data[section].cellType isEqual:@"onlineFriends"]) {
-    //        return 8;
-    //    } else if ([data[section].cellType isEqual:@"updateContactHeaderCell"]) {
-    //        return 0;
-    //    } else {
-    //        return 20;
-    //    }
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    CellObject *object = [self objectAtIndexPath: indexPath];
+    return [cellFactory tableView:tableView heightForRowWithObject:object];
 }
 
 @end

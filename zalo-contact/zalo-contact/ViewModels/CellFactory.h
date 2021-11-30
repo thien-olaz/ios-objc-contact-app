@@ -20,13 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                            atIndexPath:(NSIndexPath *)indexPath
                             withObject:(CellObject *)cellObject;
 
-- (UIView *) headerForTableView:(UITableView *)tableView
-                      inSection:(NSInteger)section
-                     withObject:(HeaderObject *)object;
-
-- (UIView *) footerForTableView:(UITableView *)tableView
-                      inSection:(NSInteger)section
-                     withObject:(FooterObject *)object;
+- (CGFloat)tableView:(UITableView *)tableView heightForRowWithObject:(CellObject *)object;
 
 @end
 

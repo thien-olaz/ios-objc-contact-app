@@ -5,9 +5,9 @@
 //  Created by Thiện on 24/11/2021.
 //
 
-#import "ActionCell.h"
+#import "CommonCell.h"
 
-@interface ActionCell ()
+@interface CommonCell ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UIImageView *iconImageView;
@@ -15,7 +15,7 @@
 
 @end
 
-@implementation ActionCell
+@implementation CommonCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -25,7 +25,7 @@
     [self setSelectedBackgroundView:bgView];
     [self setSelectionStyle:(UITableViewCellSelectionStyleGray)];
     
-    [self setBackgroundColor:UIColor.darkGrayColor];
+    [self setBackgroundColor:UIColor.zaloBackgroundColor];
     [self.contentView addSubview:self.iconImageView];
     [self.contentView addSubview:self.titleLabel];
     [self.contentView setNeedsUpdateConstraints];
@@ -82,7 +82,7 @@
 - (UIImageView *) iconImageView {
     if (!_iconImageView) {
         _iconImageView = [UIImageView new];
-        _iconImageView.backgroundColor = UIColor.buttonGrayColor;
+        _iconImageView.backgroundColor = UIColor.zaloLightGrayColor;
         [_iconImageView setContentMode:(UIViewContentModeScaleAspectFit)];
         [_iconImageView.layer setCornerRadius:UIConstants.cornerRadius];
         [_iconImageView.layer setMasksToBounds:YES];
@@ -90,12 +90,14 @@
     return  _iconImageView;
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:NO];
-    if (self.selected) {
-        
-        if (_block) _block();
-    }
+- (void)setNeedsObject:(CommonCellObject *)object {
+    [self setTitle:object.title];
+    [self setIconImage:object.image];
+    [self setTitleTintColor:object.tintColor];
+}
+
++ (CGFloat)heightForRowWithObject:(nonnull CellObject *)object {
+    return 60;
 }
 
 @end

@@ -6,6 +6,7 @@
 //
 
 @import Foundation;
+@import CoreGraphics;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @required
 - (void)setNeedsObject:(CellObject *)object;
++ (CGFloat)heightForRowWithObject:(CellObject *)object;
 
 @end
 

@@ -6,13 +6,17 @@
 //
 
 #import "BlankFooterCell.h"
-
+#import "UIColorExt.h"
 @implementation BlankFooterCell
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    [self setBackgroundColor: UIColor.systemBackgroundColor];
+- (instancetype)init {
+    self = [super init];
+    [self setBackgroundColor: UIColor.zaloLightGrayColor];
     return self;
+}
+
++ (CGFloat)heightForFooterWithObject:(FooterObject *)object {
+    return 8;
 }
 
 @end
