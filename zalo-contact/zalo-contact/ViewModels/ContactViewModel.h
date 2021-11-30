@@ -19,10 +19,18 @@
 #import "ContactObject.h"
 @import UIKit;
 
-NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactViewModel : NSObject<UITableViewDataSource, UITableViewDelegate>
+@protocol ZaloTableviewDataSource <NSObject>
+
+@required
+
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
-NS_ASSUME_NONNULL_END
+@interface ContactViewModel : NSObject<UITableViewDataSource, ZaloTableviewDataSource>
+
+- (void)compileDatasource:(NSArray *)dataArray;
+
+@end
+

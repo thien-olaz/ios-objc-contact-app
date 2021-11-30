@@ -5,75 +5,55 @@
 //  Created by Thiện on 23/11/2021.
 //
 #import "ContactViewModel.h"
-
+#import "SectionObject.h"
 extern actionCellRepeatTime = 0;
 @implementation ContactViewModel {
-    ContactsLoader *loader;
-    NSMutableArray *data;
+    
+    NSMutableArray<SectionObject *> *sections;
     CellFactory *cellFactory;
 }
 
 - (instancetype)init {
     self = [super init];
-    //MARK: Hardcoded - add check permission
-    loader =  [[ContactsLoader alloc] init];
-    [loader update];
     
-    data = NSMutableArray.alloc.init;
-    
-    // Mock data - replace later
-    //    [data addObject:[CellItem initWithType:@"friendRequest" data:@[]]];
-    //    [data addObject:[CellItem initWithType:@"addFriendFromDevice" data:@[]]];
-    //    [data addObject:[CellItem initWithType:@"closeFriends" data:@[]]];
-    //
-    //    [data addObject:[CellItem initWithType:@"onlineFriends" data: loader.mockOnlineFriends]];
-    //    [data addObject:[CellItem initWithType:@"updateContactHeaderCell" data:@[]]];
-    //    for (ContactGroupEntity *group in loader.contactGroup) {
-    //        [data addObject:[CellItem initWithType:@"contacts" data:group]];
-    //    }
-    for (ContactEntity *contact in ((ContactGroupEntity *)loader.contactGroup[0]).contacts) {
-        [data addObject:[ContactObject.alloc initWithContactEntity:contact]];
-    }
     
     cellFactory = [CellFactory new];
     
     return self;
 }
 - (void)compileDatasource:(NSArray *)dataArray {
-    NSMutableArray* sections = [NSMutableArray array];
-    NSMutableArray* tempSectionRows = nil;
+    NSMutableArray<SectionObject *>* sectionsArray = [NSMutableArray array];
+    //    NSMutableArray* tempSectionRows = nil;
+    //    BOOL inSection = NO;
+    SectionObject *currentSection = nil;
+    
     for (id object in dataArray) {
-        if ([object isKindOfClass:NSString.class]) {
-            
-        } else {
-//            if header
+        if ([object isKindOfClass:CellObject.class]) {
+            if (currentSection) {
+                [currentSection addRowObject:(CellObject *)object];
+            }
+        } else if ([object isKindOfClass:HeaderObject.class]) {
+            if (currentSection) {
+                [sectionsArray addObject:currentSection];
+            }
+            currentSection = SectionObject.new;
+            currentSection.header = (HeaderObject *)object;
+        } else if ([object isKindOfClass:FooterObject.class]) {
+            if (currentSection) {
+                currentSection.footer = (FooterObject *)object;
+            }
         }
-        //        else {
-        //            if footer
-        //        }
+        
     }
     
+    if (currentSection) [sectionsArray addObject:currentSection];
+    
+    sections = sectionsArray;
 }
+
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return data[indexPath.row];
-    
-    if (nil == indexPath) {
-        return nil;
-    }
-    
-    id object = nil;
-    
-    //  if (indexPath.section < self.sections.count) {
-    //    NSArray* rows = [[self.sections objectAtIndex:section] rows];
-    //
-    //    NIDASSERT((NSUInteger)row < rows.count);
-    //    if ((NSUInteger)row < rows.count) {
-    //      object = [rows objectAtIndex:row];
-    //    }
-    //  }
-    
-    return object;
+    SectionObject *section = sections[indexPath.section];
+    return [section getObjectForRow:indexPath.row];
 }
 
 // MARK: UITableViewDataSource
@@ -175,19 +155,19 @@ extern actionCellRepeatTime = 0;
     //        [cell setButtonTitle: @"CẬP NHẬP"];
     //        return cell;
     //    } else {
-
+    
 }
 
 - (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return data.count;
+    return sections[section].numberOfRowsInSection;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return sections.count;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return ((ContactGroupEntity *)loader.contactGroup[section]).header;
+    return @"123";
 }
 
 // Ref qua section

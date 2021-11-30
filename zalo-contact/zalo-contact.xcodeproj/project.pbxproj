@@ -37,6 +37,7 @@
 		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
 		AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5B274284A500500137 /* ContactsLoader.m */; };
 		AFCDDE5F2742875200500137 /* ContactEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5E2742875200500137 /* ContactEntity.m */; };
+		AFE4C9FE2755D73B00A0190F /* SectionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE4C9FD2755D73B00A0190F /* SectionObject.m */; };
 		AFEB1CCA2754B670001636C6 /* CellFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEB1CC92754B670001636C6 /* CellFactory.m */; };
 		AFEB1CCD2754B80F001636C6 /* CellObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEB1CCC2754B80F001636C6 /* CellObject.m */; };
 		AFEB1CD02754BA9F001636C6 /* ContactObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEB1CCF2754BA9F001636C6 /* ContactObject.m */; };
@@ -103,6 +104,8 @@
 		AFCDDE5B274284A500500137 /* ContactsLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactsLoader.m; sourceTree = "<group>"; };
 		AFCDDE5D2742875200500137 /* ContactEntity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactEntity.h; sourceTree = "<group>"; };
 		AFCDDE5E2742875200500137 /* ContactEntity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactEntity.m; sourceTree = "<group>"; };
+		AFE4C9FC2755D73B00A0190F /* SectionObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SectionObject.h; sourceTree = "<group>"; };
+		AFE4C9FD2755D73B00A0190F /* SectionObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SectionObject.m; sourceTree = "<group>"; };
 		AFEB1CC82754B670001636C6 /* CellFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CellFactory.h; sourceTree = "<group>"; };
 		AFEB1CC92754B670001636C6 /* CellFactory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CellFactory.m; sourceTree = "<group>"; };
 		AFEB1CCB2754B80F001636C6 /* CellObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CellObject.h; sourceTree = "<group>"; };
@@ -213,6 +216,8 @@
 				AF426F5E2754DC4C004C541E /* HeaderObject.m */,
 				AF426F602754DE41004C541E /* FooterObject.h */,
 				AF426F612754DE41004C541E /* FooterObject.m */,
+				AFE4C9FC2755D73B00A0190F /* SectionObject.h */,
+				AFE4C9FD2755D73B00A0190F /* SectionObject.m */,
 			);
 			path = BaseCellObject;
 			sourceTree = "<group>";
@@ -461,6 +466,7 @@
 				AF0BFBFB27456EC4006E072B /* UserContacts.m in Sources */,
 				AFEB1CD02754BA9F001636C6 /* ContactObject.m in Sources */,
 				AF24F4D4274E002700A71E07 /* BlankFooterCell.m in Sources */,
+				AFE4C9FE2755D73B00A0190F /* SectionObject.m in Sources */,
 				AF24F4DC274F6B9600A71E07 /* CellItem.m in Sources */,
 				AF9201B52746004500E1581C /* ContactGroupEntity.m in Sources */,
 				AF24F4CB274DDFBD00A71E07 /* UpdateContactHeaderCell.m in Sources */,

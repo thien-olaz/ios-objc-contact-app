@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 @import UIKit;
 #import "CellObject.h"
+#import "ContactViewModel.h"
 NS_ASSUME_NONNULL_BEGIN
 typedef void (^TapBlock)(void);
 
