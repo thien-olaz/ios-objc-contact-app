@@ -22,7 +22,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactViewController : UIViewController
-- (id) initWithViewModel:(ContactTableViewDataSource *)vm;
+- (id)initWithViewModel:(ContactTableViewDataSource *)vm;
 @end
 
 NS_ASSUME_NONNULL_END

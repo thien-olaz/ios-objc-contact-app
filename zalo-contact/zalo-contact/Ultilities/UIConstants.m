@@ -12,15 +12,15 @@
     return UIEdgeInsetsMake(0, 0, 15, 0);
 }
 
-+ (CGFloat) contactHeaderHeight {
++ (CGFloat)contactHeaderHeight {
     return 30;
 }
 
-+ (UIEdgeInsets) contactCellEdgeInset {
++ (UIEdgeInsets)contactCellEdgeInset {
     return UIEdgeInsetsMake(0, 0, 15, 0);
 }
 
-+ (CGFloat) contactCellHeight {
++ (CGFloat)contactCellHeight {
     return 60.0;
 }
 
@@ -28,27 +28,27 @@
     return 16.0;
 }
 
-+ (CGFloat) contactCellMinHorizontalInset {
++ (CGFloat)contactCellMinHorizontalInset {
     return 20.0;
 }
 
-+ (CGFloat) contactMinHorizontalSpacing {
++ (CGFloat)contactMinHorizontalSpacing {
     return 10.0;
 }
 
-+ (CGFloat) contactCellDimensionSize {
++ (CGFloat)contactCellDimensionSize {
     return 44;
 }
 
-+ (CGFloat) cornerRadius {
++ (CGFloat)cornerRadius {
     return self.contactCellDimensionSize / 2;
 }
 
-+ (CGSize) contactCellAvatarSize {
++ (CGSize)contactCellAvatarSize {
     return CGSizeMake(self.contactCellDimensionSize, self.contactCellDimensionSize);
 }
 
-+ (CGSize) contactCellButtonSize {
++ (CGSize)contactCellButtonSize {
     return CGSizeMake(40, 40);
 }
 

@@ -32,7 +32,7 @@
     return _separateLineview;
 }
 
-- (void) updateConstraints {
+- (void)updateConstraints {
     if (!_didSetupConstraints) {
         [self.separateLineview autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.separateLineview autoPinEdgeToSuperviewEdge:ALEdgeLeft

@@ -16,7 +16,7 @@
 @implementation SceneDelegate
 @synthesize window;
 
-- (UITabBarController *) getTabbarController {
+- (UITabBarController *)getTabbarController {
     NSMutableArray *tabItems = [[NSMutableArray alloc] init];
     
     //- Home

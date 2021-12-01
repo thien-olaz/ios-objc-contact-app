@@ -20,7 +20,7 @@
 }
 
 //just return the first appear phone number
-- (NSString  * _Nullable) phoneNumber{
+- (NSString  * _Nullable)phoneNumber{
     for (CNLabeledValue<CNPhoneNumber*> *phoneNumber in _contact.phoneNumbers) {
         return phoneNumber.value.stringValue;
     }

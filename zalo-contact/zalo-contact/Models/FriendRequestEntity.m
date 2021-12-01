@@ -8,7 +8,7 @@
 #import "FriendRequestEntity.h"
 
 @implementation FriendRequestEntity
-- (id) init {
+- (id)init {
     return [self initWithFirstName: @""
                           lastName: @""
                        phoneNumber: @""
@@ -16,11 +16,11 @@
                       requestTyppe: @""];
 }
 
-- (id) initWithFirstName:(NSString *)firstName
-                lastName:(NSString *)lastName
-             phoneNumber:(NSString *)phoneNumber
-             receiveDate:(NSDate *)date
-            requestTyppe:(NSString *)type {
+- (id)initWithFirstName:(NSString *)firstName
+               lastName:(NSString *)lastName
+            phoneNumber:(NSString *)phoneNumber
+            receiveDate:(NSDate *)date
+           requestTyppe:(NSString *)type {
     self = super.init;
     _fistName = firstName;
     _lastName = lastName;

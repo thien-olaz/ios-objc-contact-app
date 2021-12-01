@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactEntityAdapter : ContactEntity
 
--(id)initWithCNContact:(CNContact *)contact;
+- (id)initWithCNContact:(CNContact *)contact;
 
 @end
 

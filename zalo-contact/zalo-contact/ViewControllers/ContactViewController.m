@@ -15,7 +15,8 @@
 @interface ContactViewController () {
     UITableView *tableView;
     ContactTableViewAction *tableViewAction;
-    ContactTableViewDataSource *viewModel;
+    ContactTableViewDataSource *tableViewDataSource;
+    ContactViewModel *viewModel;
     ContactsLoader *loader;
     BOOL didSetupConstraints;
 }
@@ -26,7 +27,7 @@
 
 - (id)initWithViewModel:(ContactTableViewDataSource *)vm {
     self = [super init];
-    viewModel = vm;
+    tableViewDataSource = vm;
     return self;
 }
 
@@ -62,7 +63,7 @@
     }
     
     tableViewAction = ContactTableViewAction.new;
-
+    
     NSMutableArray *data = NSMutableArray.alloc.init;
     
     [data addObject:NullHeaderObject.new];
@@ -109,7 +110,7 @@
         } ]
         ];
     }
-
+    
     [data addObject:BlankFooterObject.new];
     [data addObject:HeaderObject.new];
     
@@ -119,9 +120,9 @@
     
     [data addObject:[FooterObject.alloc initWithFooterClass:ContactFooterCell.class]];
     
-    [viewModel compileDatasource:data];
+    [tableViewDataSource compileDatasource:data];
     
-    [tableView setDataSource:viewModel];
+    [tableView setDataSource:tableViewDataSource];
     [tableView setDelegate:tableViewAction];
 }
 

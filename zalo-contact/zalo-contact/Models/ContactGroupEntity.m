@@ -9,7 +9,7 @@
 
 @implementation ContactGroupEntity
 
-- (id) initWithContactArray:(NSArray<ContactEntity *> *)contacts {
+- (id)initWithContactArray:(NSArray<ContactEntity *> *)contacts {
     self = [super init];
     _contacts = [NSMutableArray.alloc initWithArray: contacts];
     if (contacts[0]) {
@@ -18,7 +18,7 @@
     return self;
 }
 
-- (ContactEntity * _Nullable) getContactForIndex:(long)index {
+- (ContactEntity * _Nullable)getContactForIndex:(long)index {
     if (_contacts.count > index) {
         return _contacts[index];
     }

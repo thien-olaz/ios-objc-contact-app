@@ -13,11 +13,11 @@ typedef void (^PermissionCompletion) (BOOL);
 
 @interface UserContacts : NSObject
 
-+(UserContacts *)sharedInstance;
-+(void) checkAccessContactPermission:(PermissionCompletion)block;
++ (UserContacts *)sharedInstance;
++ (void)checkAccessContactPermission:(PermissionCompletion)block;
 
--(void) fetchLocalContacts;
-- (NSArray<CNContact *> *) getContactList;
+- (void)fetchLocalContacts;
+- (NSArray<CNContact *> *)getContactList;
 
 @end
 

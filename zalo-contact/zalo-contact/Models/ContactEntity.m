@@ -17,13 +17,13 @@
 
 @implementation ContactEntity
 
-- (id) init {
+- (id)init {
     return [self initWithFirstName:@"" lastName:@"" phoneNumber:@""];
 }
 
-- (id) initWithFirstName:(NSString *)firstName
-                lastName:(NSString *)lastName
-             phoneNumber:(NSString *)phoneNumber {
+- (id)initWithFirstName:(NSString *)firstName
+               lastName:(NSString *)lastName
+            phoneNumber:(NSString *)phoneNumber {
     self = super.init;
     _firstName = firstName;
     _lastName = lastName;
@@ -31,28 +31,28 @@
     return self;
 }
 
-- (id) initWithFirstName:(NSString *)firstName
-                lastName:(NSString *)lastName
-             phoneNumber:(NSString *)phoneNumber
-                imageUrl:(NSString *)url {
+- (id)initWithFirstName:(NSString *)firstName
+               lastName:(NSString *)lastName
+            phoneNumber:(NSString *)phoneNumber
+               imageUrl:(NSString *)url {
     self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber];
     _imageUrl = url;
     return self;
 }
 
-- (NSString *) fullName {
+- (NSString *)fullName {
     return [NSString stringWithFormat:@"%@ %@", _lastName, _firstName];
 }
 
-- (NSString *) phoneNumber{
+- (NSString *)phoneNumber{
     return _phoneNumber;
 }
 
-- (NSString *) header{
+- (NSString *)header{
     return _lastName && _lastName.length > 0 ? [_lastName substringToIndex:1] : [_firstName substringToIndex:1];;
 }
 
-- (NSString * __nullable) imageUrl {
+- (NSString * __nullable)imageUrl {
     return _imageUrl;
 }
 

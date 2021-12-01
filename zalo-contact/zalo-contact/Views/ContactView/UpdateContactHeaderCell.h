@@ -18,8 +18,8 @@ typedef void (^ActionBlock)(void);
 
 @property (copy) ActionBlock block;
 
-- (void) setSectionTitle:(NSString *)title;
-- (void) setButtonTitle:(NSString *)title;
+- (void)setSectionTitle:(NSString *)title;
+- (void)setButtonTitle:(NSString *)title;
 
 @end
 

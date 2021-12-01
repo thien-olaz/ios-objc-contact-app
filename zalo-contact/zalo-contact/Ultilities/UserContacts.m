@@ -13,7 +13,7 @@
 @implementation UserContacts
 static UserContacts *sharedInstance = nil;
 
-+(UserContacts *)sharedInstance {
++ (UserContacts *)sharedInstance {
     @synchronized([UserContacts class]) {
         if (!sharedInstance)
             sharedInstance = [self new];
@@ -22,12 +22,12 @@ static UserContacts *sharedInstance = nil;
     return nil;
 }
 
--(instancetype)init {
+- (instancetype)init {
     self = [super init];
     return self;
 }
 
-+(void) checkAccessContactPermission:(PermissionCompletion)block {
++ (void) checkAccessContactPermission:(PermissionCompletion)block {
     [CNContactStore.alloc.init
      requestAccessForEntityType:CNEntityTypeContacts
      completionHandler:
@@ -37,7 +37,7 @@ static UserContacts *sharedInstance = nil;
 }
 
 // MARK: - check
--(void) fetchLocalContacts {
+- (void)fetchLocalContacts {
     //MARK: - background -
     CNContactStore *store = [CNContactStore new];
     NSArray *keysToFetch = @[CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPhoneNumbersKey];
@@ -69,7 +69,7 @@ static UserContacts *sharedInstance = nil;
 }
 
 //fetcch contact
-- (NSArray<CNContact *> *) getContactList {
+- (NSArray<CNContact *> *)getContactList {
     if (!_contactList) {
         return @[];
     }

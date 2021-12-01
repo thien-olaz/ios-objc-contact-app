@@ -27,7 +27,7 @@
     return self;
 }
 
--(void) updateConstraints {
+- (void)updateConstraints {
     if (!_didSetupConstraints) {
         [self.sectionHeaderLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.sectionHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft
@@ -43,22 +43,22 @@
     [super updateConstraints];
 }
 
-- (void) setSectionTitle:(NSString *)title {
+- (void)setSectionTitle:(NSString *)title {
     [self.sectionHeaderLabel setText:title];
 }
 
-- (void) setButtonTitle:(NSString *)title {
+- (void)setButtonTitle:(NSString *)title {
     [self.updateButton setTitle:title forState:(UIControlStateNormal)];
 }
 
-- (UILabel *) sectionHeaderLabel {
+- (UILabel *)sectionHeaderLabel {
     if (!_sectionHeaderLabel) {
         _sectionHeaderLabel = [UILabel new];
     }
     return _sectionHeaderLabel;
 }
 
-- (UIButton *) updateButton {
+- (UIButton *)updateButton {
     if (!_updateButton) {
         _updateButton = [UIButton buttonWithType:UIButtonTypeSystem];
         [_updateButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
@@ -70,7 +70,7 @@
     return _updateButton;
 }
 
-- (void) didClick {
+- (void)didClick {
     if (_block) _block();
 }
 

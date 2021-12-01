@@ -15,8 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property BOOL *isOnlineGroup;
 @property NSMutableArray<ContactEntity *> *contacts;
 
-- (id) initWithContactArray:(NSArray<ContactEntity *> *)contacts;
-- (ContactEntity * _Nullable) getContactForIndex:(long)index;
+- (id)initWithContactArray:(NSArray<ContactEntity *> *)contacts;
+- (ContactEntity * _Nullable)getContactForIndex:(long)index;
 @end
 
 NS_ASSUME_NONNULL_END

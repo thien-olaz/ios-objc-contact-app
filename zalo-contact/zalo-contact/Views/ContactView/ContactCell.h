@@ -15,17 +15,19 @@
 
 
 NS_ASSUME_NONNULL_BEGIN
+
 typedef void (^PhoneCallBlock)(void);
 typedef void (^VideoCallBlock)(void);
+
 @interface ContactCell : UITableViewCell<ZaloCell>
 @property (copy) PhoneCallBlock phoneBlock;
 @property (copy) VideoCallBlock videoBlock;
 
-- (void) setNameWith:(NSString *)name;
-- (void) setSubtitleWith:(NSString *)subtitle;
-- (void) setAvatarImage:(nonnull UIImage*)image;
-- (void) setAvatarImageUrl:(NSString * __nullable)url;
-- (void) setOnline;
+- (void)setNameWith:(NSString *)name;
+- (void)setSubtitleWith:(NSString *)subtitle;
+- (void)setAvatarImage:(nonnull UIImage*)image;
+- (void)setAvatarImageUrl:(NSString * __nullable)url;
+- (void)setOnline;
 @end
 
 NS_ASSUME_NONNULL_END

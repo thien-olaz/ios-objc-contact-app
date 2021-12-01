@@ -32,20 +32,20 @@
     return self;
 }
 
--(void) updateConstraints {
+- (void)updateConstraints {
     if (!self.didSetupConstraints) {
         
         [self.iconImageView autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.iconImageView autoPinEdgeToSuperviewEdge:ALEdgeLeft
-                                               withInset:UIConstants.contactCellMinHorizontalInset];
+                                             withInset:UIConstants.contactCellMinHorizontalInset];
         [self.iconImageView autoSetDimensionsToSize:UIConstants.contactCellAvatarSize];
-           
+        
         
         [self.titleLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.titleLabel autoPinEdge:ALEdgeLeft
-                             toEdge:ALEdgeRight
-                             ofView:self.iconImageView
-                         withOffset:UIConstants.contactMinHorizontalSpacing];
+                              toEdge:ALEdgeRight
+                              ofView:self.iconImageView
+                          withOffset:UIConstants.contactMinHorizontalSpacing];
         
         
         self.didSetupConstraints = YES;
@@ -53,26 +53,26 @@
     [super updateConstraints];
 }
 
-- (void) prepareForReuse {
+- (void)prepareForReuse {
     [super prepareForReuse];
     [self.titleLabel setTextColor:nil];
     [self.iconImageView setTintColor:nil];
 }
 
-- (void) setTitleTintColor:(UIColor *)color {
+- (void)setTitleTintColor:(UIColor *)color {
     [self.titleLabel setTextColor:color];
     [self.iconImageView setTintColor:color];
 }
 
-- (void) setTitle:(NSString *)title {
+- (void)setTitle:(NSString *)title {
     [self.titleLabel setText:title];
 }
 
-- (void) setIconImage:(nonnull UIImage*)image {
+- (void)setIconImage:(nonnull UIImage*)image {
     [self.iconImageView setImage:image];
 }
 
-- (UILabel *) titleLabel {
+- (UILabel *)titleLabel {
     if (!_titleLabel) {
         _titleLabel = [UILabel new];
     }

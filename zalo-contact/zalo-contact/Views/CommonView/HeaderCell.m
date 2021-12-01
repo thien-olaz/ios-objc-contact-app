@@ -23,19 +23,19 @@
     return self;
 }
 
-- (instancetype) initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     [self commonInit];
     return self;
 }
 
-- (void) commonInit {
+- (void)commonInit {
     [self setBackgroundColor: UIColor.zaloBackgroundColor];
     [self addSubview:self.sectionHeaderLabel];
     [self setNeedsUpdateConstraints];
 }
 
--(void) updateConstraints {
+- (void)updateConstraints {
     if (!_didSetupConstraints) {
         [self.sectionHeaderLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.sectionHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeft
@@ -46,7 +46,7 @@
     [super updateConstraints];
 }
 
-- (void) setSectionTitle:(NSString *)title {
+- (void)setSectionTitle:(NSString *)title {
     [self.sectionHeaderLabel setText:title];
 }
 

@@ -42,19 +42,19 @@
     return self;
 }
 
-- (void) setOnline {
+- (void)setOnline {
     [self.badgeView setBackgroundColor:UIColor.badgeColor];
 }
 
-- (void) setNameWith:(NSString *)name {
+- (void)setNameWith:(NSString *)name {
     [self.nameLabel setText:name];
 }
 
-- (void) setSubtitleWith:(NSString *)subtitle {
+- (void)setSubtitleWith:(NSString *)subtitle {
     [self.subtitleLabel setText:subtitle];
 }
 
-- (void) setAvatarImage:(nonnull UIImage*)image {
+- (void)setAvatarImage:(nonnull UIImage*)image {
     //    UIImage *cropImage = nil;
     
     //    UIGraphicsBeginImageContext(image.size);
@@ -75,7 +75,7 @@
     [self.avatarImageView setImage:image];
 }
 
-- (void) setAvatarImageUrl:(NSString * __nullable)url {
+- (void)setAvatarImageUrl:(NSString * __nullable)url {
     if (url) {
         [_avatarImageView sd_setImageWithURL: [NSURL.alloc initWithString:url] placeholderImage:[UIImage imageNamed:@"ct_avt_placeholder"]];
     } else {
@@ -86,7 +86,7 @@
     }
 }
 
-- (void) updateConstraints {
+- (void)updateConstraints {
     if (!self.didSetupConstraints) {
         
         [self.avatarImageView autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
@@ -137,7 +137,7 @@
     [super updateConstraints];
 }
 
-- (UIStackView *) nameView {
+- (UIStackView *)nameView {
     if (!_nameView) {
         _nameView = [UIStackView new];
         [_nameView setAxis:UILayoutConstraintAxisVertical];
@@ -146,14 +146,14 @@
     return _nameView;
 }
 
-- (UILabel *) nameLabel {
+- (UILabel *)nameLabel {
     if (!_nameLabel) {
         _nameLabel = [UILabel new];
     }
     return _nameLabel;
 }
 
-- (UILabel *) subtitleLabel {
+- (UILabel *)subtitleLabel {
     if (!_subtitleLabel) {
         _subtitleLabel = [UILabel new];
         [_subtitleLabel setFont: [_subtitleLabel.font fontWithSize:14]];
@@ -162,7 +162,7 @@
     return _subtitleLabel;
 }
 
-- (UIView *) newFriendMarkView {
+- (UIView *)newFriendMarkView {
     if (!_newFriendMarkView) {
         _newFriendMarkView = [UIView new];
         [_newFriendMarkView setBackgroundColor:UIColor.zaloLightGrayColor];
@@ -185,7 +185,7 @@
     return _newFriendMarkView;
 }
 
-- (UIView *) badgeView {
+- (UIView *)badgeView {
     if (!_badgeView) {
         _badgeView = UIView.new;
         [_badgeView setBackgroundColor:UIColor.clearColor];
@@ -195,7 +195,7 @@
 }
 
 
-- (UIImageView *) avatarImageView {
+- (UIImageView *)avatarImageView {
     if (!_avatarImageView) {
         _avatarImageView = [UIImageView new];
         _avatarImageView.backgroundColor = UIColor.clearColor;
@@ -205,7 +205,7 @@
     return  _avatarImageView;
 }
 
-- (UIButton *) callButton {
+- (UIButton *)callButton {
     if (!_callButton) {
         _callButton = [UIButton new];
         [_callButton setImage:[UIImage imageNamed:@"ct_call"]  forState:UIControlStateNormal];
@@ -216,11 +216,11 @@
     return  _callButton;
 }
 
-- (void) phoneCallClicked {
+- (void)phoneCallClicked {
     if (_phoneBlock) _phoneBlock();
 }
 
-- (UIButton *) videoCallButton {
+- (UIButton *)videoCallButton {
     if (!_videoCallButton) {
         _videoCallButton = [UIButton new];
         [_videoCallButton setImage:[UIImage imageNamed:@"ct_videoCall"]  forState:UIControlStateNormal];
@@ -231,7 +231,7 @@
     return  _videoCallButton;
 }
 
-- (void) videoCallClicked {
+- (void)videoCallClicked {
     if (_videoBlock) _videoBlock();
 }
 

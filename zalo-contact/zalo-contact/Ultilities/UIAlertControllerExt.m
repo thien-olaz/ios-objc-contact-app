@@ -9,7 +9,7 @@
 
 @implementation UIAlertController (Common)
 
-+ (UIAlertController *) contactPermisisonAlert {
++ (UIAlertController *)contactPermisisonAlert {
     UIAlertController *alertController = [UIAlertController
                                           alertControllerWithTitle:@"No permission"
                                           message:@"Please go to setting and turn on contact access permission"

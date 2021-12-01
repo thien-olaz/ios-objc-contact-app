@@ -14,21 +14,21 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIConstants : NSObject
 
 // MARK: - Contact Section Cell UI Constant
-+ (UIEdgeInsets) contactHeaderEdgeInset;
-+ (CGFloat) contactHeaderHeight;
++ (UIEdgeInsets)contactHeaderEdgeInset;
++ (CGFloat)contactHeaderHeight;
 
 // MARK: - Contact Cell UI Constant
-+ (UIEdgeInsets) contactCellEdgeInset;
++ (UIEdgeInsets)contactCellEdgeInset;
 
-+ (CGFloat) contactCellHeight;
-+ (CGFloat) contactFooterHeight;
++ (CGFloat)contactCellHeight;
++ (CGFloat)contactFooterHeight;
 
-+ (CGFloat) contactCellMinHorizontalInset;
-+ (CGFloat) contactMinHorizontalSpacing;
-+ (CGFloat) contactCellDimensionSize;
-+ (CGFloat) cornerRadius;
-+ (CGSize) contactCellAvatarSize;
-+ (CGSize) contactCellButtonSize;
++ (CGFloat)contactCellMinHorizontalInset;
++ (CGFloat)contactMinHorizontalSpacing;
++ (CGFloat)contactCellDimensionSize;
++ (CGFloat)cornerRadius;
++ (CGSize)contactCellAvatarSize;
++ (CGSize)contactCellButtonSize;
 
 @end
 
