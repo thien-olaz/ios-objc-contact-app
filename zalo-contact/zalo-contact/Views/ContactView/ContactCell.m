@@ -243,7 +243,7 @@
 - (void)setNeedsObject:(ContactObject *)object {
     [self setNameWith:object.contact.fullName];
     [self setAvatarImageUrl:object.contact.imageUrl];
-    [self setSubtitleWith:[NSString.alloc initWithFormat:@"%@@%@", object.contact.fullName, @"gmail.com"]];
+    [self setSubtitleWith:@"Subtitle"];
 }
 
 + (CGFloat)heightForRowWithObject:(CellObject *)object {

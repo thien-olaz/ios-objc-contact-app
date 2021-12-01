@@ -8,134 +8,133 @@
 #import "ContactsLoader.h"
 #import "ContactEntity.h"
 
-extern NSString *image1 = @"https://i.guim.co.uk/img/media/66e444bff77d9c566e53c8da88591e4297df0896/120_0_1800_1080/master/1800.png?width=1200&height=1200&quality=85&auto=format&fit=crop&s=69b22b4292160faf91cb45ad024fc649";
-extern NSString *image2 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6yFzIYiRlIzc_Nb_KD3lmSmvtmJxr4eboXw&usqp=CAU";
-
-extern NSString *image3 = @"https://publish.one37pm.net/wp-content/uploads/2020/12/screen-shot-2020-12-23-at-11-54-06-am.png?fit=750%2C775";
-
-extern NSString *image4 = @"https://5b0988e595225.cdn.sohucs.com/images/20180609/e28ffe23ba7941dd9993a8e0c6f596c9.jpeg";
-extern NSString *image5 = @"https://variety.com/wp-content/uploads/2021/07/Pokemon.jpg";
-
-extern NSString *image6 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtQdzeTZ_qVpCnTMewV-f7VSyO-r3LiaRZQ_CHz5e4x8JPR4cZRXWccKjKsWpWjWC2s84&usqp=CAU";
-
 @implementation ContactsLoader {
-    NSMutableArray<ContactGroupEntity *> *_contactGroups;
+    NSArray<ContactGroupEntity *> *_contactGroups;
 }
 
--(NSMutableArray<ContactGroupEntity *> *) contactGroup {
-    if (!_contactGroups) {
-        //        [self update];
-        return @[];
-    }
-    return _contactGroups;
+
+#warning @"Make sure this function call after the permission checking in vm"
+- (void)fetchData:(FetchBlock)block {
+    [UserContacts.sharedInstance fetchLocalContacts];
+    
+    NSMutableDictionary *apiContacts = [self fetchApiContacts];
+    NSMutableDictionary *localContacts = (NSMutableDictionary *)UserContacts.sharedInstance.getContactDictionary;
+        
+    _contactGroups = [self groupFromContacts: [self mergeContactDict:apiContacts toDict:localContacts]];
+    block(_contactGroups);
 }
 
--(void) update {
-    _contactGroups = [self contactGroupFromContactsList: self.fetchAllContacts];
+// kiểm tra ok -> bảo thằng loader nó fetch về đi -> fetch xong rồi chuyển nó thành contact group
+- (NSArray<ContactGroupEntity *> *)groupFromContacts:(NSDictionary<NSString *,NSArray<ContactEntity *> *> *)contacts {
+    NSMutableArray<ContactGroupEntity *> *arr = NSMutableArray.array;
+    
+    [contacts enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
+        [arr addObject:[ContactGroupEntity.alloc initWithHeader:key andContactArray:value]];
+    }];
+    
+    //MARK: - light weight - maximum 24 charactor
+    [arr sortUsingComparator:^NSComparisonResult(ContactGroupEntity *obj1,ContactGroupEntity *obj2) {
+        return [obj1.header compare:obj2.header];
+    }];
+    return arr;
 }
 
-//MARK: - performance - warning
-- (NSMutableArray<ContactGroupEntity *> *) contactGroupFromContactsList:(NSArray<ContactEntity *> *)list {
-    NSArray *distinctHeader;
+- (NSDictionary<NSString*, NSArray<ContactEntity*>*> *)mergeContactDict:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)dict1
+                                                                 toDict:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)dict2 {
+    [dict1 enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
+        NSArray<ContactEntity *> *dict2Arr = [dict2 objectForKey:key];
+        // append contact to existing list
+        if (dict2Arr) {
+            [dict1 setObject: [self mergeArray:value withArray:dict2Arr] forKey:key];
+            [dict2 removeObjectForKey:key];
+        }
+    }];
     
-    NSMutableDictionary *result = [NSMutableDictionary new];
-    distinctHeader = [list valueForKeyPath:@"@distinctUnionOfObjects.header"];
-    
-    //MARK: - performance - warning
-    for (NSString *charactor in distinctHeader) {
-        //        Nặng
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"header = %@", charactor];
-        NSArray *persons = [list filteredArrayUsingPredicate:predicate];
-        [result setObject:persons forKey:charactor];
-    }
-    
-    NSArray *sortedKeys = [distinctHeader sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    
-    NSLog(@"%s Sorted key %@", __PRETTY_FUNCTION__, sortedKeys);
-    
-    NSMutableArray<ContactGroupEntity *> *groups = NSMutableArray.new;
-    
-    for (NSString *key in sortedKeys) {
-        NSArray *arr = [result[key] sortedArrayUsingComparator:^NSComparisonResult(ContactEntity *a, ContactEntity *b) {
-            return [a.fullName compare:b.fullName];
-        }];//
-        [groups addObject:[ContactGroupEntity.alloc initWithContactArray:arr]];
-    }
-    return groups;
+    [dict1 addEntriesFromDictionary:dict2];
+    return dict1;
 }
 
-//MARK: - background
--(NSArray<ContactEntity *>*) fetchAllContacts {
-    NSMutableArray<ContactEntity *> *contactsArray = [[NSMutableArray alloc] initWithArray: @[]];
+
+- (NSArray<ContactEntity *> *)mergeArray:(NSArray<ContactEntity *> *)arr1 withArray:(NSArray<ContactEntity *> *)arr2 {
     
-    for (CNContact *contact in UserContacts.sharedInstance.getContactList) {
-        [contactsArray addObject:[ContactEntityAdapter.alloc initWithCNContact: contact]];
+    int i = 0, j = 0;
+    
+    NSUInteger arr1Length = arr1.count, arr2Length = arr2.count;
+    
+    NSMutableArray *returnArr = NSMutableArray.new;
+    
+    while (i < arr1Length && j < arr2Length) {
+        if ([arr1[i].header compare:arr2[j].header])
+            [returnArr addObject:arr1[i++]];
+        else
+            [returnArr addObject:arr2[j++]];
     }
     
-    //sort if
-    //stress test the list
-    for (int i = 0; i < 8; i++) {
-        [contactsArray addObjectsFromArray:[[NSMutableArray alloc] initWithArray: @[
-            [[ContactEntity alloc] initWithFirstName:@"Thiện "
-                                            lastName:@"Nguyễn"
-                                         phoneNumber:@"0123456789"
-                                            imageUrl:image1],
-            [[ContactEntity alloc] initWithFirstName:@"Thiện"
-                                            lastName:@"Công"
-                                         phoneNumber:@"0123456789"
-                                            imageUrl:image2],
-            [[ContactEntity alloc] initWithFirstName:@"Tính"
-                                            lastName:@"Thiên"
-                                         phoneNumber:@"0123456789"
-                                            imageUrl:image3],
-            [[ContactEntity alloc] initWithFirstName:@"Vũ"
-                                            lastName:@"Hoàng"
-                                         phoneNumber:@"0123456789"
-                                            imageUrl:image4],
-            [[ContactEntity alloc] initWithFirstName:@"Vân"
-                                            lastName:@"Hồ"
-                                         phoneNumber:@"0123456789"
-                                            imageUrl:image5],
-            [[ContactEntity alloc] initWithFirstName:@"Vân"
-                                            lastName:@"Lê"
-                                         phoneNumber:@"0123456789"
-                                            imageUrl:image6],
-        ]]];
-    }
-    return contactsArray;
+    
+    while (i < arr1Length)
+        [returnArr addObject:arr1[i++]];
+    
+    while (j < arr2Length)
+        [returnArr addObject:arr2[j++]];
+    
+    return returnArr;
 }
 
-- (ContactGroupEntity *) mockOnlineFriends {
-    ContactGroupEntity *mockOnlineFriends = [ContactGroupEntity.alloc
-                                             initWithContactArray: @[
-        [[ContactEntity alloc] initWithFirstName:@"Thiện "
-                                        lastName:@"Nguyễn"
-                                     phoneNumber:@"0123456789"
-                                        imageUrl:image1],
-        [[ContactEntity alloc] initWithFirstName:@"Thiện"
-                                        lastName:@"Công"
-                                     phoneNumber:@"0123456789"
-                                        imageUrl:image2],
-        [[ContactEntity alloc] initWithFirstName:@"Tính"
-                                        lastName:@"Thiên"
-                                     phoneNumber:@"0123456789"
-                                        imageUrl:image3],
-        [[ContactEntity alloc] initWithFirstName:@"Vũ"
-                                        lastName:@"Hoàng"
-                                     phoneNumber:@"0123456789"
-                                        imageUrl:image4],
-        [[ContactEntity alloc] initWithFirstName:@"Vân"
-                                        lastName:@"Hồ"
-                                     phoneNumber:@"0123456789"
-                                        imageUrl:image5],
-        [[ContactEntity alloc] initWithFirstName:@"Vân"
-                                        lastName:@"Lê"
-                                     phoneNumber:@"0123456789"
-                                        imageUrl:image6],
-    ]];
+
+// MARK: - Fake a api request
+- (NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)fetchApiContacts {
+    NSString *image2 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6yFzIYiRlIzc_Nb_KD3lmSmvtmJxr4eboXw&usqp=CAU";
+    NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *dicionary = NSMutableDictionary.new;
     
-    [mockOnlineFriends setHeader:@"Bạn bè mới truy cập"];
-    return  mockOnlineFriends;
+    int repeatTime = 400;
+    //    A list
+    NSMutableArray * aArray = NSMutableArray.array;
+    for (int i = 0; i < repeatTime; i++)
+         [aArray addObject:[[ContactEntity alloc] initWithFirstName:@"A"
+                                                           lastName:@"Công"
+                                                        phoneNumber:@"0123456789"
+                                                           imageUrl:image2]];
+    for (int i = 0; i < repeatTime; i++)
+         [aArray addObject:[[ContactEntity alloc] initWithFirstName:@"A"
+                                                           lastName:@"Thiện"
+                                                        phoneNumber:@"0123456789"
+                                                           imageUrl:image2]];
+    [dicionary setObject:aArray forKey:@"A"];
+    
+    
+    //    B list
+    NSMutableArray * bArray = [NSMutableArray array];
+    
+    for (int i = 0; i < repeatTime; i++)
+         [bArray addObject:[[ContactEntity alloc] initWithFirstName:@"Bành"
+                                                           lastName:@"T"
+                                                        phoneNumber:@"0123456789"
+                                                           imageUrl:image2]];
+    for (int i = 0; i < repeatTime; i++)
+         [bArray addObject: [[ContactEntity alloc] initWithFirstName:@"Bảo"
+                                                            lastName:@"Z"
+                                                         phoneNumber:@"0123456789"
+                                                            imageUrl:image2]];
+    
+    [dicionary setObject:bArray forKey:@"B"];
+    
+    //    T list
+    NSMutableArray * tArray = [NSMutableArray array];
+    
+    for (int i = 0; i < repeatTime; i++)
+         [tArray addObject: [[ContactEntity alloc] initWithFirstName:@"Trần"
+                                                            lastName:@"A"
+                                                         phoneNumber:@"0123456789"
+                                                            imageUrl:image2]];
+    for (int i = 0; i < repeatTime; i++)
+         [tArray addObject: [[ContactEntity alloc] initWithFirstName:@"Trần"
+                                                             lastName:@"B"
+                                                          phoneNumber:@"0123456789"
+                                                             imageUrl:image2]];
+    
+    [dicionary setObject:tArray forKey:@"T"];
+    
+    return dicionary;
 }
 
 @end

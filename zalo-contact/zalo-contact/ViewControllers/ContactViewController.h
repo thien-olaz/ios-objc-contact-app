@@ -15,8 +15,7 @@
 #import "ContactSectionController.h"
 #import "OnlineFriendsSectionController.h"
 #import "ContactTableViewDataSource.h"
-#import "CommonCell.h"
-#import "BlankFooterCell.h"
+
 
 
 NS_ASSUME_NONNULL_BEGIN

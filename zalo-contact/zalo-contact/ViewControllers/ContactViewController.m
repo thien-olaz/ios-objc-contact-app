@@ -6,20 +6,19 @@
 //
 
 #import "ContactViewController.h"
-#import "UpdateContactHeaderCell.h"
+
 #import "UIAlertControllerExt.h"
 #import "ContactTableViewAction.h"
-#import "CommonHeaderAndFooterViews.h"
+#import "ContactViewModel.h"
 
-
-@interface ContactViewController () {
-    UITableView *tableView;
-    ContactTableViewAction *tableViewAction;
-    ContactTableViewDataSource *tableViewDataSource;
-    ContactViewModel *viewModel;
-    ContactsLoader *loader;
+@interface ContactViewController () <TableViewActionDelegate> {
     BOOL didSetupConstraints;
 }
+
+@property UITableView *tableView;
+@property ContactTableViewAction *tableViewAction;
+@property ContactTableViewDataSource *tableViewDataSource;
+@property ContactViewModel *viewModel;
 
 @end
 
@@ -27,124 +26,65 @@
 
 - (id)initWithViewModel:(ContactTableViewDataSource *)vm {
     self = [super init];
-    tableViewDataSource = vm;
+    _tableViewDataSource = vm;
     return self;
 }
 
 - (void)addView {
-    [self.view addSubview:tableView];
-}
-//MARK: Move to ViewModel
-- (void)checkPermissionAndFetchData {
-    [UserContacts checkAccessContactPermission:^(BOOL complete) {
-        if (complete) {
-            [UserContacts.sharedInstance fetchLocalContacts];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // reload the table
-            });
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentViewController:[UIAlertController contactPermisisonAlert]
-                                   animated:true
-                                 completion:nil];
-            });
-        }
-    }];
+    [self.view addSubview:_tableView];
 }
 
 - (void)configTableView {
-    tableView = [UITableView.alloc initWithFrame:CGRectZero
-                                           style:UITableViewStylePlain];
-    
-    
-    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    _tableView = [UITableView.alloc initWithFrame:CGRectZero
+                                            style:UITableViewStylePlain];
+    [_tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     if (@available(iOS 15, *)) {
-        [tableView setSectionHeaderTopPadding:0];
+        [_tableView setSectionHeaderTopPadding:0];
     }
-    
-    tableViewAction = ContactTableViewAction.new;
-    
-    NSMutableArray *data = NSMutableArray.alloc.init;
-    
-    [data addObject:NullHeaderObject.new];
-    [data addObject:
-         [tableViewAction attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Lời mời kết bạn"
-                                          image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                  action:^{
-        NSLog(@"Tapped");
-    } ]
-    ];
-    [data addObject:
-         [tableViewAction attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Bạn từ danh bạ máy"
-                                          image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                  action:^{
-        NSLog(@"Tapped");
-    } ]
-    ];
-    
-    [data addObject:BlankFooterObject.new];
-    
-    
-    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn thân"]];
-    [data addObject:
-         [tableViewAction attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Chọn bạn thường liên lạc"
-                                          image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.blueColor]
-                                  action:^{
-        NSLog(@"Tapped");
-    } ]
-    ];
-    
-    
-    [data addObject:BlankFooterObject.new];
-    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Danh bạ"]];
-    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"A"]];
-    
-    for (ContactEntity *contact in ((ContactGroupEntity *)loader.contactGroup[0]).contacts) {
-        [data addObject:
-             [tableViewAction attachToObject: [ContactObject.alloc initWithContactEntity:contact]
-                                      action:^{
-            NSLog(@"Tapped");
-        } ]
-        ];
-    }
-    
-    [data addObject:BlankFooterObject.new];
-    [data addObject:HeaderObject.new];
-    
-    for (ContactEntity *contact in ((ContactGroupEntity *)loader.contactGroup[0]).contacts) {
-        [data addObject:[ContactObject.alloc initWithContactEntity:contact]];
-    }
-    
-    [data addObject:[FooterObject.alloc initWithFooterClass:ContactFooterCell.class]];
-    
-    [tableViewDataSource compileDatasource:data];
-    
-    [tableView setDataSource:tableViewDataSource];
-    [tableView setDelegate:tableViewAction];
+    _tableViewAction = ContactTableViewAction.new;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //MARK: Hardcoded - add check permission
-    loader =  [[ContactsLoader alloc] init];
-    [loader update];
-    
     [self configTableView];
     [self addView];
+    
+    [self bindViewModel];
 }
 
+- (void)bindViewModel {
 
+    _viewModel = [ContactViewModel.alloc initWithDelegate: self];
+    
+    // capture weak self for binding block
+    __unsafe_unretained typeof(self) weakSelf = self;
+    
+    [_viewModel setDataBlock:^{
+        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
+        
+        [weakSelf.tableView setDataSource:weakSelf.tableViewDataSource];
+        [weakSelf.tableView setDelegate:weakSelf.tableViewAction];
+        [weakSelf.tableView reloadData];
+    }];
+    
+}
 
 - (void)updateViewConstraints {
     if (!didSetupConstraints) {
-        [tableView autoPinEdgesToSuperviewEdges];
+        [_tableView autoPinEdgesToSuperviewEdges];
         didSetupConstraints = YES;
     }
     [super updateViewConstraints];
 }
 
+#pragma mark - TableViewActionDelegate
+- (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped {
+    if (!_tableViewAction) {
+        _tableViewAction = ContactTableViewAction.new;
+    }
+    return [_tableViewAction attachToObject:object action:tapped];
+}
+
 @end
+

@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSMutableArray<ContactEntity *> *contacts;
 
 - (id)initWithContactArray:(NSArray<ContactEntity *> *)contacts;
+- (id)initWithHeader:(NSString *)header andContactArray:(NSArray<ContactEntity *> *)contacts;
 - (ContactEntity * _Nullable)getContactForIndex:(long)index;
 @end
 

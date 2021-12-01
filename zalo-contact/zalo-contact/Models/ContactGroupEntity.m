@@ -18,6 +18,12 @@
     return self;
 }
 
+- (id)initWithHeader:(NSString *)header andContactArray:(NSArray<ContactEntity *> *)contacts {
+    self = [super init];
+    _contacts = [NSMutableArray.alloc initWithArray: contacts];
+    _header = header;
+    return self;
+}
 - (ContactEntity * _Nullable)getContactForIndex:(long)index {
     if (_contacts.count > index) {
         return _contacts[index];

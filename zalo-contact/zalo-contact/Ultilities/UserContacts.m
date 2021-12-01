@@ -6,8 +6,11 @@
 //
 
 #import "UserContacts.h"
+#import "ContactEntityAdapter.h"
+
 @interface UserContacts ()
 @property NSMutableArray<CNContact *> *contactList;
+@property NSDictionary<NSString*, NSMutableArray<ContactEntity *>*> *contactDictionary;
 @end
 
 @implementation UserContacts
@@ -38,35 +41,86 @@ static UserContacts *sharedInstance = nil;
 
 // MARK: - check
 - (void)fetchLocalContacts {
-    //MARK: - background -
-    CNContactStore *store = [CNContactStore new];
-    NSArray *keysToFetch = @[CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPhoneNumbersKey];
-    NSError *error = nil;
-    
-    NSError *containerError = nil;
-    NSArray<CNContainer *> *allContainer = [store containersMatchingPredicate:nil error: &containerError];
-    if (containerError) {
-        NSLog(@"%s %@", __PRETTY_FUNCTION__, containerError.description);
-        return;
-    }
-    
-    NSMutableArray<CNContact *> *results = [NSMutableArray new];
-    
-    for (CNContainer *container in allContainer) {
-        NSPredicate *fetchPredicate = [CNContact predicateForContactsInContainerWithIdentifier:container.identifier];
-        
-        NSArray<CNContact*> *containerResult = [store unifiedContactsMatchingPredicate:fetchPredicate keysToFetch:keysToFetch error:&error];
-        if (error) {
-            NSLog(@"%s %@", __PRETTY_FUNCTION__, error.description);
-            return;
-        }
-        if (containerResult) [results addObjectsFromArray:containerResult];
-    }
-    
-    _contactList = results;
-    NSLog(@"%s load complete - %lu contacts founded", __PRETTY_FUNCTION__, (unsigned long)results.count);
-    
+    _contactDictionary = [self getDeviceContactEntities];
 }
+
+- (NSMutableDictionary<NSString*, NSMutableArray<ContactEntity *>*>*)getDeviceContactEntities {
+    //    NSDate *methodStart = [NSDate date];
+    
+    //    for(int i=1; i<2000; i++) {
+    CNContactStore *ctstore = [[CNContactStore alloc] init];
+    
+    NSMutableDictionary<NSString*, NSMutableArray<ContactEntity *>*> *contactDictionary = [NSMutableDictionary dictionary];
+    
+    [ctstore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
+        if (granted == YES) {
+            
+            NSArray *keys = @[CNContactNamePrefixKey, CNContactNameSuffixKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPhoneNumbersKey, CNContactImageDataKey];
+            CNContactFetchRequest *request = [CNContactFetchRequest.alloc initWithKeysToFetch:keys];
+            NSError *error;
+            
+            [request setSortOrder:CNContactsUserDefaults.sharedDefaults.sortOrder];
+            
+            [ctstore enumerateContactsWithFetchRequest:request
+                                                 error:&error
+                                            usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop) {
+                if (error) {
+                    NSLog(@"error fetching contacts %@", error);
+                } else {
+                    ContactEntityAdapter *contactEntity = [ContactEntityAdapter.alloc initWithCNContact:contact];
+                    NSString *header = contactEntity.header;
+                    NSMutableArray<ContactEntity *> *contacts = [contactDictionary objectForKey:header];
+                    if (!contacts) {
+                        [contactDictionary setObject:[NSMutableArray.alloc initWithArray:@[contactEntity]]  forKey: header];
+                    } else {
+                        [contacts addObject:contactEntity];
+                        [contactDictionary setObject:contacts forKey: header];
+                    }
+                    
+                    // NSLog(@"%@ , %@, %@, %@, %@", contact.familyName, contact.familyName, contact.givenName, ((CNLabeledValue<CNPhoneNumber*>*)contact.phoneNumbers[0]).value.stringValue);
+                }
+            }];
+        }
+    }];
+    //    }
+    //    NSLog(@"%@", contactDictionary.description);
+    
+    //    NSDate *methodFinish = [NSDate date];
+    //    NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
+    //    NSLog(@"new executionTime = %f", executionTime);
+    //    return results;
+    return contactDictionary;
+}
+
+- (void)newMethod2 {
+    NSDate *methodStart = [NSDate date];
+    for(int i=1; i<2000; i++) {
+        CNContactStore *store = [[CNContactStore alloc] init];
+        NSMutableArray<CNContact *> *results = [NSMutableArray new];
+        [store requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            if (granted == YES) {
+                //keys with fetching properties
+                NSArray *keys = @[CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPhoneNumbersKey, CNContactImageDataKey];
+                NSString *containerId = store.defaultContainerIdentifier;
+                NSPredicate *predicate = [CNContact predicateForContactsInContainerWithIdentifier:containerId];
+                NSError *error;
+                NSArray *cnContacts = [store unifiedContactsMatchingPredicate:predicate keysToFetch:keys error:&error];
+                if (error) {
+                    NSLog(@"error fetching contacts %@", error);
+                } else {
+                    for (CNContact *contact in cnContacts) {
+                        [results addObject:contact];
+                        NSLog(@"%@, %@, %@", contact.familyName, contact.givenName, ((CNLabeledValue<CNPhoneNumber*>*)contact.phoneNumbers[0]).value.stringValue);
+                    }
+                }
+            }
+        }];
+    }
+    NSDate *methodFinish = [NSDate date];
+    NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
+    NSLog(@"new2 executionTime = %f", executionTime);
+}
+
 
 //fetcch contact
 - (NSArray<CNContact *> *)getContactList {
@@ -74,6 +128,14 @@ static UserContacts *sharedInstance = nil;
         return @[];
     }
     return _contactList;
+}
+
+- (NSDictionary<NSString*, NSArray<ContactEntity*>*> *)getContactDictionary {
+    if (_contactDictionary) {
+        return _contactDictionary;
+    }
+    return [NSDictionary new];
+    
 }
 
 

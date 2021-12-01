@@ -12,11 +12,11 @@
 #import "ContactGroupEntity.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactsLoader : NSObject
+typedef void (^FetchBlock)(NSArray<ContactGroupEntity *>*);
 
-- (NSMutableArray *) contactGroup;
-- (ContactGroupEntity *) mockOnlineFriends;
-- (void) update;
+@interface ContactsLoader : NSObject
+- (void)fetchData:(FetchBlock)block;
+
 @end
 
 NS_ASSUME_NONNULL_END

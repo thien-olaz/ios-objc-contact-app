@@ -14,7 +14,6 @@
 #import "CommonCell.h"
 #import "BlankFooterCell.h"
 #import "UpdateContactHeaderCell.h"
-#import "CellItem.h"
 #import "CellFactory.h"
 #import "ContactObject.h"
 @import UIKit;

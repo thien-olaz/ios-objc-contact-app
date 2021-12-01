@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 @import Contacts;
+#import "ContactEntity.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^PermissionCompletion) (BOOL);
@@ -18,6 +20,7 @@ typedef void (^PermissionCompletion) (BOOL);
 
 - (void)fetchLocalContacts;
 - (NSArray<CNContact *> *)getContactList;
+- (NSDictionary<NSString*, NSMutableArray<ContactEntity*>*> *)getContactDictionary;
 
 @end
 
