@@ -29,12 +29,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *title;
 - (instancetype)initWithTitle:(NSString *)title;
 - (instancetype)init;
-
+- (instancetype)initWithTitle:(NSString *)title andTitleLetter:(NSString *)letter;
 @end
 
 #pragma mark - NullHeaderObject
 @interface NullHeaderObject : HeaderObject
 
+- (instancetype)initWithLeter:(NSString *)letter;
+    
 @end
 
 NS_ASSUME_NONNULL_END

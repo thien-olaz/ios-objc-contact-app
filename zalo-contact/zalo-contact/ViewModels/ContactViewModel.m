@@ -65,7 +65,7 @@
     NSMutableArray *data = NSMutableArray.alloc.init;
     
     //MARK:  - mấy cell đầu danh bạ
-    [data addObject:NullHeaderObject.new];
+    [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
     [data addObject:
          [actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Lời mời kết bạn"
                                                                         image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
@@ -101,7 +101,7 @@
     for (ContactGroupEntity *group in groups) {
         
         // Header
-        [data addObject:[ShortHeaderObject.alloc initWithTitle:group.header]];
+        [data addObject:[ShortHeaderObject.alloc initWithTitle:group.header andTitleLetter:group.header]];
         
         // Contact
         for (ContactEntity *contact in group.contacts) {

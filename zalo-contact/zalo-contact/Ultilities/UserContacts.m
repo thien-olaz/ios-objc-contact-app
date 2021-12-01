@@ -76,8 +76,7 @@ static UserContacts *sharedInstance = nil;
                         [contacts addObject:contactEntity];
                         [contactDictionary setObject:contacts forKey: header];
                     }
-                    
-                    // NSLog(@"%@ , %@, %@, %@, %@", contact.familyName, contact.familyName, contact.givenName, ((CNLabeledValue<CNPhoneNumber*>*)contact.phoneNumbers[0]).value.stringValue);
+                    NSLog(@"%@, %@", contact.familyName, contact.givenName);
                 }
             }];
         }

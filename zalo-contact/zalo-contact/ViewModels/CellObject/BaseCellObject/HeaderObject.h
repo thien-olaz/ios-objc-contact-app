@@ -13,7 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, assign) Class headerClass;
 
+@property NSString *letterTitle;
 - (instancetype)initWithHeaderClass:(Class)headerClass;
+
 @end
 
 

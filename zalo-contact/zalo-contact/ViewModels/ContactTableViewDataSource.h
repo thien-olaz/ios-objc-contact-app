@@ -8,12 +8,6 @@
 #import <Foundation/Foundation.h>
 #import "ContactTableViewDataSource.h"
 #import "ContactsLoader.h"
-#import "ContactCell.h"
-#import "ContactFooterCell.h"
-#import "HeaderCell.h"
-#import "CommonCell.h"
-#import "BlankFooterCell.h"
-#import "UpdateContactHeaderCell.h"
 #import "CellFactory.h"
 #import "ContactObject.h"
 @import UIKit;

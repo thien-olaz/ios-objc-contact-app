@@ -86,7 +86,7 @@
     NSString *image2 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6yFzIYiRlIzc_Nb_KD3lmSmvtmJxr4eboXw&usqp=CAU";
     NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *dicionary = NSMutableDictionary.new;
     
-    int repeatTime = 400;
+    int repeatTime = 20;
     //    A list
     NSMutableArray * aArray = NSMutableArray.array;
     for (int i = 0; i < repeatTime; i++)
