@@ -92,36 +92,6 @@ static UserContacts *sharedInstance = nil;
     return contactDictionary;
 }
 
-- (void)newMethod2 {
-    NSDate *methodStart = [NSDate date];
-    for(int i=1; i<2000; i++) {
-        CNContactStore *store = [[CNContactStore alloc] init];
-        NSMutableArray<CNContact *> *results = [NSMutableArray new];
-        [store requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
-            if (granted == YES) {
-                //keys with fetching properties
-                NSArray *keys = @[CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPhoneNumbersKey, CNContactImageDataKey];
-                NSString *containerId = store.defaultContainerIdentifier;
-                NSPredicate *predicate = [CNContact predicateForContactsInContainerWithIdentifier:containerId];
-                NSError *error;
-                NSArray *cnContacts = [store unifiedContactsMatchingPredicate:predicate keysToFetch:keys error:&error];
-                if (error) {
-                    NSLog(@"error fetching contacts %@", error);
-                } else {
-                    for (CNContact *contact in cnContacts) {
-                        [results addObject:contact];
-                        NSLog(@"%@, %@, %@", contact.familyName, contact.givenName, ((CNLabeledValue<CNPhoneNumber*>*)contact.phoneNumbers[0]).value.stringValue);
-                    }
-                }
-            }
-        }];
-    }
-    NSDate *methodFinish = [NSDate date];
-    NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
-    NSLog(@"new2 executionTime = %f", executionTime);
-}
-
-
 //fetcch contact
 - (NSArray<CNContact *> *)getContactList {
     if (!_contactList) {
