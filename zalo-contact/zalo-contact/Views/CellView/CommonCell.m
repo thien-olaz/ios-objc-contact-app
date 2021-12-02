@@ -79,7 +79,7 @@
     return _titleLabel;
 }
 
-- (UIImageView *) iconImageView {
+- (UIImageView *)iconImageView {
     if (!_iconImageView) {
         _iconImageView = [UIImageView new];
         _iconImageView.backgroundColor = UIColor.zaloLightGrayColor;

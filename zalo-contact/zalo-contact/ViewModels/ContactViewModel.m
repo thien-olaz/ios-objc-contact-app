@@ -20,8 +20,10 @@
     
 }
 
-- (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action andDiffDelegate:(id<TableViewDiffDelegate>)diff {
+- (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
+                       andDiffDelegate:(id<TableViewDiffDelegate>)diff {
     self = super.init;
+    
     loader = ContactsLoader.new;
     
     actionDelegate = action;
@@ -33,9 +35,27 @@
 
 - (void)setup {
     [self performSelectorInBackground:@selector(loadSavedData) withObject:nil];
-    
     [self checkPermissionAndFetchData];
-    
+}
+
+- (void)loadSavedData {
+    [loader loadSavedData:^(NSArray<ContactGroupEntity *> * groups) {
+        [self setContactGroups:groups] ;
+        [self performSelectorOnMainThread:@selector(completeFetchingData) withObject:nil waitUntilDone:NO];
+    }];
+}
+
+- (void)fetchData {
+    [loader fetchData:^(NSArray<ContactGroupEntity *> *  groups) {
+        IGListIndexPathResult *sectionDiff = [self getSectionDiff:groups];
+        NSMutableArray<IGListIndexPathResult *> *contactsDiff = [self getCellDiff:groups];
+        
+        [self setContactGroups:groups] ;
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateDataWithSectionDiff:sectionDiff cellDiff:contactsDiff];
+        });
+    }];
 }
 
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
@@ -52,12 +72,6 @@
     [diffDelegate onDiff:sectionDiff cells:cellDiff];
 }
 
-- (void)loadSavedData {
-    [loader loadSavedData:^(NSArray<ContactGroupEntity *> * groups) {
-        [self setContactGroups:groups] ;
-        [self performSelectorOnMainThread:@selector(completeFetchingData) withObject:nil waitUntilDone:NO];
-    }];
-}
 
 - (IGListIndexPathResult *)getSectionDiff:(NSArray<ContactGroupEntity *> *)newGroups {
     IGListIndexPathResult * sectionDiff = [IGListDiffPaths(0, 0, contactGroups, newGroups, IGListDiffEquality) resultForBatchUpdates];
@@ -65,8 +79,6 @@
 }
 
 - (NSMutableArray<IGListIndexPathResult *> *)getCellDiff:(NSArray<ContactGroupEntity *>*)newGroups {
-    
-    
     NSMutableArray<IGListIndexPathResult *> *contactsDiff = NSMutableArray.array;
     
     for (ContactGroupEntity *oldGroup in contactGroups) {
@@ -79,23 +91,7 @@
         }
     }
     return contactsDiff;
-    
 }
-
-- (void)fetchData {
-    [loader fetchData:^(NSArray<ContactGroupEntity *> *  groups) {
-        IGListIndexPathResult *sectionDiff = [self getSectionDiff:groups];
-        NSMutableArray<IGListIndexPathResult *> *contactsDiff = [self getCellDiff:groups];
-        
-        [self setContactGroups:groups] ;
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateDataWithSectionDiff:sectionDiff cellDiff:contactsDiff];
-        });
-    }];
-}
-
-
 
 - (void)checkPermissionAndFetchData {
     [UserContacts checkAccessContactPermission:^(BOOL complete) {
@@ -103,18 +99,16 @@
             [self performSelectorInBackground:@selector(fetchData) withObject:nil];
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                //                [self presentViewController:[UIAlertController contactPermisisonAlert]
-                //                                   animated:true
-                //                                 completion:nil];
+//                [self presentViewController:[UIAlertController contactPermisisonAlert]
+//                                   animated:true
+//                                 completion:nil];
             });
         }
     }];
 }
 
-
 - (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups {
-    NSMutableArray *data = NSMutableArray.alloc.init;
-    __unsafe_unretained typeof(self) weakSelf = self;
+    NSMutableArray *data = NSMutableArray.alloc.init;    __unsafe_unretained typeof(self) weakSelf = self;
     //MARK:  - mấy cell đầu danh bạ
     [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
     [data addObject:

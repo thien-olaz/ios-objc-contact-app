@@ -50,7 +50,7 @@
     [self.sectionHeaderLabel setText:title];
 }
 
-- (UILabel *) sectionHeaderLabel {
+- (UILabel *)sectionHeaderLabel {
     if (!_sectionHeaderLabel) {
         _sectionHeaderLabel = [UILabel new];
     }

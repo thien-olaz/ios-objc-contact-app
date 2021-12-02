@@ -10,15 +10,17 @@
 @import IGListKit;
 
 extern int repeatTime = 0;
+
 @implementation ContactsLoader {
     NSArray<ContactGroupEntity *> *_contactGroups;
 }
 
-
-#warning @"Make sure this function call after the permission checking in vm"
 - (void)loadSavedData:(FetchBlock)block {
     block(self.loadSavedData);
 }
+
+#warning @"Make sure this function call after the permission checking in vm"
+/// Get local and remote data than merge
 - (void)fetchData:(FetchBlock)block {
     [UserContacts.sharedInstance fetchLocalContacts];
     
@@ -44,7 +46,7 @@ extern int repeatTime = 0;
     NSError *err = nil;
     NSData *dataToSave = [NSKeyedArchiver archivedDataWithRootObject:groups requiringSecureCoding:NO error:&err];
     if (err) {
-        NSLog(@"errorororrr %@", err.description);
+        NSLog(@"saveData error %@", err.description);
     }
     [[NSUserDefaults standardUserDefaults] setObject:dataToSave forKey:@"data"];
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -56,12 +58,13 @@ extern int repeatTime = 0;
     NSSet *classes = [NSSet setWithObjects:[NSArray class], [ContactGroupEntity class] ,[ContactEntity class], [NSString class], nil];
     NSArray<ContactGroupEntity *> * groups = (NSArray<ContactGroupEntity *> *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:decoded error:&err];
     if (err) {
-        NSLog(@"errorororrr %@", err.description);
+        NSLog(@"loadSavedData error %@", err.description);
         return NSArray.array;
     }
     return groups;
 }
 
+///Turn contacts dictionary into contact group
 - (NSArray<ContactGroupEntity *> *)groupFromContacts:(NSDictionary<NSString *,NSArray<ContactEntity *> *> *)contacts {
     NSMutableArray<ContactGroupEntity *> *arr = NSMutableArray.array;
     
@@ -76,6 +79,7 @@ extern int repeatTime = 0;
     return arr;
 }
 
+///Merge 2 contact dictionary - use for merging local contacts and remote contacts
 - (NSDictionary<NSString*, NSArray<ContactEntity*>*> *)mergeContactDict:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)dict1
                                                                  toDict:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)dict2 {
     [dict1 enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
@@ -91,13 +95,10 @@ extern int repeatTime = 0;
     return dict1;
 }
 
-
+///Merge 2 sorted array - use for contacts in section
 - (NSArray<ContactEntity *> *)mergeArray:(NSArray<ContactEntity *> *)arr1 withArray:(NSArray<ContactEntity *> *)arr2 {
-    
     int i = 0, j = 0;
-    
     NSUInteger arr1Length = arr1.count, arr2Length = arr2.count;
-    
     NSMutableArray *returnArr = NSMutableArray.new;
     
     while (i < arr1Length && j < arr2Length) {
@@ -106,7 +107,6 @@ extern int repeatTime = 0;
         else
             [returnArr addObject:arr2[j++]];
     }
-    
     
     while (i < arr1Length)
         [returnArr addObject:arr1[i++]];
@@ -118,24 +118,22 @@ extern int repeatTime = 0;
 }
 
 
-// MARK: - Fake a api request
+#pragma mark - Fake a api request
 - (NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)fetchApiContacts {
     NSString *image2 = @"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6yFzIYiRlIzc_Nb_KD3lmSmvtmJxr4eboXw&usqp=CAU";
     NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *dicionary = NSMutableDictionary.new;
-    
-//    int repeatTime = 1;
-//    int repeatTime = 2;
+
     //    A list
     if (repeatTime == 0) return NSMutableDictionary.new;
     NSMutableArray * aArray = NSMutableArray.array;
     for (int i = 0; i < repeatTime; i++)
-        [aArray addObject:[[ContactEntity alloc] initWithFirstName:@"A"
-                                                          lastName:@"Công"
+        [aArray addObject:[[ContactEntity alloc] initWithFirstName:@"Công"
+                                                          lastName:@"A"
                                                        phoneNumber:@"0123456789"
                                                           imageUrl:image2]];
     for (int i = 0; i < repeatTime; i++)
-        [aArray addObject:[[ContactEntity alloc] initWithFirstName:@"A"
-                                                          lastName:@"Thiện"
+        [aArray addObject:[[ContactEntity alloc] initWithFirstName:@"Thiện"
+                                                          lastName:@"A"
                                                        phoneNumber:@"0123456789"
                                                           imageUrl:image2]];
     [dicionary setObject:aArray forKey:@"A"];
@@ -146,13 +144,13 @@ extern int repeatTime = 0;
     NSMutableArray * bArray = [NSMutableArray array];
     
     for (int i = 0; i < repeatTime; i++)
-        [bArray addObject:[[ContactEntity alloc] initWithFirstName:@"Bành"
-                                                          lastName:@"T"
+        [bArray addObject:[[ContactEntity alloc] initWithFirstName:@"T"
+                                                          lastName:@"Bảnh"
                                                        phoneNumber:@"0123456789"
                                                           imageUrl:image2]];
     for (int i = 0; i < repeatTime; i++)
-        [bArray addObject: [[ContactEntity alloc] initWithFirstName:@"Bảo"
-                                                           lastName:@"Z"
+        [bArray addObject: [[ContactEntity alloc] initWithFirstName:@"Z"
+                                                           lastName:@"Bảo"
                                                         phoneNumber:@"0123456789"
                                                            imageUrl:image2]];
     
@@ -162,13 +160,13 @@ extern int repeatTime = 0;
     NSMutableArray * tArray = [NSMutableArray array];
     
     for (int i = 0; i < repeatTime; i++)
-        [tArray addObject: [[ContactEntity alloc] initWithFirstName:@"Trần"
-                                                           lastName:@"A"
+        [tArray addObject: [[ContactEntity alloc] initWithFirstName:@"A"
+                                                           lastName:@"Trần"
                                                         phoneNumber:@"0123456789"
                                                            imageUrl:image2]];
     for (int i = 0; i < repeatTime; i++)
-        [tArray addObject: [[ContactEntity alloc] initWithFirstName:@"Trần"
-                                                           lastName:@"B"
+        [tArray addObject: [[ContactEntity alloc] initWithFirstName:@"B"
+                                                           lastName:@"Trần"
                                                         phoneNumber:@"0123456789"
                                                            imageUrl:image2]];
     
@@ -177,13 +175,13 @@ extern int repeatTime = 0;
     NSMutableArray * oArray = [NSMutableArray array];
     
     for (int i = 0; i < repeatTime; i++)
-        [oArray addObject: [[ContactEntity alloc] initWithFirstName:@"Cao"
-                                                           lastName:@"A"
+        [oArray addObject: [[ContactEntity alloc] initWithFirstName:@"A"
+                                                           lastName:@"Cao"
                                                         phoneNumber:@"0123456789"
                                                            imageUrl:image2]];
     for (int i = 0; i < repeatTime; i++)
-        [oArray addObject: [[ContactEntity alloc] initWithFirstName:@"Cao"
-                                                           lastName:@"B"
+        [oArray addObject: [[ContactEntity alloc] initWithFirstName:@"B"
+                                                           lastName:@"Cao"
                                                         phoneNumber:@"0123456789"
                                                            imageUrl:image2]];
     

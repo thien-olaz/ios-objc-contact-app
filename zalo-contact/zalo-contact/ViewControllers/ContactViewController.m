@@ -30,6 +30,15 @@
     return self;
 }
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self configTableView];
+    [self addView];
+    
+    [self bindViewModel];
+}
+
 - (void)addView {
     [self.view addSubview:_tableView];
 }
@@ -44,18 +53,7 @@
     _tableViewAction = ContactTableViewAction.new;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    [self configTableView];
-    [self addView];
-    
-    [self bindViewModel];
-    
-}
-
 - (void)bindViewModel {
-
     _viewModel = [ContactViewModel.alloc initWithActionDelegate:self andDiffDelegate:self];
     
     // capture weak self for binding block
@@ -91,8 +89,9 @@
     return [_tableViewAction attachToObject:object action:tapped];
 }
 
+#pragma mark - TableViewDiffDelegate
 - (void)onDiff:(IGListIndexPathResult *)sectionDiff cells:(NSArray<IGListIndexPathResult *> *)cellsDiff {
-//    dispatch_async(dispatch_main(),
+
     __unsafe_unretained typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf.tableView beginUpdates];
@@ -114,8 +113,6 @@
             [weakSelf.tableView insertRowsAtIndexPaths:result.inserts withRowAnimation:(UITableViewRowAnimationLeft)];
             [weakSelf.tableView deleteRowsAtIndexPaths:result.deletes withRowAnimation:(UITableViewRowAnimationLeft)];
         }
-        
-        
 
         [weakSelf.tableView endUpdates];
     });

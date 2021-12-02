@@ -24,6 +24,7 @@
     _header = header;
     return self;
 }
+
 - (ContactEntity * _Nullable)getContactForIndex:(long)index {
     if (_contacts.count > index) {
         return _contacts[index];
@@ -31,6 +32,8 @@
     return nil;
     
 }
+
+#pragma mark - NSSecureEncoding
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
     NSString *header = [coder decodeObjectForKey:@"header"];
@@ -47,22 +50,20 @@
    return YES;
 }
 
+#pragma mark - IGListDiffable
+
 - (id<NSObject>)diffIdentifier {
-    NSLog(@"group entity %@", self.header);
-    
     return self.header;
 }
 
 - (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object {
-    
     ContactGroupEntity *entity = (ContactGroupEntity *)object;
-    NSLog(@"group diff %@ %@", self.header, entity.header);
     if (!entity) return NO;
     if (![self.header isEqualToString:entity.header]) return NO;
     return YES;
-//    return [self.contacts isEqual:entity.contacts];
 }
 
+#pragma mark - array compare
 - (BOOL)isEqual:(id)object {
     ContactGroupEntity *entity = (ContactGroupEntity *)object;
     if (!entity) return NO;

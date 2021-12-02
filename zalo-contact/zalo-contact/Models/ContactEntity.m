@@ -56,6 +56,8 @@
     return _imageUrl;
 }
 
+#pragma mark - NSSecureEncoding
+
 - (instancetype)initWithCoder:(NSCoder *)coder {
     NSString *firstName = [coder decodeObjectForKey:@"fname"];
     NSString *lastName = [coder decodeObjectForKey:@"lname"];
@@ -75,20 +77,18 @@
    return YES;
 }
 
+#pragma mark - IGListDiffable
+
 - (id<NSObject>)diffIdentifier {
-    NSLog(@"contact %@", self.lastName);
-    return self.lastName;
+    return @(self.fullName.hash);
 }
 
 - (BOOL)isEqualToDiffableObject:(id<IGListDiffable>)object {
-    NSLog(@"contact diff %@", self.lastName);
-    return  YES;
     ContactEntity *entity = (ContactEntity *)object;
     if (!entity) return NO;
     if (![self.firstName isEqualToString:entity.firstName]) return NO;
     if (![self.lastName isEqualToString:entity.lastName]) return NO;
     if (![self.phoneNumber isEqualToString:entity.phoneNumber]) return NO;
-    if (![self.imageUrl isEqualToString:entity.imageUrl]) return NO;
     
     return YES;
 }

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - BlankFooterObject
 @interface BlankFooterObject : FooterObject
 
--(instancetype)init;
+- (instancetype)init;
 
 @end
 

@@ -13,18 +13,16 @@
 
 @implementation ContactEntityAdapter
 
--(id)initWithCNContact:(CNContact *)contact {
-    self = [super initWithFirstName:contact.givenName lastName:contact.familyName phoneNumber:@""];
+- (id)initWithCNContact:(CNContact *)contact {
+    
+    NSString *pn = @"";
+    if (contact.phoneNumbers[0]) {
+        pn = ((CNPhoneNumber *)contact.phoneNumbers[0].value).stringValue;
+    }
+    
+    self = [super initWithFirstName:contact.givenName lastName:contact.familyName phoneNumber:pn];
     _contact = contact;
     return self;
-}
-
-//just return the first appear phone number
-- (NSString  * _Nullable)phoneNumber{
-    for (CNLabeledValue<CNPhoneNumber*> *phoneNumber in _contact.phoneNumbers) {
-        return phoneNumber.value.stringValue;
-    }
-    return nil;
 }
 
 @end
