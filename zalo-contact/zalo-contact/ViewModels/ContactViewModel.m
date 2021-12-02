@@ -118,7 +118,7 @@
     //MARK:  - mấy cell đầu danh bạ
     [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
     [data addObject:
-         [actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Lời mời kết bạn"
+         [actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Load thêm"
                                                                         image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
                                  action:^{
         [weakSelf->loader mockFetchDataWithReapeatTime:1 andBlock:^(NSArray<ContactGroupEntity *> * groups) {
@@ -135,7 +135,7 @@
     ];
     [data addObject:
          [actionDelegate attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Bạn từ danh bạ máy"
+          [CommonCellObject.alloc initWithTitle:@"Xoá bớt"
                                           image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
                                  action:^{
         [weakSelf->loader mockFetchDataWithReapeatTime:-1 andBlock:^(NSArray<ContactGroupEntity *> * groups) {
