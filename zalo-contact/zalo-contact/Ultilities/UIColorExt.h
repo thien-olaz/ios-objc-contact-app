@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)zaloBackgroundColor;
 
++ (UIColor *)zaloPrimaryColor;
+
 + (UIColor *)neonGreen;
 
 + (UIColor *)zaloLightGrayColor;

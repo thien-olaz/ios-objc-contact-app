@@ -32,4 +32,41 @@
     
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    NSString *header = [coder decodeObjectForKey:@"header"];
+    NSMutableArray<ContactEntity *> *contacts = [coder decodeObjectForKey:@"contacts"];    
+    return [self initWithHeader:header andContactArray:contacts];
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:_header forKey:@"header"];
+    [coder encodeObject:_contacts forKey:@"contacts"];
+}
+
++ (BOOL)supportsSecureCoding {
+   return YES;
+}
+
+- (id<NSObject>)diffIdentifier {
+    NSLog(@"group entity %@", self.header);
+    
+    return self.header;
+}
+
+- (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object {
+    
+    ContactGroupEntity *entity = (ContactGroupEntity *)object;
+    NSLog(@"group diff %@ %@", self.header, entity.header);
+    if (!entity) return NO;
+    if (![self.header isEqualToString:entity.header]) return NO;
+    return YES;
+//    return [self.contacts isEqual:entity.contacts];
+}
+
+- (BOOL)isEqual:(id)object {
+    ContactGroupEntity *entity = (ContactGroupEntity *)object;
+    if (!entity) return NO;
+    return [self.header isEqualToString:entity.header];
+}
+
 @end

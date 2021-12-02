@@ -56,4 +56,40 @@
     return _imageUrl;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    NSString *firstName = [coder decodeObjectForKey:@"fname"];
+    NSString *lastName = [coder decodeObjectForKey:@"lname"];
+    NSString *phoneNumber = [coder decodeObjectForKey:@"pnumber"];
+    NSString *imageUrl = [coder decodeObjectForKey:@"imageUrl"];
+    return [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber imageUrl:imageUrl];
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    [coder encodeObject:_firstName forKey:@"fname"];
+    [coder encodeObject:_lastName forKey:@"lname"];
+    [coder encodeObject:_phoneNumber forKey:@"pnumber"];
+    [coder encodeObject:_imageUrl forKey:@"imageUrl"];
+}
+
++ (BOOL)supportsSecureCoding {
+   return YES;
+}
+
+- (id<NSObject>)diffIdentifier {
+    NSLog(@"contact %@", self.lastName);
+    return self.lastName;
+}
+
+- (BOOL)isEqualToDiffableObject:(id<IGListDiffable>)object {
+    NSLog(@"contact diff %@", self.lastName);
+    return  YES;
+    ContactEntity *entity = (ContactEntity *)object;
+    if (!entity) return NO;
+    if (![self.firstName isEqualToString:entity.firstName]) return NO;
+    if (![self.lastName isEqualToString:entity.lastName]) return NO;
+    if (![self.phoneNumber isEqualToString:entity.phoneNumber]) return NO;
+    if (![self.imageUrl isEqualToString:entity.imageUrl]) return NO;
+    
+    return YES;
+}
 @end

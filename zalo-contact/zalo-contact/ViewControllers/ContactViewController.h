@@ -12,11 +12,7 @@
 #import "ContactViewController.h"
 #import "ContactEntity.h"
 #import "ContactsLoader.h"
-#import "ContactSectionController.h"
-#import "OnlineFriendsSectionController.h"
 #import "ContactTableViewDataSource.h"
-
-
 
 NS_ASSUME_NONNULL_BEGIN
 

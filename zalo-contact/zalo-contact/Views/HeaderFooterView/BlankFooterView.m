@@ -5,9 +5,9 @@
 //  Created by Thiện on 24/11/2021.
 //
 
-#import "BlankFooterCell.h"
+#import "BlankFooterView.h"
 #import "UIColorExt.h"
-@implementation BlankFooterCell
+@implementation BlankFooterView
 
 - (instancetype)init {
     self = [super init];
@@ -16,7 +16,7 @@
 }
 
 + (CGFloat)heightForFooterWithObject:(FooterObject *)object {
-    return 8;
+    return 4;
 }
 
 @end

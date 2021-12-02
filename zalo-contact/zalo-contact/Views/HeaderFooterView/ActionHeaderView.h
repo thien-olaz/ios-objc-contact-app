@@ -9,12 +9,12 @@
 @import PureLayout;
 #import "UIConstants.h"
 #import "UIColorExt.h"
-
+#import "CommonHeaderAndFooterViews.h"
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^ActionBlock)(void);
 
-@interface UpdateContactHeaderCell : UITableViewCell
+@interface ActionHeaderView : UIView<ZaloHeader>
 
 @property (copy) ActionBlock block;
 

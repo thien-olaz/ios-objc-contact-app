@@ -5,9 +5,9 @@
 //  Created by Thiện on 24/11/2021.
 //
 
-#import "UpdateContactHeaderCell.h"
+#import "ActionHeaderView.h"
 
-@interface UpdateContactHeaderCell ()
+@interface ActionHeaderView ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UILabel *sectionHeaderLabel;
@@ -15,14 +15,13 @@
 
 @end
 
-@implementation UpdateContactHeaderCell
+@implementation ActionHeaderView
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    [self setSelectionStyle:(UITableViewCellSelectionStyleNone)];
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
     [self setBackgroundColor: UIColor.zaloBackgroundColor];
-    [self.contentView addSubview:self.sectionHeaderLabel];
-    [self.contentView addSubview:self.updateButton];
+    [self addSubview:self.sectionHeaderLabel];
+    [self addSubview:self.updateButton];
     [self setNeedsUpdateConstraints];
     return self;
 }
@@ -72,6 +71,15 @@
 
 - (void)didClick {
     if (_block) _block();
+}
+
+- (void)setNeedsObject:(nonnull ActionHeaderObject *)object {
+    [self setSectionTitle:object.title];
+    [self setButtonTitle:object.buttonTitle];
+}
+
++ (CGFloat)heightForHeaderWithObject:(ShortHeaderObject *)object {
+    return 28;
 }
 
 @end

@@ -9,9 +9,10 @@
 @import UIKit;
 #import "FooterObject.h"
 #import "HeaderObject.h"
-#import "BlankFooterCell.h"
-#import "HeaderCell.h"
+#import "BlankFooterView.h"
+#import "HeaderView.h"
 #import "NullHeaderView.h"
+#import "ActionHeaderView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -36,6 +37,18 @@ NS_ASSUME_NONNULL_BEGIN
 @interface NullHeaderObject : HeaderObject
 
 - (instancetype)initWithLeter:(NSString *)letter;
+    
+@end
+
+
+#pragma mark - Action header
+
+@interface ActionHeaderObject : HeaderObject
+
+@property NSString *title;
+@property NSString *buttonTitle;
+
+- (instancetype)initWithTitle:(NSString *)title andButtonTitle:(NSString *)btnTitle;
     
 @end
 

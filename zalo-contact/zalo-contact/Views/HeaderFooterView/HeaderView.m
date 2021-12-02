@@ -5,16 +5,16 @@
 //  Created by Thiện on 16/11/2021.
 //
 
-#import "HeaderCell.h"
+#import "HeaderView.h"
 
-@interface HeaderCell ()
+@interface HeaderView ()
 
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UILabel *sectionHeaderLabel;
 
 @end
 
-@implementation HeaderCell
+@implementation HeaderView
 
 - (instancetype)initWithTitle:(NSString *)title {
     self = [super init];
@@ -62,7 +62,7 @@
 }
 
 + (CGFloat)heightForHeaderWithObject:(ShortHeaderObject *)object {
-    return 20;
+    return 28;
 }
 
 @end

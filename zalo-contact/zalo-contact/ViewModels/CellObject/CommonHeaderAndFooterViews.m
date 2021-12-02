@@ -10,7 +10,7 @@
 @implementation BlankFooterObject
 
 - (instancetype)init {
-    self = [super initWithFooterClass:BlankFooterCell.class];
+    self = [super initWithFooterClass:BlankFooterView.class];
     return self;
 }
 
@@ -20,7 +20,7 @@
 @implementation ShortHeaderObject
 
 - (instancetype)init {
-    self = [super initWithHeaderClass:HeaderCell.class];
+    self = [super initWithHeaderClass:HeaderView.class];
     return self;
 }
 
@@ -49,6 +49,17 @@
 - (instancetype)initWithLeter:(NSString *)letter {
     self = [super initWithHeaderClass:NullHeaderView.class];
     self.letterTitle = letter;
+    return self;
+}
+
+@end
+
+@implementation ActionHeaderObject
+
+- (instancetype)initWithTitle:(NSString *)title andButtonTitle:(NSString *)btnTitle {
+    self = [super initWithHeaderClass:ActionHeaderView.class];
+    _title = title;
+    _buttonTitle = btnTitle;
     return self;
 }
 

@@ -6,7 +6,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NSObject_ListDiffable.h"
 #import "UserContacts.h"
 #import "ContactEntityAdapter.h"
 #import "ContactGroupEntity.h"
@@ -15,7 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^FetchBlock)(NSArray<ContactGroupEntity *>*);
 
 @interface ContactsLoader : NSObject
+
+- (void)loadSavedData:(FetchBlock)block;
 - (void)fetchData:(FetchBlock)block;
+- (void)mockFetchDataWithReapeatTime:(int)time andBlock:(FetchBlock)block;
 
 @end
 

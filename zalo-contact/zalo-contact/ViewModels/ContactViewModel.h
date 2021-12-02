@@ -19,13 +19,21 @@ typedef void (^BindDataBlock)(void);
 
 @end
 
+@protocol TableViewDiffDelegate
+
+- (void)onDiff:(IGListIndexPathResult *)sectionDiff cells:(NSArray<IGListIndexPathResult *> *)cellDiff;
+
+@end
+
 @interface ContactViewModel : NSObject
 
 @property (nonatomic, copy) BindDataBlock dataBlock;
+@property (nonatomic, copy) BindDataBlock updateBlock;
 @property NSMutableArray *data;
 
-- (instancetype)initWithDelegate:(id<TableViewActionDelegate>)delegate;
-- (void)setDataBlock:(BindDataBlock)dataBlock;
+- (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action andDiffDelegate:(id<TableViewDiffDelegate>)diff;
+
+- (void)setup;
 
 @end
 

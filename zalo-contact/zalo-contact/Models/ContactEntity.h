@@ -6,10 +6,10 @@
 //
 
 #import <Foundation/Foundation.h>
-
+@import IGListKit;
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactEntity : NSObject
+@interface ContactEntity : NSObject<NSSecureCoding, IGListDiffable>
 - (id)initWithFirstName:(NSString *)firstName
                lastName:(NSString *)lastName
             phoneNumber:(NSString *)phoneNumber;
@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)header;
 - (NSString *)fullName;
 - (NSString * __nullable)imageUrl;
+- (id<NSObject>)diffIdentifier;
+- (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object;
 
 @end
 

@@ -11,7 +11,7 @@
 #import "ContactTableViewAction.h"
 #import "ContactViewModel.h"
 
-@interface ContactViewController () <TableViewActionDelegate> {
+@interface ContactViewController () <TableViewActionDelegate, TableViewDiffDelegate> {
     BOOL didSetupConstraints;
 }
 
@@ -51,24 +51,29 @@
     [self addView];
     
     [self bindViewModel];
+    
 }
 
 - (void)bindViewModel {
 
-    _viewModel = [ContactViewModel.alloc initWithDelegate: self];
+    _viewModel = [ContactViewModel.alloc initWithActionDelegate:self andDiffDelegate:self];
     
     // capture weak self for binding block
     __unsafe_unretained typeof(self) weakSelf = self;
+    [_tableView setDataSource:_tableViewDataSource];
+    [_tableView setDelegate:_tableViewAction];
     
     [_viewModel setDataBlock:^{
         [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
-        
-        [weakSelf.tableView setDataSource:weakSelf.tableViewDataSource];
-        [weakSelf.tableView setDelegate:weakSelf.tableViewAction];
         [weakSelf.tableView reloadData];
     }];
     
+    [_viewModel setUpdateBlock:^{
+        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
+    }];
+    
 }
+
 
 - (void)updateViewConstraints {
     if (!didSetupConstraints) {
@@ -86,5 +91,36 @@
     return [_tableViewAction attachToObject:object action:tapped];
 }
 
+- (void)onDiff:(IGListIndexPathResult *)sectionDiff cells:(NSArray<IGListIndexPathResult *> *)cellsDiff {
+//    dispatch_async(dispatch_main(),
+    __unsafe_unretained typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.tableView beginUpdates];
+
+        NSMutableIndexSet *sectionInsert = [NSMutableIndexSet indexSet];
+        for (NSIndexPath *indexPath in [sectionDiff inserts]) {
+            [sectionInsert addIndex:indexPath.row + 3];
+        }
+
+        NSMutableIndexSet *sectionDelete = [NSMutableIndexSet indexSet];
+        for (NSIndexPath *indexPath in [sectionDiff deletes]) {
+            [sectionDelete addIndex:indexPath.row + 3];
+        }
+
+        [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
+        [weakSelf.tableView deleteSections:sectionDelete withRowAnimation:(UITableViewRowAnimationLeft)];
+
+        for (IGListIndexPathResult *result in cellsDiff) {
+            [weakSelf.tableView insertRowsAtIndexPaths:result.inserts withRowAnimation:(UITableViewRowAnimationLeft)];
+            [weakSelf.tableView deleteRowsAtIndexPaths:result.deletes withRowAnimation:(UITableViewRowAnimationLeft)];
+        }
+        
+        
+
+        [weakSelf.tableView endUpdates];
+    });
+    
+    
+}
 @end
 

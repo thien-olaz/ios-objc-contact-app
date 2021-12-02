@@ -59,7 +59,7 @@
 - (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
     UIWindowScene *windowScene = (UIWindowScene *)scene;
     window = [[UIWindow alloc] initWithWindowScene: windowScene];
-    window.backgroundColor = UIColor.blackColor;
+    [window setOverrideUserInterfaceStyle:(UIUserInterfaceStyleLight)];
     
     self.tabbarController = self.getTabbarController;
     
