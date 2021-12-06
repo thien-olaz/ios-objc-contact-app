@@ -21,9 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)header;
 - (NSString *)fullName;
+- (NSString *)lastName;
 - (NSString * __nullable)imageUrl;
 - (id<NSObject>)diffIdentifier;
 - (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object;
+- (NSComparisonResult)compare:(ContactEntity *)entity;
 
 @end
 

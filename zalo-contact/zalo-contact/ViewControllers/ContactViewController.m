@@ -10,6 +10,7 @@
 #import "UIAlertControllerExt.h"
 #import "ContactTableViewAction.h"
 #import "ContactViewModel.h"
+#import "MockAPIService.h"
 
 @interface ContactViewController () <TableViewActionDelegate, TableViewDiffDelegate> {
     BOOL didSetupConstraints;
@@ -54,13 +55,14 @@
 }
 
 - (void)bindViewModel {
-    _viewModel = [ContactViewModel.alloc initWithActionDelegate:self andDiffDelegate:self];
+    MockAPIService *apiService = MockAPIService.new;
+    _viewModel = [ContactViewModel.alloc initWithActionDelegate:self andDiffDelegate:self apiService:apiService];
     
     // capture weak self for binding block
     __unsafe_unretained typeof(self) weakSelf = self;
     [_tableView setDataSource:_tableViewDataSource];
     [_tableView setDelegate:_tableViewAction];
-    
+    [_viewModel setTableViewDataSource:self.tableViewDataSource];
     [_viewModel setDataBlock:^{
         [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
         [weakSelf.tableView reloadData];
@@ -71,7 +73,6 @@
     }];
     
 }
-
 
 - (void)updateViewConstraints {
     if (!didSetupConstraints) {
@@ -87,6 +88,9 @@
         _tableViewAction = ContactTableViewAction.new;
     }
     return [_tableViewAction attachToObject:object action:tapped];
+}
+- (void) scrollTo:(NSIndexPath *)indexPath {
+    [_tableView scrollToRowAtIndexPath:indexPath atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
 }
 
 #pragma mark - TableViewDiffDelegate
@@ -108,7 +112,7 @@
 
         [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
         [weakSelf.tableView deleteSections:sectionDelete withRowAnimation:(UITableViewRowAnimationLeft)];
-
+        
         for (IGListIndexPathResult *result in cellsDiff) {
             [weakSelf.tableView insertRowsAtIndexPaths:result.inserts withRowAnimation:(UITableViewRowAnimationLeft)];
             [weakSelf.tableView deleteRowsAtIndexPaths:result.deletes withRowAnimation:(UITableViewRowAnimationLeft)];

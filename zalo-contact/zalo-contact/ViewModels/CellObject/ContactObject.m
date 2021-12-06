@@ -15,4 +15,25 @@
     return self;
 }
 
+- (BOOL)isEqual:(id)object {
+    ContactObject *contact = (ContactObject *)object;
+    if (!contact) {
+        return NO;
+    }
+    if ([contact isKindOfClass:ContactObject.class]) {
+    return [self.contact compare:contact.contact] == NSOrderedSame;
+    }
+    return NO;
+}
+
+- (NSComparisonResult)compare:(ContactObject *)object {
+    ContactObject *contact = (ContactObject *)object;
+    if (!contact) {
+        return NO;
+    }
+    
+    return [self.contact compare:contact.contact];
+    
+}
+
 @end

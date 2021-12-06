@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property ContactEntity *contact;
 
 - (instancetype)initWithContactEntity:(ContactEntity *)contact;
+- (BOOL)isEqual:(id)object;
+- (NSComparisonResult)compare:(ContactObject *)object;
 
 @end
 

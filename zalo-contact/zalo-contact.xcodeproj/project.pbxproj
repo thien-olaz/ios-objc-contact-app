@@ -30,6 +30,10 @@
 		AF426F672754E915004C541E /* ContactTableViewAction.m in Sources */ = {isa = PBXBuildFile; fileRef = AF426F662754E915004C541E /* ContactTableViewAction.m */; };
 		AF9201B52746004500E1581C /* ContactGroupEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B42746004500E1581C /* ContactGroupEntity.m */; };
 		AF9201B827460EB300E1581C /* UIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B727460EB300E1581C /* UIConstants.m */; };
+		AFA2BDC9275E092200128996 /* MockAPIService.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDC8275E092200128996 /* MockAPIService.m */; };
+		AFA2BDCD275E094300128996 /* ZaloContactService.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDCC275E094300128996 /* ZaloContactService.m */; };
+		AFA2BDCF275E104300128996 /* contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA2BDCE275E104300128996 /* contacts.vcf */; };
+		AFA2BDD2275E14A000128996 /* NSStringExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD1275E14A000128996 /* NSStringExt.m */; };
 		AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4A72756093300FB5406 /* NullHeaderView.m */; };
 		AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */; };
 		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
@@ -90,6 +94,13 @@
 		AF9201B42746004500E1581C /* ContactGroupEntity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactGroupEntity.m; sourceTree = "<group>"; };
 		AF9201B627460EB300E1581C /* UIConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIConstants.h; sourceTree = "<group>"; };
 		AF9201B727460EB300E1581C /* UIConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIConstants.m; sourceTree = "<group>"; };
+		AFA2BDC7275E092200128996 /* MockAPIService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MockAPIService.h; sourceTree = "<group>"; };
+		AFA2BDC8275E092200128996 /* MockAPIService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MockAPIService.m; sourceTree = "<group>"; };
+		AFA2BDCB275E094300128996 /* ZaloContactService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZaloContactService.h; sourceTree = "<group>"; };
+		AFA2BDCC275E094300128996 /* ZaloContactService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZaloContactService.m; sourceTree = "<group>"; };
+		AFA2BDCE275E104300128996 /* contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = contacts.vcf; sourceTree = "<group>"; };
+		AFA2BDD0275E14A000128996 /* NSStringExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSStringExt.h; sourceTree = "<group>"; };
+		AFA2BDD1275E14A000128996 /* NSStringExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSStringExt.m; sourceTree = "<group>"; };
 		AFC3D4A62756093300FB5406 /* NullHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullHeaderView.h; sourceTree = "<group>"; };
 		AFC3D4A72756093300FB5406 /* NullHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullHeaderView.m; sourceTree = "<group>"; };
 		AFC3D4AC27560BFB00FB5406 /* CommonHeaderAndFooterViews.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHeaderAndFooterViews.h; sourceTree = "<group>"; };
@@ -146,6 +157,8 @@
 				AF24F4B82749FD7A00A71E07 /* UIColorExt.m */,
 				AF24F4D5274F375B00A71E07 /* UIAlertControllerExt.h */,
 				AF24F4D6274F375B00A71E07 /* UIAlertControllerExt.m */,
+				AFA2BDD0275E14A000128996 /* NSStringExt.h */,
+				AFA2BDD1275E14A000128996 /* NSStringExt.m */,
 			);
 			path = Ultilities;
 			sourceTree = "<group>";
@@ -191,6 +204,7 @@
 				AF368C4A27420F3800E17AEB /* AppDelegate.m */,
 				AF368C4C27420F3800E17AEB /* SceneDelegate.h */,
 				AF368C4D27420F3800E17AEB /* SceneDelegate.m */,
+				AFA2BDC6275E08FA00128996 /* Services */,
 				AF0BFBF827456E63006E072B /* Ultilities */,
 				AFCDDE50274279C600500137 /* Models */,
 				AFCDDE54274279FC00500137 /* Views */,
@@ -240,6 +254,18 @@
 				AF0BFBED2743A071006E072B /* ContactCell.m */,
 			);
 			path = CellView;
+			sourceTree = "<group>";
+		};
+		AFA2BDC6275E08FA00128996 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				AFA2BDC7275E092200128996 /* MockAPIService.h */,
+				AFA2BDC8275E092200128996 /* MockAPIService.m */,
+				AFA2BDCB275E094300128996 /* ZaloContactService.h */,
+				AFA2BDCC275E094300128996 /* ZaloContactService.m */,
+				AFA2BDCE275E104300128996 /* contacts.vcf */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		AFCD453C2757B20A00825C0E /* ViewFactory */ = {
@@ -389,6 +415,7 @@
 			files = (
 				AF368C5927420F3A00E17AEB /* LaunchScreen.storyboard in Resources */,
 				AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */,
+				AFA2BDCF275E104300128996 /* contacts.vcf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +471,7 @@
 				AF24F4B92749FD7A00A71E07 /* UIColorExt.m in Sources */,
 				AF3E8BE72757295C00BB8AE4 /* ContactViewModel.m in Sources */,
 				AF24F4C8274C9E5900A71E07 /* ContactTableViewDataSource.m in Sources */,
+				AFA2BDCD275E094300128996 /* ZaloContactService.m in Sources */,
 				AF0BFBF727456B88006E072B /* ContactEntityAdapter.m in Sources */,
 				AF426F622754DE41004C541E /* FooterObject.m in Sources */,
 				AF9201B827460EB300E1581C /* UIConstants.m in Sources */,
@@ -453,12 +481,14 @@
 				AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */,
 				AF24F4CE274DE4A900A71E07 /* CommonCell.m in Sources */,
 				AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */,
+				AFA2BDD2275E14A000128996 /* NSStringExt.m in Sources */,
 				AFE4CA072755F45600A0190F /* HeaderFooterFactory.m in Sources */,
 				AF0BFBF42743B971006E072B /* FriendRequestEntity.m in Sources */,
 				AF0BFBEE2743A071006E072B /* ContactCell.m in Sources */,
 				AFEB1CCA2754B670001636C6 /* CellFactory.m in Sources */,
 				AF0BFBF12743A0A6006E072B /* HeaderView.m in Sources */,
 				AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */,
+				AFA2BDC9275E092200128996 /* MockAPIService.m in Sources */,
 				AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */,
 				AF368C5C27420F3A00E17AEB /* main.m in Sources */,
 				AFCDDE5F2742875200500137 /* ContactEntity.m in Sources */,

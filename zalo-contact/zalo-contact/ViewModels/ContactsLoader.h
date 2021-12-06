@@ -17,6 +17,7 @@ typedef void (^FetchBlock)(NSArray<ContactGroupEntity *>*);
 
 - (void)loadSavedData:(FetchBlock)block;
 - (void)fetchData:(FetchBlock)block;
+- (void)addContact:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)contactd returnBlock:(FetchBlock)block;
 - (void)mockFetchDataWithReapeatTime:(int)time andBlock:(FetchBlock)block;
 
 @end

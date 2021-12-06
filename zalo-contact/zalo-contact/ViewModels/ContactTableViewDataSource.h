@@ -18,9 +18,12 @@
 @required
 
 - (id _Nonnull )objectAtIndexPath:(NSIndexPath *_Nonnull)indexPath;
+- (NSIndexPath *)indexPathForObject:(id)object;
+
 - (nullable HeaderObject *)headerObjectInSection:(NSInteger)index;
 - (nullable FooterObject *)footerObjectInSection:(NSInteger)index;
 - (CGFloat)tableView:(UITableView *_Nonnull)tableView heightForRowAtIndexPath:(NSIndexPath *_Nonnull)indexPath;
+
 
 @end
 

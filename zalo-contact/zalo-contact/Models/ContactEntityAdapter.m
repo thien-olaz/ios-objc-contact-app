@@ -16,7 +16,8 @@
 - (id)initWithCNContact:(CNContact *)contact {
     
     NSString *pn = @"";
-    if (contact.phoneNumbers[0]) {
+    BOOL hasPhoneNumber = 0 < [contact.phoneNumbers count] ? YES : NO;
+    if (hasPhoneNumber) {
         pn = ((CNPhoneNumber *)contact.phoneNumbers[0].value).stringValue;
     }
     

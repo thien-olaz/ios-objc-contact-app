@@ -45,17 +45,17 @@ static UserContacts *sharedInstance = nil;
 }
 
 - (NSMutableDictionary<NSString*, NSMutableArray<ContactEntity *>*>*)getDeviceContactEntities {
-    //    NSDate *methodStart = [NSDate date];
-    
-    //    for(int i=1; i<2000; i++) {
     CNContactStore *ctstore = [[CNContactStore alloc] init];
     
     NSMutableDictionary<NSString*, NSMutableArray<ContactEntity *>*> *contactDictionary = [NSMutableDictionary dictionary];
     
     [ctstore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
-        if (granted == YES) {
+        if (granted == YES && !error) {
             
-            NSArray *keys = @[CNContactNamePrefixKey, CNContactNameSuffixKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPhoneNumbersKey, CNContactImageDataKey];
+            NSArray *keys = @[CNContactFamilyNameKey,
+                              CNContactGivenNameKey,
+                              CNContactPhoneNumbersKey];
+            
             CNContactFetchRequest *request = [CNContactFetchRequest.alloc initWithKeysToFetch:keys];
             NSError *error;
             
@@ -74,20 +74,14 @@ static UserContacts *sharedInstance = nil;
                         [contactDictionary setObject:[NSMutableArray.alloc initWithArray:@[contactEntity]]  forKey: header];
                     } else {
                         [contacts addObject:contactEntity];
-                        [contactDictionary setObject:contacts forKey: header];
                     }
-//                    NSLog(@"%@, %@", contact.familyName, contact.givenName);
                 }
             }];
+        } else {
+            //MARK: Handle error
         }
     }];
-    //    }
-    //    NSLog(@"%@", contactDictionary.description);
-    
-    //    NSDate *methodFinish = [NSDate date];
-    //    NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
-    //    NSLog(@"new executionTime = %f", executionTime);
-    //    return results;
+
     return contactDictionary;
 }
 
@@ -100,10 +94,10 @@ static UserContacts *sharedInstance = nil;
 }
 
 - (NSDictionary<NSString*, NSArray<ContactEntity*>*> *)getContactDictionary {
-    if (_contactDictionary) {
-        return _contactDictionary;
+    if (!_contactDictionary) {
+        _contactDictionary = [NSDictionary new];
     }
-    return [NSDictionary new];
+    return _contactDictionary;;
     
 }
 

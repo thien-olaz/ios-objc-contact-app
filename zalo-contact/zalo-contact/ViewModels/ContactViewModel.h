@@ -9,6 +9,8 @@
 #import "ContactsLoader.h"
 #import "CellObject.h"
 #import "ContactTableViewAction.h"
+#import "MockAPIService.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^BindDataBlock)(void);
@@ -16,6 +18,7 @@ typedef void (^BindDataBlock)(void);
 @protocol TableViewActionDelegate
 
 - (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped;
+- (void) scrollTo:(NSIndexPath *)indexPath;
 
 @end
 
@@ -29,9 +32,12 @@ typedef void (^BindDataBlock)(void);
 
 @property (nonatomic, copy) BindDataBlock dataBlock;
 @property (nonatomic, copy) BindDataBlock updateBlock;
+@property ContactTableViewDataSource *tableViewDataSource;
 @property NSMutableArray *data;
 
-- (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action andDiffDelegate:(id<TableViewDiffDelegate>)diff;
+- (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
+                       andDiffDelegate:(id<TableViewDiffDelegate>)diff
+                            apiService:(id<APIServiceProtocol>)api;
 
 - (void)setup;
 
