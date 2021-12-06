@@ -114,4 +114,29 @@
 //    }
     return NSOrderedSame;
 }
+
+#pragma mark - sort 2 array
+
+/// Use insertionSort because it has O(n) complexity with sorted array, fast for almost sorted array
++ (NSArray<ContactEntity*>*) insertionSort:(NSArray<ContactEntity*> *)array {
+    NSMutableArray<ContactEntity *> *sortedArray = [NSMutableArray arrayWithArray:array];
+    
+    int i, j;
+    ContactEntity *key;
+    NSInteger length = sortedArray.count;
+    
+    for (i = 1; i < length; i++) {
+        
+        key = sortedArray[i];
+        j = i - 1;
+        
+        while (j >= 0 && [sortedArray[j] compare:key] == NSOrderedDescending ) {
+            sortedArray[j + 1] = sortedArray[j];
+            j = j - 1;
+        }
+        sortedArray[j + 1] = key;
+    }
+    return sortedArray;
+}
+
 @end

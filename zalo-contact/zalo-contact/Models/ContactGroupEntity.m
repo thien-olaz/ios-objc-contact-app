@@ -70,4 +70,20 @@
     return [self.header isEqualToString:entity.header];
 }
 
+///Turn contacts dictionary into contact group
++ (NSArray<ContactGroupEntity *> *)groupFromContacts:(NSDictionary<NSString *,NSArray<ContactEntity *> *> *)contacts {
+    NSMutableArray<ContactGroupEntity *> *arr = NSMutableArray.array;
+    
+    [contacts enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
+        [arr addObject:[ContactGroupEntity.alloc initWithHeader:key andContactArray:value]];
+    }];
+    
+    //MARK: - light weight - maximum 24 charactor
+    [arr sortUsingComparator:^NSComparisonResult(ContactGroupEntity *obj1,ContactGroupEntity *obj2) {
+        return [obj1.header compare:obj2.header];
+    }];
+    return arr;
+}
+
+
 @end

@@ -140,4 +140,13 @@
     return [cellFactory tableView:tableView heightForRowWithObject:object];
 }
 
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        NSLog(@"delete");
+    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        NSLog(@"insert");
+    }
+}
+
+
 @end

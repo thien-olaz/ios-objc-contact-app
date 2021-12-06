@@ -12,13 +12,25 @@
 #import "ActionHeaderView.h"
 #import "ContactObject.h"
 #import "NSStringExt.h"
+#import "GCDThrottle.h"
+#import "ZaloContactService.h"
+
+@interface ContactViewModel () <ZaloContactEventListener>
+
+@property IGListIndexPathResult *sectionDiff;
+@property NSArray<IGListIndexPathResult *> *contactsDiff;
+
+@end
 
 @implementation ContactViewModel {
     ContactsLoader *loader;
     NSMutableArray<ContactGroupEntity *> *contactGroups;
+    NSMutableArray<ContactGroupEntity *> *tempContactGroups;
+    NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *tempContactDict;
+    
     id<TableViewActionDelegate> actionDelegate;
     id<TableViewDiffDelegate> diffDelegate;
-    id<APIServiceProtocol> apiService;
+    
 }
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
@@ -30,46 +42,48 @@
     
     actionDelegate = action;
     diffDelegate = diff;
-    apiService = api;
-    [apiService setOnContactAdded:^(ContactEntity * newContact) {
-        LOG(newContact.description);
-        NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *contactDict = NSMutableDictionary.new;
-        [contactDict setObject:@[newContact] forKey: newContact.header];
-        [loader addContact:contactDict returnBlock:^(NSArray<ContactGroupEntity *> *  groups) {
-            IGListIndexPathResult *sectionDiff = [self getSectionDiff:groups];
-            NSMutableArray<IGListIndexPathResult *> *contactsDiff = [self getCellDiff:groups];
-            
-            [self setContactGroups:groups] ;
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateDataWithSectionDiff:sectionDiff cellDiff:contactsDiff];
-            });
-        }];
-    }];
     
-    [apiService setOnContactDeleted:^(ContactEntity * deleteContact) {
-        
-    }];
+    [ZaloContactService.sharedInstance subcribe:self];
     
-    [apiService setOnContactUpdated:^(ContactEntity * oldContact, ContactEntity * updatedContact) {
-        
-    }];
-    [apiService fakeServerUpdate];
+    contactGroups = NSMutableArray.new;
+    
+    tempContactDict = NSMutableDictionary.new;
+    
+    
     [self setup];
     return self;
 }
 
-- (void)addContact:(ContactEntity *)contact {
+// MARK: Zalo contact service observer
+- (void)onAddContact:(nonnull ContactEntity *)contact {
+    
+    if (![tempContactDict objectForKey:contact.header]) {
+        [tempContactDict setObject:@[contact] forKey:contact.header];
+    } else {
+        NSMutableArray<ContactEntity *> *arr = [NSMutableArray arrayWithArray:[tempContactDict objectForKey:contact.header]];
+        [arr addObject:contact];
+        [tempContactDict setObject: [ContactEntity insertionSort:arr] forKey:contact.header];
+    }
+    
+    __weak typeof(self) weakSelf = self;
+    dispatch_throttle_by_type(2.5, GCDThrottleTypeInvokeAndIgnore, ^{
+        
+        NSArray<ContactGroupEntity *> *groups = [ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict];
+        IGListIndexPathResult *sectionDiff = [self getSectionDiff:groups];
+        NSMutableArray<IGListIndexPathResult *> *contactsDiff = [self getCellDiff:groups];
+        
+        [self setContactGroups:groups];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf updateDataWithSectionDiff:sectionDiff cellDiff:contactsDiff];
+        });
+    });
+}
+
+- (void)onDeleteContact:(nonnull ContactEntity *)contact {
     
 }
 
-- (void)deleteContact:(ContactEntity *)contact {
-    
-}
-
-- (void)updaContact:(ContactEntity *)contact toContact:(ContactEntity *)updatedContact {
-    
-}
 
 - (void)setup {
     [self performSelectorInBackground:@selector(loadSavedData) withObject:nil];
@@ -97,17 +111,30 @@
 }
 
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
-    contactGroups = [NSMutableArray.alloc initWithArray: groups];
-    _data = [self compileGroupToTableData:contactGroups];
+    tempContactGroups = [NSMutableArray.alloc initWithArray: groups];
+    _data = [self compileGroupToTableData:tempContactGroups];
 }
 
 - (void)completeFetchingData {
+    contactGroups = tempContactGroups;
+    _data = [self compileGroupToTableData:contactGroups];
     if (_dataBlock) _dataBlock();
 }
 
-- (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {
+- (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {            
+    
+    self.sectionDiff = sectionDiff;
+    self.contactsDiff = cellDiff;
+    
+    contactGroups = tempContactGroups;
     if (_updateBlock) _updateBlock();
-    [diffDelegate onDiff:sectionDiff cells:cellDiff];
+    [self updateUI];
+    [tempContactDict removeAllObjects];
+    LOG(@"Updated");
+}
+
+- (void)updateUI {
+    [diffDelegate onDiff:self.sectionDiff cells:self.contactsDiff];
 }
 
 - (IGListIndexPathResult *)getSectionDiff:(NSArray<ContactGroupEntity *> *)newGroups {
@@ -166,6 +193,7 @@
         }];
     }]
     ];
+    
     [data addObject:
          [actionDelegate attachToObject:
           [CommonCellObject.alloc initWithTitle:@"Xoá bớt"
@@ -191,8 +219,8 @@
                                  action:^{
         
         NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForObject:[ContactObject.alloc initWithContactEntity:[ContactEntity.alloc initWithFirstName:@"Thien"
-                                                                                                                          lastName:@"Abbott"
-                                                                                                                       phoneNumber:@"0123456789"]]];
+                                                                                                                                                     lastName:@"Abbott"
+                                                                                                                                                  phoneNumber:@"0123456789"]]];
         if (idp) [weakSelf->actionDelegate scrollTo:idp];
     } ]
     ];
@@ -229,7 +257,6 @@
     
     return data;
 }
-
 
 
 @end

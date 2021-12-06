@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object;
 // Array equal
 - (BOOL)isEqual:(id)object;
+
+//group from contacts
++ (NSArray<ContactGroupEntity *> *)groupFromContacts:(NSDictionary<NSString *,NSArray<ContactEntity *> *> *)contacts;
 @end
 
 NS_ASSUME_NONNULL_END

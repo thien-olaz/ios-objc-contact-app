@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<NSObject>)diffIdentifier;
 - (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object;
 - (NSComparisonResult)compare:(ContactEntity *)entity;
-
++ (NSArray<ContactEntity*>*) insertionSort:(NSArray<ContactEntity*> *)array;
 @end
 
 NS_ASSUME_NONNULL_END

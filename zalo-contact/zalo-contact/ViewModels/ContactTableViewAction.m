@@ -90,6 +90,25 @@
     return tableView.rowHeight;
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
+}
 
+- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UIContextualAction *deleteAction = [UIContextualAction contextualActionWithStyle:(UIContextualActionStyleNormal) title:@"Delete" handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+        
+    }];
+    
+    deleteAction.backgroundColor = UIColor.redColor;
+    
+    UIContextualAction *markAsCloseFriendAction = [UIContextualAction contextualActionWithStyle:(UIContextualActionStyleNormal) title:@"Favorite" handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+        
+    }];
+    
+    markAsCloseFriendAction.backgroundColor = UIColor.blueColor;
+
+    return [UISwipeActionsConfiguration configurationWithActions:@[deleteAction, markAsCloseFriendAction]];
+}
 
 @end

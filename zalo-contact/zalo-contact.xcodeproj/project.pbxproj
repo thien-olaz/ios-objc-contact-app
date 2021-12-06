@@ -19,6 +19,7 @@
 		AF24F4CE274DE4A900A71E07 /* CommonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4CD274DE4A900A71E07 /* CommonCell.m */; };
 		AF24F4D4274E002700A71E07 /* BlankFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4D3274E002700A71E07 /* BlankFooterView.m */; };
 		AF24F4D7274F375B00A71E07 /* UIAlertControllerExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4D6274F375B00A71E07 /* UIAlertControllerExt.m */; };
+		AF2C5D6F275E833000DF06CF /* NSArrayExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AF2C5D6E275E833000DF06CF /* NSArrayExt.m */; };
 		AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4A27420F3800E17AEB /* AppDelegate.m */; };
 		AF368C4E27420F3800E17AEB /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C4D27420F3800E17AEB /* SceneDelegate.m */; };
 		AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF368C5527420F3A00E17AEB /* Assets.xcassets */; };
@@ -34,6 +35,8 @@
 		AFA2BDCD275E094300128996 /* ZaloContactService.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDCC275E094300128996 /* ZaloContactService.m */; };
 		AFA2BDCF275E104300128996 /* contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA2BDCE275E104300128996 /* contacts.vcf */; };
 		AFA2BDD2275E14A000128996 /* NSStringExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD1275E14A000128996 /* NSStringExt.m */; };
+		AFA2BDD5275E4A2700128996 /* NSObject+Debounce.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD4275E4A2700128996 /* NSObject+Debounce.m */; };
+		AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD7275E54E000128996 /* GCDThrottle.m */; };
 		AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4A72756093300FB5406 /* NullHeaderView.m */; };
 		AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */; };
 		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
@@ -73,6 +76,8 @@
 		AF24F4D3274E002700A71E07 /* BlankFooterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlankFooterView.m; sourceTree = "<group>"; };
 		AF24F4D5274F375B00A71E07 /* UIAlertControllerExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIAlertControllerExt.h; sourceTree = "<group>"; };
 		AF24F4D6274F375B00A71E07 /* UIAlertControllerExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIAlertControllerExt.m; sourceTree = "<group>"; };
+		AF2C5D6D275E833000DF06CF /* NSArrayExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSArrayExt.h; sourceTree = "<group>"; };
+		AF2C5D6E275E833000DF06CF /* NSArrayExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSArrayExt.m; sourceTree = "<group>"; };
 		AF368C4627420F3800E17AEB /* zalo-contact.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "zalo-contact.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF368C4927420F3800E17AEB /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		AF368C4A27420F3800E17AEB /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -101,6 +106,10 @@
 		AFA2BDCE275E104300128996 /* contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = contacts.vcf; sourceTree = "<group>"; };
 		AFA2BDD0275E14A000128996 /* NSStringExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSStringExt.h; sourceTree = "<group>"; };
 		AFA2BDD1275E14A000128996 /* NSStringExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSStringExt.m; sourceTree = "<group>"; };
+		AFA2BDD3275E4A2700128996 /* NSObject+Debounce.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Debounce.h"; sourceTree = "<group>"; };
+		AFA2BDD4275E4A2700128996 /* NSObject+Debounce.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Debounce.m"; sourceTree = "<group>"; };
+		AFA2BDD6275E54E000128996 /* GCDThrottle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDThrottle.h; sourceTree = "<group>"; };
+		AFA2BDD7275E54E000128996 /* GCDThrottle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDThrottle.m; sourceTree = "<group>"; };
 		AFC3D4A62756093300FB5406 /* NullHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullHeaderView.h; sourceTree = "<group>"; };
 		AFC3D4A72756093300FB5406 /* NullHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullHeaderView.m; sourceTree = "<group>"; };
 		AFC3D4AC27560BFB00FB5406 /* CommonHeaderAndFooterViews.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHeaderAndFooterViews.h; sourceTree = "<group>"; };
@@ -159,6 +168,12 @@
 				AF24F4D6274F375B00A71E07 /* UIAlertControllerExt.m */,
 				AFA2BDD0275E14A000128996 /* NSStringExt.h */,
 				AFA2BDD1275E14A000128996 /* NSStringExt.m */,
+				AFA2BDD3275E4A2700128996 /* NSObject+Debounce.h */,
+				AFA2BDD4275E4A2700128996 /* NSObject+Debounce.m */,
+				AFA2BDD6275E54E000128996 /* GCDThrottle.h */,
+				AFA2BDD7275E54E000128996 /* GCDThrottle.m */,
+				AF2C5D6D275E833000DF06CF /* NSArrayExt.h */,
+				AF2C5D6E275E833000DF06CF /* NSArrayExt.m */,
 			);
 			path = Ultilities;
 			sourceTree = "<group>";
@@ -480,9 +495,11 @@
 				AF426F5F2754DC4C004C541E /* HeaderObject.m in Sources */,
 				AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */,
 				AF24F4CE274DE4A900A71E07 /* CommonCell.m in Sources */,
+				AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */,
 				AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */,
 				AFA2BDD2275E14A000128996 /* NSStringExt.m in Sources */,
 				AFE4CA072755F45600A0190F /* HeaderFooterFactory.m in Sources */,
+				AFA2BDD5275E4A2700128996 /* NSObject+Debounce.m in Sources */,
 				AF0BFBF42743B971006E072B /* FriendRequestEntity.m in Sources */,
 				AF0BFBEE2743A071006E072B /* ContactCell.m in Sources */,
 				AFEB1CCA2754B670001636C6 /* CellFactory.m in Sources */,
@@ -493,6 +510,7 @@
 				AF368C5C27420F3A00E17AEB /* main.m in Sources */,
 				AFCDDE5F2742875200500137 /* ContactEntity.m in Sources */,
 				AF0BFBFB27456EC4006E072B /* UserContacts.m in Sources */,
+				AF2C5D6F275E833000DF06CF /* NSArrayExt.m in Sources */,
 				AFEB1CD02754BA9F001636C6 /* ContactObject.m in Sources */,
 				AF24F4D4274E002700A71E07 /* BlankFooterView.m in Sources */,
 				AFE4CA0A2755FFD900A0190F /* CommonCellObject.m in Sources */,

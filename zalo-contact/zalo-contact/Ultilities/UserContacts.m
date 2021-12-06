@@ -8,9 +8,10 @@
 #import "UserContacts.h"
 #import "ContactEntityAdapter.h"
 
+
 @interface UserContacts ()
 @property NSMutableArray<CNContact *> *contactList;
-@property NSDictionary<NSString*, NSMutableArray<ContactEntity *>*> *contactDictionary;
+@property ContactDictionary *contactDictionary;
 @end
 
 @implementation UserContacts
@@ -44,10 +45,10 @@ static UserContacts *sharedInstance = nil;
     _contactDictionary = [self getDeviceContactEntities];
 }
 
-- (NSMutableDictionary<NSString*, NSMutableArray<ContactEntity *>*>*)getDeviceContactEntities {
-    CNContactStore *ctstore = [[CNContactStore alloc] init];
+- (ContactDictionary *)getDeviceContactEntities {
+    CNContactStore *ctstore = [CNContactStore.alloc init];
     
-    NSMutableDictionary<NSString*, NSMutableArray<ContactEntity *>*> *contactDictionary = [NSMutableDictionary dictionary];
+    ContactDictionary *contactDictionary = [ContactDictionary dictionary];
     
     [ctstore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
         if (granted == YES && !error) {
@@ -69,12 +70,13 @@ static UserContacts *sharedInstance = nil;
                 } else {
                     ContactEntityAdapter *contactEntity = [ContactEntityAdapter.alloc initWithCNContact:contact];
                     NSString *header = contactEntity.header;
-                    NSMutableArray<ContactEntity *> *contacts = [contactDictionary objectForKey:header];
+                    NSMutableArray<ContactEntity *> *contacts = [NSMutableArray arrayWithArray:[contactDictionary objectForKey:header]];
                     if (!contacts) {
                         [contactDictionary setObject:[NSMutableArray.alloc initWithArray:@[contactEntity]]  forKey: header];
                     } else {
                         [contacts addObject:contactEntity];
                     }
+                    [contactDictionary setObject:contacts  forKey: header];                    
                 }
             }];
         } else {
@@ -93,9 +95,9 @@ static UserContacts *sharedInstance = nil;
     return _contactList;
 }
 
-- (NSDictionary<NSString*, NSArray<ContactEntity*>*> *)getContactDictionary {
+- (ContactDictionary *)getContactDictionary {
     if (!_contactDictionary) {
-        _contactDictionary = [NSDictionary new];
+        _contactDictionary = [ContactDictionary new];
     }
     return _contactDictionary;;
     

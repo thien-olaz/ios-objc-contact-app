@@ -52,6 +52,7 @@
         [_tableView setSectionHeaderTopPadding:0];
     }
     _tableViewAction = ContactTableViewAction.new;
+    _tableView.allowsMultipleSelectionDuringEditing = NO;
 }
 
 - (void)bindViewModel {

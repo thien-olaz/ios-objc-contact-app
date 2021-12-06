@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 @import Contacts;
 #import "ContactEntity.h"
+#import "ZaloContactService.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +21,7 @@ typedef void (^PermissionCompletion) (BOOL);
 
 - (void)fetchLocalContacts;
 - (NSArray<CNContact *> *)getContactList;
-- (NSDictionary<NSString*, NSMutableArray<ContactEntity*>*> *)getContactDictionary;
+- (ContactDictionary *)getContactDictionary;
 
 @end
 

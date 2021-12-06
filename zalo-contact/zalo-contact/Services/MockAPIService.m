@@ -47,7 +47,9 @@
 }
 
 - (void)fakeServerUpdate {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     [self addNewContact];
+    });
 }
 
 - (void)addNewContact {
@@ -55,6 +57,7 @@
     
     if (currentIndex < contactsPool.count) {
         ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:contactsPool[currentIndex]];
+        NSLog(@"%@", enity.fullName);
         onContactAdded(enity);
         currentIndex += 1;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
