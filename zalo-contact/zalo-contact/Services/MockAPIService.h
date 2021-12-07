@@ -10,6 +10,7 @@
 @import Contacts;
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^OnData) (NSArray<ContactEntity *>*);
 typedef void (^OnContactChangeBlock) (ContactEntity *);
 typedef void (^OnContactUpdateBlock) (ContactEntity *, ContactEntity *);
 
@@ -23,7 +24,7 @@ typedef void (^OnContactUpdateBlock) (ContactEntity *, ContactEntity *);
 
 - (void)getContactList;
 - (void)fakeServerUpdate;
-
+- (void)fetchContacts:(OnData)block;
 //- (void)contactChanged;
 //- (void)contactDeleted;
 //- (void)contactAdded;

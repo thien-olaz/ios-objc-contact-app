@@ -7,16 +7,19 @@
 
 #import "BlankFooterView.h"
 #import "UIColorExt.h"
-@implementation BlankFooterView
+@implementation BlankFooterView {
+    UIView *separateLine;
+}
 
 - (instancetype)init {
     self = [super init];
     [self setBackgroundColor: UIColor.zaloLightGrayColor];
+    
     return self;
 }
 
 + (CGFloat)heightForFooterWithObject:(FooterObject *)object {
-    return 4;
+    return 6;
 }
 
 @end

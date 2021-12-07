@@ -11,6 +11,7 @@
 
 @property NSString *firstName;
 @property NSString *lastName;
+
 @property (nonatomic) NSString *phoneNumber;
 @property (nullable) NSString *imageUrl;
 @end
@@ -18,42 +19,43 @@
 @implementation ContactEntity
 
 - (id)init {
-    return [self initWithFirstName:@"" lastName:@"" phoneNumber:@""];
+    return [self initWithFirstName:@"" lastName:@"" phoneNumber:@"" subtitle:nil];
 }
 
 - (id)initWithFirstName:(NSString *)firstName
                lastName:(NSString *)lastName
-            phoneNumber:(NSString *)phoneNumber {
+            phoneNumber:(NSString *)phoneNumber
+               subtitle:(nullable NSString *)subtitle{
     self = super.init;
     _firstName = firstName;
     _lastName = lastName;
     _phoneNumber = phoneNumber;
+    self.subtitle = subtitle;
+    [self update];
     return self;
 }
 
 - (id)initWithFirstName:(NSString *)firstName
                lastName:(NSString *)lastName
             phoneNumber:(NSString *)phoneNumber
-               imageUrl:(NSString *)url {
-    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber];
-    _imageUrl = url;
+               imageUrl:(NSString *)url
+               subtitle:(nullable NSString *)subtitle {
+    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle];
+    _imageUrl = url;    
     return self;
-}
-
-- (NSString *)fullName {
-    return [NSString stringWithFormat:@"%@ %@", _lastName, _firstName];
 }
 
 - (NSString *)lastName {
     return _lastName;
 }
 
-- (NSString *)phoneNumber{
+- (NSString *)phoneNumber {
     return _phoneNumber;
 }
 
-- (NSString *)header{
-    return _lastName && _lastName.length > 0 ? [_lastName substringToIndex:1] : [_firstName substringToIndex:1];
+- (void)update {
+    self.header = [ContactEntity headerFromFirstName:_firstName andLastName:_lastName];
+    self.fullName = [NSString stringWithFormat:@"%@ %@", _lastName, _firstName];
 }
 
 - (NSString * __nullable)imageUrl {
@@ -67,7 +69,9 @@
     NSString *lastName = [coder decodeObjectForKey:@"lname"];
     NSString *phoneNumber = [coder decodeObjectForKey:@"pnumber"];
     NSString *imageUrl = [coder decodeObjectForKey:@"imageUrl"];
-    return [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber imageUrl:imageUrl];
+    NSString *subtitle = [coder decodeObjectForKey:@"subtitle"];
+    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber imageUrl:imageUrl subtitle:subtitle];
+    return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
@@ -75,10 +79,11 @@
     [coder encodeObject:_lastName forKey:@"lname"];
     [coder encodeObject:_phoneNumber forKey:@"pnumber"];
     [coder encodeObject:_imageUrl forKey:@"imageUrl"];
+    [coder encodeObject:self.subtitle forKey:@"subtitle"];
 }
 
 + (BOOL)supportsSecureCoding {
-   return YES;
+    return YES;
 }
 
 #pragma mark - IGListDiffable
@@ -108,10 +113,12 @@
     if ( res != NSOrderedSame) {
         return res;
     }
-//    res = [self.phoneNumber compare:entity.phoneNumber];
-//    if ( res != NSOrderedSame) {
-//        return res;
-//    }
+    
+    //    res = [self.phoneNumber compare:entity.phoneNumber];
+    //    if ( res != NSOrderedSame) {
+    //        return res;
+    //    }
+    
     return NSOrderedSame;
 }
 
@@ -137,6 +144,11 @@
         sortedArray[j + 1] = key;
     }
     return sortedArray;
+}
+
+#pragma mark - properties
++ (NSString *)headerFromFirstName:(nullable NSString *)firstName andLastName:(nullable NSString *)lastName {
+    return lastName && lastName.length > 0 ? [lastName substringToIndex:1] : firstName && firstName.length > 0 ? [firstName substringToIndex:1] : @"#";
 }
 
 @end

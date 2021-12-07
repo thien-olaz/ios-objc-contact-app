@@ -13,6 +13,7 @@
 #import "HeaderView.h"
 #import "NullHeaderView.h"
 #import "ActionHeaderView.h"
+#import "ContactFooterView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,6 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark - ContactFooterObject
+@interface ContactFooterObject : FooterObject
+
+- (instancetype)init;
+
+@end
 
 #pragma mark - ShortHeaderObject
 @interface ShortHeaderObject : HeaderObject

@@ -21,8 +21,10 @@
         pn = ((CNPhoneNumber *)contact.phoneNumbers[0].value).stringValue;
     }
     
-    self = [super initWithFirstName:contact.givenName lastName:contact.familyName phoneNumber:pn];
+    self = [super initWithFirstName:contact.givenName lastName:contact.familyName phoneNumber:pn subtitle:nil];
+    
     _contact = contact;
+    
     return self;
 }
 

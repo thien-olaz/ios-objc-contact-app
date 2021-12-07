@@ -34,8 +34,7 @@
 }
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
-                       andDiffDelegate:(id<TableViewDiffDelegate>)diff
-                            apiService:(id<APIServiceProtocol>)api{
+                       andDiffDelegate:(id<TableViewDiffDelegate>)diff{
     self = super.init;
     
     loader = ContactsLoader.new;
@@ -45,7 +44,7 @@
     
     [ZaloContactService.sharedInstance subcribe:self];
     
-    contactGroups = NSMutableArray.new;
+    //    contactGroups = NSMutableArray.new;
     
     tempContactDict = NSMutableDictionary.new;
     
@@ -55,64 +54,65 @@
 }
 
 // MARK: Zalo contact service observer
+- (void)onReceiveNewList {
+    [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+}
+
 - (void)onAddContact:(nonnull ContactEntity *)contact {
-    
-    if (![tempContactDict objectForKey:contact.header]) {
-        [tempContactDict setObject:@[contact] forKey:contact.header];
-    } else {
-        NSMutableArray<ContactEntity *> *arr = [NSMutableArray arrayWithArray:[tempContactDict objectForKey:contact.header]];
-        [arr addObject:contact];
-        [tempContactDict setObject: [ContactEntity insertionSort:arr] forKey:contact.header];
-    }
-    
     __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(2.5, GCDThrottleTypeInvokeAndIgnore, ^{
-        
-        NSArray<ContactGroupEntity *> *groups = [ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict];
-        IGListIndexPathResult *sectionDiff = [self getSectionDiff:groups];
-        NSMutableArray<IGListIndexPathResult *> *contactsDiff = [self getCellDiff:groups];
-        
-        [self setContactGroups:groups];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf updateDataWithSectionDiff:sectionDiff cellDiff:contactsDiff];
+    dispatch_throttle_by_type(2.4, GCDThrottleTypeInvokeAndIgnore, ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
+            [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
         });
     });
 }
 
 - (void)onDeleteContact:(nonnull ContactEntity *)contact {
-    
+    __weak typeof(self) weakSelf = self;
+    dispatch_throttle_by_type(2.4, GCDThrottleTypeInvokeAndIgnore, ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
+            [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+        });
+    });
 }
 
+- (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact {
+    __weak typeof(self) weakSelf = self;
+    dispatch_throttle_by_type(2.4, GCDThrottleTypeInvokeAndIgnore, ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
+            [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+        });
+    });
+}
+
+- (void)updateDiff:(NSArray<ContactGroupEntity *> *)groups {
+    if (contactGroups) {
+        _sectionDiff = [self getSectionDiff:groups];
+        _contactsDiff = [self getCellDiff:groups];
+        [self setContactGroups:groups];
+        [self updateData];
+    } else {
+        [self setContactGroups:groups];
+        [self completeFetchingData];
+    }
+}
 
 - (void)setup {
-    [self performSelectorInBackground:@selector(loadSavedData) withObject:nil];
-    [self checkPermissionAndFetchData];
+    [self performSelectorInBackground:@selector(fetchData) withObject:nil];
 }
 
-- (void)loadSavedData {
-    [loader loadSavedData:^(NSArray<ContactGroupEntity *> * groups) {
-        [self setContactGroups:groups] ;
-        [self performSelectorOnMainThread:@selector(completeFetchingData) withObject:nil waitUntilDone:NO];
-    }];
-}
 
 - (void)fetchData {
-    [loader fetchData:^(NSArray<ContactGroupEntity *> *  groups) {
-        IGListIndexPathResult *sectionDiff = [self getSectionDiff:groups];
-        NSMutableArray<IGListIndexPathResult *> *contactsDiff = [self getCellDiff:groups];
-        
-        [self setContactGroups:groups] ;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateDataWithSectionDiff:sectionDiff cellDiff:contactsDiff];
-        });
-    }];
+    [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
 }
 
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
     tempContactGroups = [NSMutableArray.alloc initWithArray: groups];
     _data = [self compileGroupToTableData:tempContactGroups];
+}
+
+- (void)updateData{
+    [self updateDataWithSectionDiff:_sectionDiff cellDiff:_contactsDiff];
 }
 
 - (void)completeFetchingData {
@@ -130,7 +130,7 @@
     if (_updateBlock) _updateBlock();
     [self updateUI];
     [tempContactDict removeAllObjects];
-    LOG(@"Updated");
+    LOG(@"Updated UI");
 }
 
 - (void)updateUI {
@@ -178,19 +178,10 @@
     //MARK:  - mấy cell đầu danh bạ
     [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
     [data addObject:
-         [actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Load thêm"
+         [actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Clear saved data"
                                                                         image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
                                  action:^{
-        [weakSelf->loader mockFetchDataWithReapeatTime:1 andBlock:^(NSArray<ContactGroupEntity *> * groups) {
-            IGListIndexPathResult *sectionDiff = [self getSectionDiff:groups];
-            NSMutableArray<IGListIndexPathResult *> *contactsDiff = [self getCellDiff:groups];
-            
-            [self setContactGroups:groups] ;
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateDataWithSectionDiff:sectionDiff cellDiff:contactsDiff];
-            });
-        }];
+        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"data"];
     }]
     ];
     
@@ -199,16 +190,7 @@
           [CommonCellObject.alloc initWithTitle:@"Xoá bớt"
                                           image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
                                  action:^{
-        [weakSelf->loader mockFetchDataWithReapeatTime:-1 andBlock:^(NSArray<ContactGroupEntity *> * groups) {
-            IGListIndexPathResult *sectionDiff = [self getSectionDiff:groups];
-            NSMutableArray<IGListIndexPathResult *> *contactsDiff = [self getCellDiff:groups];
-            
-            [self setContactGroups:groups] ;
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateDataWithSectionDiff:sectionDiff cellDiff:contactsDiff];
-            });
-        }];
+      
     } ]
     ];
     
@@ -220,7 +202,8 @@
         
         NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForObject:[ContactObject.alloc initWithContactEntity:[ContactEntity.alloc initWithFirstName:@"Thien"
                                                                                                                                                      lastName:@"Abbott"
-                                                                                                                                                  phoneNumber:@"0123456789"]]];
+                                                                                                                                                  phoneNumber:@"0123456789"
+                                                                                                                                                     subtitle:nil]]];
         if (idp) [weakSelf->actionDelegate scrollTo:idp];
     } ]
     ];
@@ -252,7 +235,7 @@
         }
         
         // Footer
-        [data addObject:BlankFooterObject.new];
+        [data addObject:ContactFooterObject.new];
     }
     
     return data;

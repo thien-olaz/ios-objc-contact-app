@@ -51,13 +51,13 @@
     if (@available(iOS 15, *)) {
         [_tableView setSectionHeaderTopPadding:0];
     }
+    _tableView.rowHeight = UITableViewAutomaticDimension;
     _tableViewAction = ContactTableViewAction.new;
-    _tableView.allowsMultipleSelectionDuringEditing = NO;
+//    _tableView.allowsMultipleSelectionDuringEditing = NO;
 }
 
 - (void)bindViewModel {
-    MockAPIService *apiService = MockAPIService.new;
-    _viewModel = [ContactViewModel.alloc initWithActionDelegate:self andDiffDelegate:self apiService:apiService];
+    _viewModel = [ContactViewModel.alloc initWithActionDelegate:self andDiffDelegate:self];
     
     // capture weak self for binding block
     __unsafe_unretained typeof(self) weakSelf = self;
@@ -66,7 +66,9 @@
     [_viewModel setTableViewDataSource:self.tableViewDataSource];
     [_viewModel setDataBlock:^{
         [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
-        [weakSelf.tableView reloadData];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf.tableView reloadData];
+        });
     }];
     
     [_viewModel setUpdateBlock:^{

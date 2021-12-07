@@ -11,7 +11,10 @@
 
 @implementation MockAPIService {
     NSArray<CNContact *> *contactsPool;
-    int currentIndex;
+    NSArray<CNContact *> *fixedContactsPool;
+    
+    int addIndex;
+    int deleteIndex;
 }
 
 @synthesize onContactUpdated;
@@ -22,44 +25,96 @@
 
 - (instancetype)init {
     self = super.init;
-    [self mockAddContact];
-    currentIndex = 0;
+    [self getContactsFromFile];
+//    [self mockDeleteContact];
+    addIndex = 0;
     return self;
 }
 
-- (void)mockAddContact {
-    NSString *filepath = [[NSBundle mainBundle] pathForResource:@"contacts" ofType:@"vcf"];
-    NSError *error;
-    NSString *fileContents = [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:&error];
+- (void)getContactsFromFile {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        if (!weakSelf) return;
+        MockAPIService *strongSelf = weakSelf;
+        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"contacts" ofType:@"vcf"];
+        NSError *error;
+        NSString *fileContents = [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:&error];
+        
+        if (error) {
+            LOG(error.description);
+            return;
+        }
+        
+        NSData *data = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
+        
+        if (!strongSelf) return;
+        
+        strongSelf->contactsPool = [CNContactVCardSerialization contactsWithData:data error:&error];
+        if (error) {
+            LOG(error.description);
+            return;
+        }
+        [strongSelf fakeServerUpdate];
+    });
     
-    if (error) {
-        LOG(error.description);
-        return;
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        if (!weakSelf) return;
+        MockAPIService *strongSelf = weakSelf;
+        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"fixedContactsList" ofType:@"vcf"];
+        NSError *error;
+        NSString *fileContents = [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:&error];
+        
+        if (error) {
+            LOG(error.description);
+            return;
+        }
+        
+        NSData *data = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
+        
+        if (!strongSelf) return;
+        
+        strongSelf->fixedContactsPool = [CNContactVCardSerialization contactsWithData:data error:&error];
+        if (error) {
+            LOG(error.description);
+            return;
+        }
+    });
     
-    NSData *data = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
-    contactsPool =[CNContactVCardSerialization contactsWithData:data error:&error];
-    if (error) {
-        LOG(error.description);
-        return;
-    }
+}
+
+// MARK: Fake a api request with 1 sec delay
+- (void)fetchContacts:(OnData)block {
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        if (!weakSelf) return;
+        MockAPIService *strongSelf = weakSelf;
+        NSMutableArray<ContactEntity *> *apiContactsResult = NSMutableArray.new;
+        for (CNContact *cnct in strongSelf->fixedContactsPool) {
+            ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:cnct];
+            [apiContactsResult addObject:entity];
+        }
+        block(apiContactsResult);
+    });
     
 }
 
 - (void)fakeServerUpdate {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-    [self addNewContact];
+//        [self addNewContact];
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+//        [self deleteContact];
     });
 }
 
 - (void)addNewContact {
     if (!onContactAdded) return;
     
-    if (currentIndex < contactsPool.count) {
-        ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:contactsPool[currentIndex]];
+    if (addIndex < contactsPool.count) {
+        ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:contactsPool[addIndex]];
         NSLog(@"%@", enity.fullName);
         onContactAdded(enity);
-        currentIndex += 1;
+        addIndex += 1;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [self addNewContact];
         });
@@ -67,20 +122,20 @@
     
 }
 
-//- (void)getContactList {
-//    <#code#>
-//}
-//
-//- (void)contactAdded {
-//    <#code#>
-//}
-//
-//- (void)contactChanged {
-//    <#code#>
-//}
-//
-//- (void)contactDeleted {
-//    <#code#>
-//}
+- (void)deleteContact {
+    if (!onContactDeleted) return;
+    
+    if (deleteIndex < contactsPool.count) {
+        ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:contactsPool[deleteIndex]];
+        NSLog(@"%@", entity.fullName);
+        onContactDeleted(entity);
+        deleteIndex += 1;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [self deleteContact];
+        });
+    };
+    
+}
+
 
 @end

@@ -36,8 +36,7 @@ typedef void (^BindDataBlock)(void);
 @property NSMutableArray *data;
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
-                       andDiffDelegate:(id<TableViewDiffDelegate>)diff
-                            apiService:(id<APIServiceProtocol>)api;
+                       andDiffDelegate:(id<TableViewDiffDelegate>)diff;
 
 - (void)setup;
 

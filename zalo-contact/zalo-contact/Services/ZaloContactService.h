@@ -13,9 +13,10 @@ typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictio
 
 @protocol ZaloContactEventListener <NSObject>
 
+- (void)onReceiveNewList;
 - (void)onAddContact:(ContactEntity *)contact;
 - (void)onDeleteContact:(ContactEntity *)contact;
-
+- (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact;
 @end
 
 @interface ZaloContactService : NSObject
@@ -26,12 +27,13 @@ typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictio
 + (ZaloContactService *)sharedInstance;
 - (ContactDictionary *)getFullContactDict;
 - (NSArray<ContactEntity *>*)getFullContactList;
-
+- (void)fetchLocalContact;
 //MARK: Observer functions
-- (void)didAddContact:(ContactEntity *)contact;
-- (void)didDeleteContact:(ContactEntity *)contact;
 - (void)subcribe:(id<ZaloContactEventListener>)listener;
 - (void)unsubcribe:(id<ZaloContactEventListener>)listener;
+- (void)didAddContact:(ContactEntity *)contact;
+- (void)didDeleteContact:(ContactEntity *)contact;
+
 @end
 
 NS_ASSUME_NONNULL_END

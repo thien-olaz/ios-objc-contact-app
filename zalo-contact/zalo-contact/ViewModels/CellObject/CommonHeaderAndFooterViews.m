@@ -16,6 +16,15 @@
 
 @end
 
+@implementation ContactFooterObject
+
+- (instancetype)init {
+    self = [super initWithFooterClass:ContactFooterView.class];
+    return self;
+}
+
+@end
+
 
 @implementation ShortHeaderObject
 

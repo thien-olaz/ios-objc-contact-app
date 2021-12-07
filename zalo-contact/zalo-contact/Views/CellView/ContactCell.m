@@ -37,6 +37,8 @@
     [self.contentView addSubview:self.videoCallButton];
     [self.contentView addSubview:self.newFriendMarkView];
     
+    [self.newFriendMarkView setHidden:YES];
+    
     [self setNeedsUpdateConstraints];
     
     return self;
@@ -243,7 +245,10 @@
 - (void)setNeedsObject:(ContactObject *)object {
     [self setNameWith:object.contact.fullName];
     [self setAvatarImageUrl:object.contact.imageUrl];
-    [self setSubtitleWith:@"Subtitle"];
+    if (object.contact.subtitle) {
+        [self setSubtitleWith:object.contact.subtitle];
+    }
+    
 }
 
 + (CGFloat)heightForRowWithObject:(CellObject *)object {
