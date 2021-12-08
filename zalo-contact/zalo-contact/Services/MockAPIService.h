@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OnData) (NSArray<ContactEntity *>*);
 typedef void (^OnContactChangeBlock) (ContactEntity *);
 typedef void (^OnContactUpdateBlock) (ContactEntity *, ContactEntity *);
+typedef void (^OnContactUpdateWithPhoneNumberBLock) (NSString *, ContactEntity *);
 
 @protocol APIServiceProtocol
 
@@ -21,9 +22,9 @@ typedef void (^OnContactUpdateBlock) (ContactEntity *, ContactEntity *);
 @property OnContactChangeBlock onContactAdded;
 @property OnContactChangeBlock onContactDeleted;
 @property OnContactUpdateBlock onContactUpdated;
+@property OnContactUpdateWithPhoneNumberBLock onContactUpdatedWithPhoneNumber;
 
 - (void)getContactList;
-- (void)fakeServerUpdate;
 - (void)fetchContacts:(OnData)block;
 //- (void)contactChanged;
 //- (void)contactDeleted;
@@ -32,6 +33,8 @@ typedef void (^OnContactUpdateBlock) (ContactEntity *, ContactEntity *);
 @end
 
 @interface MockAPIService : NSObject<APIServiceProtocol>
+
+- (void)fakeServerUpdate;
 
 @end
 

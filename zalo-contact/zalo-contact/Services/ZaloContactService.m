@@ -16,7 +16,11 @@
  */
 @implementation ZaloContactService {
     NSMutableArray<id<ZaloContactEventListener>> *listeners;
+    
+    NSLock *contactDictionaryLock;
     NSMutableDictionary<NSString *, ContactEntity *> *accountDictionary;
+    NSLock *accountDictionaryLock;
+    
     //    id<APIServiceProtocol> apiService;
 }
 
@@ -33,6 +37,9 @@ static ZaloContactService *sharedInstance = nil;
 
 - (instancetype)init {
     self = super.init;
+    
+    contactDictionaryLock = [NSLock new];
+    accountDictionaryLock = [NSLock new];
     
     _apiService = [MockAPIService new];
     
@@ -81,6 +88,10 @@ static ZaloContactService *sharedInstance = nil;
         [weakSelf didUpdateContact:oldContact toContact:newContact];
     }];
     
+    [_apiService setOnContactUpdatedWithPhoneNumber:^(NSString * phoneNumber, ContactEntity * newContact) {
+        [weakSelf didUpdateContactWihPhoneNumber:phoneNumber toContact:newContact];
+    }];
+    
     //    [_apiService fakeServerUpdate];
 }
 
@@ -122,7 +133,7 @@ static ZaloContactService *sharedInstance = nil;
     [listeners removeObject:listener];
 }
 
-- (void)didReceiveNewFullList:(NSArray<ContactEntity *>*)sortedArray {
+- (void)didReceiveNewFullList:(NSArray<ContactEntity *>*)sortedArray {    
     NSString *currentHeader = sortedArray[0].header;
     ContactDictionary *temp = [ContactDictionary new];
     NSMutableArray<ContactEntity *> *tempArray = NSMutableArray.new;
@@ -152,6 +163,8 @@ static ZaloContactService *sharedInstance = nil;
 }
 
 - (void)didAddContact:(ContactEntity *)contact {
+    [contactDictionaryLock lock];
+    [accountDictionaryLock lock];
     [accountDictionary setObject:contact forKey:contact.phoneNumber.copy];
     if (![_contactDictionary objectForKey:contact.header]) {
         [_contactDictionary setObject:@[contact] forKey:contact.header];
@@ -173,6 +186,9 @@ static ZaloContactService *sharedInstance = nil;
         [_contactDictionary setObject:arr forKey:contact.header];
     }
     
+    [contactDictionaryLock unlock];
+    [accountDictionaryLock unlock];
+    
     [self didChange];
     
     // Notify subscriber
@@ -185,6 +201,9 @@ static ZaloContactService *sharedInstance = nil;
 }
 
 - (void)didDeleteContact:(ContactEntity *)contact {
+    [contactDictionaryLock lock];
+    [accountDictionaryLock lock];
+    
     [accountDictionary removeObjectForKey:contact.phoneNumber];
     if ([_contactDictionary objectForKey:contact.header]) {
         //        delete from to array
@@ -198,6 +217,10 @@ static ZaloContactService *sharedInstance = nil;
         if (arr.count > 0) [_contactDictionary setObject:arr forKey:contact.header];
         else [_contactDictionary removeObjectForKey:contact.header];
     }
+    
+    [contactDictionaryLock unlock];
+    [accountDictionaryLock unlock];
+    
     [self didChange];
     
     for (id<ZaloContactEventListener> listener in listeners) {
@@ -210,6 +233,8 @@ static ZaloContactService *sharedInstance = nil;
 
 // MARK: - actually we just need the account id and new contact infor for this function when in use
 - (void)didUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact {
+    [contactDictionaryLock lock];
+    [accountDictionaryLock lock];
     
     [accountDictionary removeObjectForKey:contact.phoneNumber];
     [accountDictionary setObject:newContact forKey:newContact.phoneNumber];
@@ -227,27 +252,86 @@ static ZaloContactService *sharedInstance = nil;
         else [_contactDictionary removeObjectForKey:contact.header];
     }
     
-    if (![_contactDictionary objectForKey:contact.header]) {
-        [_contactDictionary setObject:@[contact] forKey:contact.header];
+    if (![_contactDictionary objectForKey:newContact.header]) {
+        [_contactDictionary setObject:@[contact] forKey:newContact.header];
     } else {
         //        insert to array
-        NSMutableArray *arr = [_contactDictionary objectForKey:contact.header].mutableCopy;
+        NSMutableArray *arr = [_contactDictionary objectForKey:newContact.header].mutableCopy;
         for (int i = 0; i < arr.count; i++) {
-            if ([contact compare:arr[i]] == NSOrderedDescending) {
+            if ([newContact compare:arr[i]] == NSOrderedDescending) {
                 
-                if (i + 1 < arr.count && [contact compare:arr[i + 1]] == NSOrderedSame) {
+                if (i + 1 < arr.count && [newContact compare:arr[i + 1]] == NSOrderedSame) {
                     continue;
                 } else {
-                    [arr insertObject:contact atIndex:i];
+                    [arr insertObject:newContact atIndex:i];
                 }
                 
                 break;
             }
         }
-        [_contactDictionary setObject:arr forKey:contact.header];
+        [_contactDictionary setObject:arr forKey:newContact.header];
     }
     
-    [self save];
+    [contactDictionaryLock unlock];
+    [accountDictionaryLock unlock];
+    
+    [self didChange];
+    
+    for (id<ZaloContactEventListener> listener in listeners) {
+        if ([listener respondsToSelector:@selector(onUpdateContact:toContact:)]) {
+            [listener onUpdateContact:contact toContact:newContact];
+        }
+    }
+    
+}
+
+- (void)didUpdateContactWihPhoneNumber:(NSString *)phoneNumber toContact:(ContactEntity *)newContact {
+    
+    [contactDictionaryLock lock];
+    [accountDictionaryLock lock];
+    
+    ContactEntity *contact = [accountDictionary objectForKey:phoneNumber];
+    
+    [accountDictionary removeObjectForKey:phoneNumber];
+    [accountDictionary setObject:newContact forKey:phoneNumber];
+    
+    if ([_contactDictionary objectForKey:contact.header]) {
+        //        delete from to array
+        NSMutableArray *arr = [_contactDictionary objectForKey:contact.header].mutableCopy;
+        for (int i = 0; i < arr.count; i++) {
+            if ([contact compare:arr[i]] == NSOrderedSame) {
+                [arr removeObjectAtIndex:i];
+                break;
+            }
+        }
+        if (arr.count > 0) [_contactDictionary setObject:arr forKey:contact.header];
+        else [_contactDictionary removeObjectForKey:contact.header];
+    }
+    
+    if (![_contactDictionary objectForKey:newContact.header]) {
+        [_contactDictionary setObject:@[newContact] forKey:newContact.header];
+    } else {
+        //        insert to array
+        NSMutableArray *arr = [_contactDictionary objectForKey:newContact.header].mutableCopy;
+        for (int i = 0; i < arr.count; i++) {
+            if ([newContact compare:arr[i]] == NSOrderedDescending) {
+                
+                if (i + 1 < arr.count && [newContact compare:arr[i + 1]] == NSOrderedSame) {
+                    continue;
+                } else {
+                    [arr insertObject:newContact atIndex:i];
+                }
+                
+                break;
+            }
+        }
+        [_contactDictionary setObject:arr forKey:newContact.header];
+    }
+    
+    [contactDictionaryLock unlock];
+    [accountDictionaryLock unlock];
+    
+    [self didChange];
     
     for (id<ZaloContactEventListener> listener in listeners) {
         if ([listener respondsToSelector:@selector(onUpdateContact:toContact:)]) {
@@ -262,8 +346,7 @@ static ZaloContactService *sharedInstance = nil;
     [self save];
 }
 
-- (void)save {
-    NSLog(@"Did save");
+- (void)save {    
     NSError *err = nil;
     NSData *dataToSave = [NSKeyedArchiver archivedDataWithRootObject: self.getFullContactDict requiringSecureCoding:NO error:&err];
     if (err) {
@@ -282,45 +365,6 @@ static ZaloContactService *sharedInstance = nil;
         NSLog(@"loadSavedData error %@", err.description);
     }
     if (groups) _contactDictionary = groups;
-}
-
-// MARK: Merge 2 contact dictionary - use for merging local contacts and remote contacts
-- (NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)mergeContactDict:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)incommingDict
-                                                                        toDict:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)dict2 {
-    [incommingDict enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
-        NSArray<ContactEntity *> *dict2Arr = [dict2 objectForKey:key];
-        // append contact to existing list
-        
-        if (dict2Arr) {
-            [incommingDict setObject: [self mergeArray:[ContactEntity insertionSort:value] withArray:dict2Arr] forKey:key];
-            [dict2 removeObjectForKey:key];
-        }
-    }];
-    
-    [incommingDict addEntriesFromDictionary:dict2];
-    return incommingDict;
-}
-
-///Merge 2 sorted array - use for contacts in section
-- (NSArray<ContactEntity *> *)mergeArray:(NSArray<ContactEntity *> *)arr1 withArray:(NSArray<ContactEntity *> *)arr2 {
-    int i = 0, j = 0;
-    NSUInteger arr1Length = arr1.count, arr2Length = arr2.count;
-    NSMutableArray *returnArr = NSMutableArray.new;
-    
-    while (i < arr1Length && j < arr2Length) {
-        if ([arr1[i] compare:arr2[j]] == NSOrderedAscending)
-            [returnArr addObject:arr1[i++]];
-        else
-            [returnArr addObject:arr2[j++]];
-    }
-    
-    while (i < arr1Length)
-        [returnArr addObject:arr1[i++]];
-    
-    while (j < arr2Length)
-        [returnArr addObject:arr2[j++]];
-    
-    return returnArr;
 }
 
 @end

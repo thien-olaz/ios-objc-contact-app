@@ -25,8 +25,7 @@
 @implementation ContactViewModel {
     ContactsLoader *loader;
     NSMutableArray<ContactGroupEntity *> *contactGroups;
-    NSMutableArray<ContactGroupEntity *> *tempContactGroups;
-    NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *tempContactDict;
+
     
     id<TableViewActionDelegate> actionDelegate;
     id<TableViewDiffDelegate> diffDelegate;
@@ -44,10 +43,8 @@
     
     [ZaloContactService.sharedInstance subcribe:self];
     
-    //    contactGroups = NSMutableArray.new;
-    
-    tempContactDict = NSMutableDictionary.new;
-    
+//        contactGroups = NSMutableArray.new;
+
     
     [self setup];
     return self;
@@ -59,26 +56,20 @@
 }
 
 - (void)onAddContact:(nonnull ContactEntity *)contact {
-    __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(2.4, GCDThrottleTypeInvokeAndIgnore, ^{
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
-            [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
-        });
-    });
+    [self setNeedsUpdate];
 }
 
 - (void)onDeleteContact:(nonnull ContactEntity *)contact {
-    __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(2.4, GCDThrottleTypeInvokeAndIgnore, ^{
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
-            [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
-        });
-    });
+    [self setNeedsUpdate];
 }
 
 - (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact {
+    [self setNeedsUpdate];
+}
+
+- (void)setNeedsUpdate {
     __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(2.4, GCDThrottleTypeInvokeAndIgnore, ^{
+    dispatch_throttle_by_type(0.4, GCDThrottleTypeInvokeAndIgnore, ^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
             [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
         });
@@ -90,7 +81,7 @@
         _sectionDiff = [self getSectionDiff:groups];
         _contactsDiff = [self getCellDiff:groups];
         [self setContactGroups:groups];
-        [self updateData];
+        [self updateDataWithSectionDiff:_sectionDiff cellDiff:_contactsDiff];
     } else {
         [self setContactGroups:groups];
         [self completeFetchingData];
@@ -107,29 +98,19 @@
 }
 
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
-    tempContactGroups = [NSMutableArray.alloc initWithArray: groups];
-    _data = [self compileGroupToTableData:tempContactGroups];
+    contactGroups = [NSMutableArray.alloc initWithArray: groups];
+    _data = [self compileGroupToTableData:contactGroups];
 }
 
-- (void)updateData{
-    [self updateDataWithSectionDiff:_sectionDiff cellDiff:_contactsDiff];
-}
 
 - (void)completeFetchingData {
-    contactGroups = tempContactGroups;
     _data = [self compileGroupToTableData:contactGroups];
     if (_dataBlock) _dataBlock();
 }
 
-- (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {            
-    
-    self.sectionDiff = sectionDiff;
-    self.contactsDiff = cellDiff;
-    
-    contactGroups = tempContactGroups;
+- (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {
     if (_updateBlock) _updateBlock();
     [self updateUI];
-    [tempContactDict removeAllObjects];
     LOG(@"Updated UI");
 }
 
@@ -150,9 +131,9 @@
         NSUInteger oldIndex = [contactGroups indexOfObject:oldGroup];
         NSUInteger foundIndex = [newGroups indexOfObject:oldGroup];
         if (foundIndex != NSNotFound) {
-            [contactsDiff addObject:
-                 [IGListDiffPaths(oldIndex + 3, foundIndex + 3, oldGroup.contacts, newGroups[foundIndex].contacts, IGListDiffEquality) resultForBatchUpdates]
-            ];
+            IGListIndexPathResult * res = IGListDiffPaths(oldIndex + 3, foundIndex + 3, oldGroup.contacts, newGroups[foundIndex].contacts, IGListDiffEquality).resultForBatchUpdates;
+            if (res.inserts.count >0 || res.deletes.count > 0 || res.updates.count > 0)
+                [contactsDiff addObject:res];
         }
     }
     return contactsDiff;
@@ -189,9 +170,7 @@
          [actionDelegate attachToObject:
           [CommonCellObject.alloc initWithTitle:@"Xoá bớt"
                                           image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                 action:^{
-      
-    } ]
+                                 action:^{} ]
     ];
     
     [data addObject:

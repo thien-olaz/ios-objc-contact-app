@@ -15,6 +15,11 @@
     
     int addIndex;
     int deleteIndex;
+    
+    //
+    BOOL isContact1;
+    ContactEntity *contact1;
+    ContactEntity *contact2;
 }
 
 @synthesize onContactUpdated;
@@ -23,12 +28,41 @@
 
 @synthesize onContactDeleted;
 
+@synthesize onContactUpdatedWithPhoneNumber;
+
 - (instancetype)init {
     self = super.init;
     [self getContactsFromFile];
+    
+    isContact1 = YES;
+    [self configContact1and2];
 //    [self mockDeleteContact];
     addIndex = 0;
     return self;
+}
+
+// MARK: - Race condition
+- (void)fakeServerUpdate {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self addNewContact];
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self deleteContact];
+    });
+
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+//        [self updateContact];
+//    });
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.4 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self updateContactWithPhoneNumber];
+    });
+}
+
+- (void)configContact1and2 {
+    contact1 = [ContactEntity.alloc initWithFirstName:@"Nguyễn" lastName:@"Thiện" phoneNumber:@"0123456789" subtitle:@"Subtitle 1"];
+    
+    contact2 = [ContactEntity.alloc initWithFirstName:@"Nguyễn" lastName:@"Thiện" phoneNumber:@"0123456789" subtitle:@"Subtitle 2"];
 }
 
 - (void)getContactsFromFile {
@@ -98,21 +132,12 @@
     
 }
 
-- (void)fakeServerUpdate {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-//        [self addNewContact];
-    });
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-//        [self deleteContact];
-    });
-}
 
 - (void)addNewContact {
     if (!onContactAdded) return;
     
     if (addIndex < contactsPool.count) {
         ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:contactsPool[addIndex]];
-        NSLog(@"%@", enity.fullName);
         onContactAdded(enity);
         addIndex += 1;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -127,7 +152,6 @@
     
     if (deleteIndex < contactsPool.count) {
         ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:contactsPool[deleteIndex]];
-        NSLog(@"%@", entity.fullName);
         onContactDeleted(entity);
         deleteIndex += 1;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -137,5 +161,37 @@
     
 }
 
+- (void)updateContact {
+    if (!onContactUpdated) return;
+    
+//    use contact 2
+    if (isContact1) {
+        onContactUpdated(contact1, contact2);
+    } else {
+        onContactUpdated(contact2, contact1);
+    }
+    isContact1 = !isContact1;
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self updateContact];
+    });
+}
+
+- (void)updateContactWithPhoneNumber {
+    if (!onContactUpdatedWithPhoneNumber) return;
+    
+//    use contact 2
+    if (isContact1) {
+        onContactUpdatedWithPhoneNumber(contact1.phoneNumber, contact2);
+    } else {
+        onContactUpdatedWithPhoneNumber(contact2.phoneNumber, contact1);
+    }
+    isContact1 = !isContact1;
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self updateContactWithPhoneNumber];
+    });
+
+}
 
 @end

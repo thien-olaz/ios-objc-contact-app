@@ -125,14 +125,14 @@
         [_isNewImageView autoSetDimensionsToSize:CGSizeMake(20, 20)];
         [_isNewImageView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(2, 6, 2, 6) excludingEdge:ALEdgeLeft];
         
-        [self.callButton autoPinEdgeToSuperviewEdge:ALEdgeRight
+        [self.videoCallButton autoPinEdgeToSuperviewEdge:ALEdgeRight
                                           withInset:UIConstants.contactCellMinHorizontalInset];
-        [self.callButton autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
-        [self.callButton autoSetDimensionsToSize:UIConstants.contactCellButtonSize];
-        
-        [self.videoCallButton autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:self.callButton];
         [self.videoCallButton autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
         [self.videoCallButton autoSetDimensionsToSize:UIConstants.contactCellButtonSize];
+        
+        [self.callButton autoPinEdge:ALEdgeRight toEdge:ALEdgeLeft ofView:self.videoCallButton];
+        [self.callButton autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
+        [self.callButton autoSetDimensionsToSize:UIConstants.contactCellButtonSize];
         
         self.didSetupConstraints = YES;
     }

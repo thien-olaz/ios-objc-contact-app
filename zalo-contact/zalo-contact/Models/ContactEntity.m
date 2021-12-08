@@ -41,7 +41,7 @@
                imageUrl:(NSString *)url
                subtitle:(nullable NSString *)subtitle {
     self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle];
-    _imageUrl = url;    
+    _imageUrl = url;
     return self;
 }
 
@@ -89,7 +89,7 @@
 #pragma mark - IGListDiffable
 
 - (id<NSObject>)diffIdentifier {
-    return @(self.fullName.hash);
+    return @(self.phoneNumber.hash);
 }
 
 - (BOOL)isEqualToDiffableObject:(id<IGListDiffable>)object {
@@ -99,7 +99,16 @@
     if (![self.lastName isEqualToString:entity.lastName]) return NO;
     if (![self.phoneNumber isEqualToString:entity.phoneNumber]) return NO;
     
-    return YES;
+    // Both null or 1 of 2 is null -> NO
+    if (self.subtitle && entity.subtitle && [self.subtitle isEqualToString:entity.subtitle]) {
+            return YES;
+    } else if (!self.subtitle && !entity.subtitle) {
+        return YES;;
+    }
+    
+    // Both null or 1 of 2 is null -> NO
+    
+    return NO;
 }
 
 #pragma mark - Equal
@@ -146,9 +155,48 @@
     return sortedArray;
 }
 
-#pragma mark - properties
+#pragma mark - class method
 + (NSString *)headerFromFirstName:(nullable NSString *)firstName andLastName:(nullable NSString *)lastName {
     return lastName && lastName.length > 0 ? [lastName substringToIndex:1] : firstName && firstName.length > 0 ? [firstName substringToIndex:1] : @"#";
+}
+
+// Merge 2 contact dictionary - use for merging local contacts and remote contacts
++ (NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)mergeContactDict:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)incommingDict
+                                                                        toDict:(NSMutableDictionary<NSString*, NSArray<ContactEntity*>*> *)dict2 {
+    [incommingDict enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL* stop) {
+        NSArray<ContactEntity *> *dict2Arr = [dict2 objectForKey:key];
+        // append contact to existing list
+        
+        if (dict2Arr) {
+            [incommingDict setObject: [self mergeArray:[ContactEntity insertionSort:value] withArray:dict2Arr] forKey:key];
+            [dict2 removeObjectForKey:key];
+        }
+    }];
+    
+    [incommingDict addEntriesFromDictionary:dict2];
+    return incommingDict;
+}
+
+///Merge 2 sorted array - use for contacts in section
++ (NSArray<ContactEntity *> *)mergeArray:(NSArray<ContactEntity *> *)arr1 withArray:(NSArray<ContactEntity *> *)arr2 {
+    int i = 0, j = 0;
+    NSUInteger arr1Length = arr1.count, arr2Length = arr2.count;
+    NSMutableArray *returnArr = NSMutableArray.new;
+    
+    while (i < arr1Length && j < arr2Length) {
+        if ([arr1[i] compare:arr2[j]] == NSOrderedAscending)
+            [returnArr addObject:arr1[i++]];
+        else
+            [returnArr addObject:arr2[j++]];
+    }
+    
+    while (i < arr1Length)
+        [returnArr addObject:arr1[i++]];
+    
+    while (j < arr2Length)
+        [returnArr addObject:arr2[j++]];
+    
+    return returnArr;
 }
 
 @end
