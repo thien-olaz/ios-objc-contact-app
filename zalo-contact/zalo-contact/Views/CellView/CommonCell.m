@@ -75,6 +75,7 @@
 - (UILabel *)titleLabel {
     if (!_titleLabel) {
         _titleLabel = [UILabel new];
+        [_titleLabel setFont:[UIFont systemFontOfSize:UIConstants.contactCellFontSize]];
     }
     return _titleLabel;
 }

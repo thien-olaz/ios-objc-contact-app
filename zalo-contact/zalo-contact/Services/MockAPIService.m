@@ -44,10 +44,10 @@
 // MARK: - Race condition
 - (void)fakeServerUpdate {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self addNewContact];
+//        [self addNewContact];
     });
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self deleteContact];
+//        [self deleteContact];
     });
 
 //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
@@ -55,7 +55,7 @@
 //    });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.4 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self updateContactWithPhoneNumber];
+//        [self updateContactWithPhoneNumber];
     });
 }
 
@@ -152,7 +152,7 @@
     
     if (deleteIndex < contactsPool.count) {
         ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:contactsPool[deleteIndex]];
-        onContactDeleted(entity);
+        onContactDeleted(entity.phoneNumber);
         deleteIndex += 1;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [self deleteContact];

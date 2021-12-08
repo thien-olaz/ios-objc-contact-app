@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (CGFloat)cornerRadius;
 + (CGSize)contactCellAvatarSize;
 + (CGSize)contactCellButtonSize;
++ (CGFloat)contactHeaderFontSize;
++ (CGFloat)contactHeaderButtonFontSize;
++ (CGFloat)contactCellFontSize;
 
 @end
 

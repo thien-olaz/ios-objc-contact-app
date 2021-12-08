@@ -53,6 +53,7 @@
 - (UILabel *)sectionHeaderLabel {
     if (!_sectionHeaderLabel) {
         _sectionHeaderLabel = [UILabel new];
+        [_sectionHeaderLabel setFont:[UIFont systemFontOfSize:UIConstants.contactHeaderFontSize weight:(UIFontWeightMedium)]];
     }
     return _sectionHeaderLabel;
 }

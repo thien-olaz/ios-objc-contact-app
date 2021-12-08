@@ -39,6 +39,7 @@
 		AFA2BDD5275E4A2700128996 /* NSObject+Debounce.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD4275E4A2700128996 /* NSObject+Debounce.m */; };
 		AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD7275E54E000128996 /* GCDThrottle.m */; };
 		AFA3B695275F6861003B198B /* fixedContactsList.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA3B694275F6861003B198B /* fixedContactsList.vcf */; };
+		AFA3B6982760A960003B198B /* SwipeActionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6972760A960003B198B /* SwipeActionObject.m */; };
 		AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4A72756093300FB5406 /* NullHeaderView.m */; };
 		AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */; };
 		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
@@ -115,6 +116,8 @@
 		AFA2BDD6275E54E000128996 /* GCDThrottle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDThrottle.h; sourceTree = "<group>"; };
 		AFA2BDD7275E54E000128996 /* GCDThrottle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDThrottle.m; sourceTree = "<group>"; };
 		AFA3B694275F6861003B198B /* fixedContactsList.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = fixedContactsList.vcf; sourceTree = "<group>"; };
+		AFA3B6962760A960003B198B /* SwipeActionObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwipeActionObject.h; sourceTree = "<group>"; };
+		AFA3B6972760A960003B198B /* SwipeActionObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwipeActionObject.m; sourceTree = "<group>"; };
 		AFC3D4A62756093300FB5406 /* NullHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullHeaderView.h; sourceTree = "<group>"; };
 		AFC3D4A72756093300FB5406 /* NullHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullHeaderView.m; sourceTree = "<group>"; };
 		AFC3D4AC27560BFB00FB5406 /* CommonHeaderAndFooterViews.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHeaderAndFooterViews.h; sourceTree = "<group>"; };
@@ -365,6 +368,8 @@
 				AFCDDE5B274284A500500137 /* ContactsLoader.m */,
 				AF3E8BE52757295C00BB8AE4 /* ContactViewModel.h */,
 				AF3E8BE62757295C00BB8AE4 /* ContactViewModel.m */,
+				AFA3B6962760A960003B198B /* SwipeActionObject.h */,
+				AFA3B6972760A960003B198B /* SwipeActionObject.m */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -512,6 +517,7 @@
 				AFA2BDD5275E4A2700128996 /* NSObject+Debounce.m in Sources */,
 				AF0BFBF42743B971006E072B /* FriendRequestEntity.m in Sources */,
 				AF0BFBEE2743A071006E072B /* ContactCell.m in Sources */,
+				AFA3B6982760A960003B198B /* SwipeActionObject.m in Sources */,
 				AFEB1CCA2754B670001636C6 /* CellFactory.m in Sources */,
 				AF0BFBF12743A0A6006E072B /* HeaderView.m in Sources */,
 				AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */,

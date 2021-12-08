@@ -37,7 +37,7 @@
 }
 
 + (CGFloat)contactCellDimensionSize {
-    return 44;
+    return 48;
 }
 
 + (CGFloat)cornerRadius {
@@ -51,5 +51,18 @@
 + (CGSize)contactCellButtonSize {
     return CGSizeMake(40, 40);
 }
+
++ (CGFloat)contactHeaderFontSize {
+    return 11;
+}
+
++ (CGFloat)contactHeaderButtonFontSize {
+    return 11;
+}
+
++ (CGFloat)contactCellFontSize {
+    return 13;
+}
+
 
 @end

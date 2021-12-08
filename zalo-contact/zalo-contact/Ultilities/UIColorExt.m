@@ -22,7 +22,7 @@
 }
 
 + (UIColor *)zaloLightGrayColor {
-    return [UIColor.alloc initWithRed:244.0f/255.0f green:244.0f/255.0f blue:244.0f/255.0f alpha:0.7f];
+    return [UIColor.alloc initWithRed:242.0f/255.0f green:242.0f/255.0f blue:242.0f/255.0f alpha:0.8f];
 }
 
 + (UIColor *)grayColor {

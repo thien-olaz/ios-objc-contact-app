@@ -25,7 +25,7 @@
 @implementation ContactViewModel {
     ContactsLoader *loader;
     NSMutableArray<ContactGroupEntity *> *contactGroups;
-
+    
     
     id<TableViewActionDelegate> actionDelegate;
     id<TableViewDiffDelegate> diffDelegate;
@@ -43,8 +43,8 @@
     
     [ZaloContactService.sharedInstance subcribe:self];
     
-//        contactGroups = NSMutableArray.new;
-
+    //        contactGroups = NSMutableArray.new;
+    
     
     [self setup];
     return self;
@@ -60,7 +60,7 @@
 }
 
 - (void)onDeleteContact:(nonnull ContactEntity *)contact {
-    [self setNeedsUpdate];
+//    [self setNeedsUpdate];
 }
 
 - (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact {
@@ -69,11 +69,15 @@
 
 - (void)setNeedsUpdate {
     __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(0.4, GCDThrottleTypeInvokeAndIgnore, ^{
+    dispatch_throttle_by_type(10, GCDThrottleTypeInvokeAndIgnore, ^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
             [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
         });
     });
+}
+
+- (void)updateIfNeeded {
+    [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
 }
 
 - (void)updateDiff:(NSArray<ContactGroupEntity *> *)groups {
@@ -89,12 +93,8 @@
 }
 
 - (void)setup {
-    [self performSelectorInBackground:@selector(fetchData) withObject:nil];
-}
-
-
-- (void)fetchData {
     [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+    //    [self checkPermissionAndFetchData];
 }
 
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
@@ -142,7 +142,7 @@
 - (void)checkPermissionAndFetchData {
     [UserContacts checkAccessContactPermission:^(BOOL complete) {
         if (complete) {
-            [self performSelectorInBackground:@selector(fetchData) withObject:nil];
+            [self setNeedsUpdate];
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
                 //                [self presentViewController:[UIAlertController contactPermisisonAlert]
@@ -162,7 +162,8 @@
          [actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Clear saved data"
                                                                         image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
                                  action:^{
-        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"data"];
+        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"contactDict"];
+        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"accountDict"];
     }]
     ];
     
@@ -202,7 +203,15 @@
     [data addObject:BlankFooterObject.new];
     
     //MARK: - danh bạ
-    [data addObject:[ActionHeaderObject.alloc initWithTitle:@"Danh bạ" andButtonTitle:@"Cập nhập"]];
+    ActionHeaderObject *contactHeaderObject = [ActionHeaderObject.alloc
+                                               initWithTitle:@"Danh bạ"
+                                               andButtonTitle:@"CẬP NHẬP"];
+    
+    [contactHeaderObject setBlock:^{
+        [self fetchLocalContactIntoList];
+    }];
+    
+    [data addObject:contactHeaderObject];
     for (ContactGroupEntity *group in groups) {
         
         // Header
@@ -210,14 +219,42 @@
         
         // Contact
         for (ContactEntity *contact in group.contacts) {
-            [data addObject:[ContactObject.alloc initWithContactEntity:contact]];
+            [data addObject:
+                 [actionDelegate attachToObject:[ContactObject.alloc initWithContactEntity:contact]
+                                    swipeAction:[self getActionListForContact:contact]]
+            ];
         }
         
         // Footer
         [data addObject:ContactFooterObject.new];
     }
+        
     
     return data;
+}
+
+- (NSArray<SwipeActionObject *>*)getActionListForContact:(ContactEntity *)contact {
+    NSMutableArray *arr = NSMutableArray.new;
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Xoá" color:UIColor.redColor action:^{
+        [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:contact.phoneNumber];
+        [self updateIfNeeded];
+    }]];
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Bạn thân" color:UIColor.blueColor action:^{
+        
+    }]];
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Thêm" color:UIColor.lightGrayColor action:^{
+        
+    }]];
+    return arr.copy;
+}
+
+//MARK: - replace with a view controller to select which contact will be adModed into list later
+/*
+ after added new contacts, this contact must be sync
+ */
+- (void)fetchLocalContactIntoList{
+    [ZaloContactService.sharedInstance fetchLocalContact];
+    [self setNeedsUpdate];
 }
 
 

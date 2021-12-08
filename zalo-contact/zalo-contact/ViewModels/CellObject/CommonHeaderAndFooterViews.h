@@ -49,9 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 #pragma mark - Action header
-
+typedef void (^ActionBlock)(void);
 @interface ActionHeaderObject : HeaderObject
 
+@property (copy) ActionBlock block;
 @property NSString *title;
 @property NSString *buttonTitle;
 

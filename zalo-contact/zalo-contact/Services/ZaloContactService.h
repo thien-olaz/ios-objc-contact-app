@@ -32,7 +32,7 @@ typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictio
 - (void)subcribe:(id<ZaloContactEventListener>)listener;
 - (void)unsubcribe:(id<ZaloContactEventListener>)listener;
 - (void)didAddContact:(ContactEntity *)contact;
-- (void)didDeleteContact:(ContactEntity *)contact;
+- (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber;
 
 @end
 

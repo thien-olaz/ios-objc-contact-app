@@ -1,25 +1,5 @@
 BEGIN:VCARD
 VERSION:3.0
-FN:Yates Smith
-N:Avery;Dale;;;
-EMAIL;TYPE=INTERNET:diannabeck@ultrasure.com
-TEL;TYPE=MOBILE:(999) 540-2902
-TEL;TYPE=HOME:(914) 513-2613
-NOTE:nulla
-END:VCARD
-BEGIN:VCARD
-VERSION:3.0
-FN:Santiago Valenzuela
-N:Cooley;Clayton;;;
-EMAIL;TYPE=INTERNET:searscotton@cinesanct.com
-EMAIL;TYPE=INTERNET:haysmcfarland@jamnation.com
-EMAIL;TYPE=INTERNET:melindamassey@corepan.com
-TEL;TYPE=MOBILE:(848) 481-2953
-TEL;TYPE=MOBILE:(901) 489-3602
-NOTE:do
-END:VCARD
-BEGIN:VCARD
-VERSION:3.0
 FN:Mejia Thompson
 N:Odonnell;Neva;;;
 EMAIL;TYPE=INTERNET:nolabonner@senmao.com
@@ -161,45 +141,4 @@ EMAIL;TYPE=INTERNET:moonmiller@empirica.com
 TEL;TYPE=MOBILE:(857) 442-2873
 TEL;TYPE=HOME:(966) 448-3197
 NOTE:laborum
-END:VCARD
-BEGIN:VCARD
-VERSION:3.0
-FN:Wilma Santos
-N:Daniel;Evelyn;;;
-EMAIL;TYPE=INTERNET:nataliabarrett@vantage.com
-EMAIL;TYPE=INTERNET:zelmaallison@sentia.com
-EMAIL;TYPE=INTERNET:zamoramunoz@everest.com
-TEL;TYPE=MOBILE:(982) 565-3607
-NOTE:do
-END:VCARD
-BEGIN:VCARD
-VERSION:3.0
-FN:Hendrix Lindsay
-N:Key;Barry;;;
-EMAIL;TYPE=INTERNET:hickmanholloway@unisure.com
-TEL;TYPE=MOBILE:(946) 464-3977
-TEL;TYPE=MOBILE:(966) 600-2677
-NOTE:minim
-END:VCARD
-BEGIN:VCARD
-VERSION:3.0
-FN:Karen Sears
-N:Rosales;Justice;;;
-EMAIL;TYPE=INTERNET:tinaanderson@ohmnet.com
-EMAIL;TYPE=INTERNET:beulahpowell@grainspot.com
-EMAIL;TYPE=INTERNET:annettelittle@paprikut.com
-TEL;TYPE=HOME:(963) 591-3535
-TEL;TYPE=HOME:(927) 405-2795
-NOTE:excepteur
-END:VCARD
-BEGIN:VCARD
-VERSION:3.0
-FN:Baker Irwin
-N:Shaw;Gena;;;
-EMAIL;TYPE=INTERNET:rhodescompton@surelogic.com
-EMAIL;TYPE=INTERNET:antoniahart@otherway.com
-EMAIL;TYPE=INTERNET:kellyburch@cuizine.com
-TEL;TYPE=MOBILE:(856) 469-2672
-TEL;TYPE=HOME:(801) 450-2848
-NOTE:anim
 END:VCARD

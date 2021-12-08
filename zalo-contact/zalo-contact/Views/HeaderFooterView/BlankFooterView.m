@@ -13,8 +13,7 @@
 
 - (instancetype)init {
     self = [super init];
-    [self setBackgroundColor: UIColor.zaloLightGrayColor];
-    
+    [self setBackgroundColor: UIColor.zaloLightGrayColor];    
     return self;
 }
 

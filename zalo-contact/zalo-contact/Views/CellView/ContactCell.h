@@ -24,7 +24,7 @@ typedef void (^VideoCallBlock)(void);
 @property (copy) VideoCallBlock videoBlock;
 
 - (void)setNameWith:(NSString *)name;
-- (void)setSubtitleWith:(NSString *)subtitle;
+- (void)setSubtitleWith:(NSString * __nullable)subtitle;
 - (void)setAvatarImage:(nonnull UIImage*)image;
 - (void)setAvatarImageUrl:(NSString * __nullable)url;
 - (void)setOnline;

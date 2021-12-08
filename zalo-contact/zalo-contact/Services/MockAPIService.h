@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^OnData) (NSArray<ContactEntity *>*);
 typedef void (^OnContactChangeBlock) (ContactEntity *);
+typedef void (^OnContactDeleteBlock) (NSString *);
 typedef void (^OnContactUpdateBlock) (ContactEntity *, ContactEntity *);
 typedef void (^OnContactUpdateWithPhoneNumberBLock) (NSString *, ContactEntity *);
 
@@ -20,7 +21,7 @@ typedef void (^OnContactUpdateWithPhoneNumberBLock) (NSString *, ContactEntity *
 @required
 
 @property OnContactChangeBlock onContactAdded;
-@property OnContactChangeBlock onContactDeleted;
+@property OnContactDeleteBlock onContactDeleted;
 @property OnContactUpdateBlock onContactUpdated;
 @property OnContactUpdateWithPhoneNumberBLock onContactUpdatedWithPhoneNumber;
 

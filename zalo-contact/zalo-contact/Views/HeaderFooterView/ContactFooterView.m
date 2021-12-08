@@ -28,7 +28,7 @@
 }
 
 + (CGFloat)heightForFooterWithObject:(FooterObject *)object {
-    return 2;
+    return 1;
 }
 
 @end

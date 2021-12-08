@@ -53,6 +53,7 @@
 - (UILabel *)sectionHeaderLabel {
     if (!_sectionHeaderLabel) {
         _sectionHeaderLabel = [UILabel new];
+        [_sectionHeaderLabel setFont:[UIFont systemFontOfSize:UIConstants.contactHeaderFontSize weight:(UIFontWeightMedium)]];
     }
     return _sectionHeaderLabel;
 }
@@ -60,7 +61,7 @@
 - (UIButton *)updateButton {
     if (!_updateButton) {
         _updateButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [_updateButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
+        [_updateButton.titleLabel setFont:[UIFont systemFontOfSize:UIConstants.contactHeaderButtonFontSize weight:(UIFontWeightSemibold)]];
         [_updateButton setTintColor:UIColor.systemBlueColor];
         [_updateButton addTarget:self
                           action:@selector(didClick)
@@ -76,6 +77,7 @@
 - (void)setNeedsObject:(nonnull ActionHeaderObject *)object {
     [self setSectionTitle:object.title];
     [self setButtonTitle:object.buttonTitle];
+    [self setBlock:object.block];
 }
 
 + (CGFloat)heightForHeaderWithObject:(ShortHeaderObject *)object {

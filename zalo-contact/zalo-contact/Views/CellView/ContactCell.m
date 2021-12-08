@@ -52,8 +52,13 @@
     [self.nameLabel setText:name];
 }
 
-- (void)setSubtitleWith:(NSString *)subtitle {
-    [self.subtitleLabel setText:subtitle];
+- (void)setSubtitleWith:(NSString * __nullable)subtitle {
+    if (subtitle && subtitle.length > 0) {
+        [self.subtitleLabel setText:subtitle];
+        if (self.subtitleLabel.isHidden == YES) [self.subtitleLabel setHidden:NO];
+    } else {
+        if (self.subtitleLabel.isHidden == NO) [self.subtitleLabel setHidden:YES];
+    }
 }
 
 - (void)setAvatarImage:(nonnull UIImage*)image {
@@ -143,7 +148,7 @@
     if (!_nameView) {
         _nameView = [UIStackView new];
         [_nameView setAxis:UILayoutConstraintAxisVertical];
-        [_nameView setSpacing:4];
+        [_nameView setSpacing:6];
     }
     return _nameView;
 }
@@ -151,6 +156,7 @@
 - (UILabel *)nameLabel {
     if (!_nameLabel) {
         _nameLabel = [UILabel new];
+        [_nameLabel setFont:[UIFont systemFontOfSize:UIConstants.contactCellFontSize]];
     }
     return _nameLabel;
 }
@@ -158,7 +164,7 @@
 - (UILabel *)subtitleLabel {
     if (!_subtitleLabel) {
         _subtitleLabel = [UILabel new];
-        [_subtitleLabel setFont: [_subtitleLabel.font fontWithSize:14]];
+        [_subtitleLabel setFont: [_subtitleLabel.font fontWithSize:UIConstants.contactCellFontSize]];
         [_subtitleLabel setTextColor:UIColor.lightGrayColor];
     }
     return _subtitleLabel;
@@ -211,6 +217,7 @@
     if (!_callButton) {
         _callButton = [UIButton new];
         [_callButton setImage:[UIImage imageNamed:@"ct_call"]  forState:UIControlStateNormal];
+        [_callButton setTintColor:UIColor.lightGrayColor];
         [_callButton addTarget:self
                         action:@selector(phoneCallClicked)
               forControlEvents:UIControlEventTouchUpInside];
@@ -226,6 +233,7 @@
     if (!_videoCallButton) {
         _videoCallButton = [UIButton new];
         [_videoCallButton setImage:[UIImage imageNamed:@"ct_videoCall"]  forState:UIControlStateNormal];
+        [_videoCallButton setTintColor:UIColor.lightGrayColor];
         [_videoCallButton addTarget:self
                              action:@selector(videoCallClicked)
                    forControlEvents:UIControlEventTouchUpInside];
@@ -240,15 +248,13 @@
 - (void)prepareForReuse {
     [super prepareForReuse];
     [self.badgeView setBackgroundColor:UIColor.clearColor];
+    [self setSubtitleWith:@""];
 }
 
 - (void)setNeedsObject:(ContactObject *)object {
     [self setNameWith:object.contact.fullName];
     [self setAvatarImageUrl:object.contact.imageUrl];
-    if (object.contact.subtitle) {
-        [self setSubtitleWith:object.contact.subtitle];
-    }
-    
+    [self setSubtitleWith:object.contact.subtitle];
 }
 
 + (CGFloat)heightForRowWithObject:(CellObject *)object {

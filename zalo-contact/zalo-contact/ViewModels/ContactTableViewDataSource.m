@@ -11,12 +11,12 @@
     NSMutableArray<SectionObject *> *sections;
     NSMutableArray<NSString *> *sectionTitles;
     NSMutableArray<NSNumber *> *remapedSectionIndex;
+    
     CellFactory *cellFactory;
 }
 
 - (instancetype)init {
     self = [super init];
-    
     cellFactory = [CellFactory new];
     
     return self;

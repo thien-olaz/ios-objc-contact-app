@@ -66,7 +66,7 @@ static ZaloContactService *sharedInstance = nil;
 
 - (void)fetchLocalContact {
     [UserContacts.sharedInstance fetchLocalContacts];
-    _contactDictionary = UserContacts.sharedInstance.getContactDictionary;
+    _contactDictionary = [ContactEntity mergeContactDict:UserContacts.sharedInstance.getContactDictionary toDict:_contactDictionary];
     
     // Complexity == all contacts
     for (NSArray<ContactEntity *> *contacts in [_contactDictionary allValues]) {
@@ -74,14 +74,15 @@ static ZaloContactService *sharedInstance = nil;
     }
 }
 
+//methods called from server
 - (void)setUp {
     __weak typeof(self) weakSelf = self;
     [_apiService setOnContactAdded:^(ContactEntity * newContact) {
         [weakSelf didAddContact:newContact];
     }];
     
-    [_apiService setOnContactDeleted:^(ContactEntity * deleteContact) {
-        [weakSelf didDeleteContact:deleteContact];
+    [_apiService setOnContactDeleted:^(NSString * phoneNumber) {
+        [weakSelf didDeleteContact:phoneNumber];
     }];
     
     [_apiService setOnContactUpdated:^(ContactEntity * oldContact, ContactEntity * newContact) {
@@ -92,7 +93,40 @@ static ZaloContactService *sharedInstance = nil;
         [weakSelf didUpdateContactWihPhoneNumber:phoneNumber toContact:newContact];
     }];
     
-    //    [_apiService fakeServerUpdate];
+}
+
+- (void)didReceiveNewFullList:(NSArray<ContactEntity *>*)sortedArray {
+    NSString *currentHeader = sortedArray[0].header;
+    ContactDictionary *temp = [ContactDictionary new];
+    NSMutableArray<ContactEntity *> *tempArray = NSMutableArray.new;
+    
+    for (ContactEntity *contact in sortedArray) {
+        
+        if (![contact.header isEqualToString:currentHeader]) {
+            [temp setObject:tempArray.copy forKey:currentHeader];
+            
+            currentHeader = contact.header;
+            tempArray = NSMutableArray.new;
+        }
+        [tempArray addObject:contact];
+        [accountDictionary setObject:contact forKey:contact.phoneNumber.copy];
+    }
+    [temp setObject:tempArray.copy forKey:currentHeader];
+    
+    _contactDictionary = temp;
+    
+    [self save];
+    
+    for (id<ZaloContactEventListener> listener in listeners) {
+        if ([listener respondsToSelector:@selector(onReceiveNewList)]) {
+            [listener onReceiveNewList];
+        }
+    }
+}
+
+//methods called from local
+- (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber {
+    [self didDeleteContact:phoneNumber];
 }
 
 
@@ -133,38 +167,10 @@ static ZaloContactService *sharedInstance = nil;
     [listeners removeObject:listener];
 }
 
-- (void)didReceiveNewFullList:(NSArray<ContactEntity *>*)sortedArray {    
-    NSString *currentHeader = sortedArray[0].header;
-    ContactDictionary *temp = [ContactDictionary new];
-    NSMutableArray<ContactEntity *> *tempArray = NSMutableArray.new;
-    
-    for (ContactEntity *contact in sortedArray) {
-        
-        if (![contact.header isEqualToString:currentHeader]) {
-            [temp setObject:tempArray.copy forKey:currentHeader];
-            
-            currentHeader = contact.header;
-            tempArray = NSMutableArray.new;
-        }
-        [tempArray addObject:contact];
-    }
-    [temp setObject:tempArray.copy forKey:currentHeader];
-    
-    _contactDictionary = temp;
-    
-    [self save];
-    
-    for (id<ZaloContactEventListener> listener in listeners) {
-        if ([listener respondsToSelector:@selector(onReceiveNewList)]) {
-            [listener onReceiveNewList];
-        }
-    }
-
-}
-
 - (void)didAddContact:(ContactEntity *)contact {
     [contactDictionaryLock lock];
     [accountDictionaryLock lock];
+    
     [accountDictionary setObject:contact forKey:contact.phoneNumber.copy];
     if (![_contactDictionary objectForKey:contact.header]) {
         [_contactDictionary setObject:@[contact] forKey:contact.header];
@@ -197,25 +203,29 @@ static ZaloContactService *sharedInstance = nil;
             [listener onAddContact:contact];
         }
     }
-
+    
 }
 
-- (void)didDeleteContact:(ContactEntity *)contact {
+- (void)didDeleteContact:(NSString *)phoneNumber {
     [contactDictionaryLock lock];
     [accountDictionaryLock lock];
     
-    [accountDictionary removeObjectForKey:contact.phoneNumber];
-    if ([_contactDictionary objectForKey:contact.header]) {
-        //        delete from to array
-        NSMutableArray *arr = [_contactDictionary objectForKey:contact.header].mutableCopy;
-        for (int i = 0; i < arr.count; i++) {
-            if ([contact compare:arr[i]] == NSOrderedSame) {
-                [arr removeObjectAtIndex:i];
-                break;
+    ContactEntity *contact = [accountDictionary objectForKey:phoneNumber];
+    [accountDictionary removeObjectForKey:phoneNumber];
+    if (contact) {
+        if ([_contactDictionary objectForKey:contact.header]) {
+            //        delete from to array
+            NSMutableArray *arr = [_contactDictionary objectForKey:contact.header].mutableCopy;
+            for (int i = 0; i < arr.count; i++) {
+                if ([contact compare:arr[i]] == NSOrderedSame) {
+                    [arr removeObjectAtIndex:i];
+                    break;
+                }
             }
+            if (arr.count > 0) [_contactDictionary setObject:arr forKey:contact.header];
+            else [_contactDictionary removeObjectForKey:contact.header];
         }
-        if (arr.count > 0) [_contactDictionary setObject:arr forKey:contact.header];
-        else [_contactDictionary removeObjectForKey:contact.header];
+        
     }
     
     [contactDictionaryLock unlock];
@@ -346,25 +356,44 @@ static ZaloContactService *sharedInstance = nil;
     [self save];
 }
 
-- (void)save {    
+- (void)save {
+    NSLog(@"save");
     NSError *err = nil;
-    NSData *dataToSave = [NSKeyedArchiver archivedDataWithRootObject: self.getFullContactDict requiringSecureCoding:NO error:&err];
+    NSData *contactDictData = [NSKeyedArchiver archivedDataWithRootObject: self.getFullContactDict requiringSecureCoding:NO error:&err];
     if (err) {
         NSLog(@"saveData error %@", err.description);
+        return;
     }
-    [[NSUserDefaults standardUserDefaults] setObject:dataToSave forKey:@"data"];
+    [[NSUserDefaults standardUserDefaults] setObject:contactDictData forKey:@"contactDict"];
+    
+    NSData *acountData = [NSKeyedArchiver archivedDataWithRootObject: accountDictionary requiringSecureCoding:NO error:&err];
+    if (err) {
+        NSLog(@"saveData error %@", err.description);
+        return;
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:acountData forKey:@"accountDict"];
+    
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)load {
+    NSLog(@"load");
     NSError *err = nil;
-    NSData *decoded = [NSUserDefaults.standardUserDefaults objectForKey:@"data"];
+    NSData *contactDictDecoded = [NSUserDefaults.standardUserDefaults objectForKey:@"contactDict"];
     NSSet *classes = [NSSet setWithObjects:[NSArray class], [ContactGroupEntity class] ,[ContactEntity class], [NSString class], [NSMutableDictionary class], nil];
-    ContactDictionary *groups = (ContactDictionary *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:decoded error:&err];
+    
+    ContactDictionary *contactDict = (ContactDictionary *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:contactDictDecoded error:&err];
     if (err) {
         NSLog(@"loadSavedData error %@", err.description);
     }
-    if (groups) _contactDictionary = groups;
+    if (contactDict) _contactDictionary = contactDict;
+    
+    NSData *accountDictDecoded = [NSUserDefaults.standardUserDefaults objectForKey:@"accountDict"];
+    NSMutableDictionary<NSString *, ContactEntity *> *accountDict = (NSMutableDictionary<NSString *, ContactEntity *> *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:accountDictDecoded error:&err];
+    if (err) {
+        NSLog(@"loadSavedData error %@", err.description);
+    }
+    if (accountDict) accountDictionary = accountDict;
 }
 
 @end

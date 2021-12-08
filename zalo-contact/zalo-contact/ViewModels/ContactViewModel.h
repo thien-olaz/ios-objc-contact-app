@@ -18,6 +18,7 @@ typedef void (^BindDataBlock)(void);
 @protocol TableViewActionDelegate
 
 - (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped;
+- (CellObject *)attachToObject:(CellObject *)object swipeAction:(NSArray<SwipeActionObject *> *)actionList;
 - (void) scrollTo:(NSIndexPath *)indexPath;
 
 @end

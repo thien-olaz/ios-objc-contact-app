@@ -7,9 +7,11 @@
 
 #import "ContactTableViewAction.h"
 
+
 @interface ContactTableViewAction ()
 
 @property NSMutableDictionary* objectToAction;
+@property NSMutableDictionary* swipeActions;
 
 @end
 
@@ -20,7 +22,8 @@
 - (instancetype)init {
     self = super.init;
     _objectToAction = [NSMutableDictionary dictionary];
-    viewFactory = HeaderFooterFactory.new;
+    _swipeActions = [NSMutableDictionary dictionary];
+    viewFactory = [HeaderFooterFactory new];
     return self;
 }
 
@@ -31,6 +34,25 @@
 - (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped {
     if (![self.objectToAction objectForKey:[self keyForObject:object]]) {
         [self.objectToAction setObject:tapped forKey:[self keyForObject:object]];
+    }
+    return object;
+}
+
+- (CellObject *)attachToObject:(CellObject *)object swipeAction:(NSArray<SwipeActionObject *> *)actionList {
+    if (![self.swipeActions objectForKey:[self keyForObject:object]]) {
+        [self.swipeActions setObject:actionList forKey:[self keyForObject:object]];
+    }
+    return object;
+}
+
+- (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped swipeAction:(NSArray<SwipeActionObject *> *)actionList {
+    if (![self.objectToAction objectForKey:[self keyForObject:object]]) {
+        [self.objectToAction setObject:tapped forKey:[self keyForObject:object]];
+    }
+    
+    if (![self.swipeActions objectForKey:[self keyForObject:object]]) {
+        [self.swipeActions setObject:actionList forKey:[self keyForObject:object]];
+        
     }
     return object;
 }
@@ -96,19 +118,20 @@
 
 - (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    UIContextualAction *deleteAction = [UIContextualAction contextualActionWithStyle:(UIContextualActionStyleNormal) title:@"Delete" handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
-        
-    }];
+    id object = [(id<ZaloDataSource>)tableView.dataSource objectAtIndexPath:indexPath];
+    NSArray<SwipeActionObject *> *actionArray = [self.swipeActions objectForKey:[self keyForObject:object]];
     
-    deleteAction.backgroundColor = UIColor.redColor;
+    NSMutableArray *allActions = NSMutableArray.new;
+    for (SwipeActionObject *actionObj in actionArray) {
+        UIContextualAction *action = [UIContextualAction contextualActionWithStyle:(UIContextualActionStyleNormal) title:actionObj.title handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
+            actionObj.actionBlock();
+        }];
+        action.backgroundColor = actionObj.color;
+        [allActions addObject:action];
+    }
     
-    UIContextualAction *markAsCloseFriendAction = [UIContextualAction contextualActionWithStyle:(UIContextualActionStyleNormal) title:@"Favorite" handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
-        
-    }];
-    
-    markAsCloseFriendAction.backgroundColor = UIColor.blueColor;
-
-    return [UISwipeActionsConfiguration configurationWithActions:@[deleteAction, markAsCloseFriendAction]];
+    return [UISwipeActionsConfiguration configurationWithActions:allActions];
 }
+
 
 @end
