@@ -23,6 +23,7 @@ typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictio
 
 @property id<APIServiceProtocol> apiService;
 @property ContactDictionary *contactDictionary;
+@property NSDate *lastUpdateTime;
 
 + (ZaloContactService *)sharedInstance;
 - (ContactDictionary *)getFullContactDict;
