@@ -16,12 +16,12 @@
  */
 @implementation ZaloContactService {
     NSMutableArray<id<ZaloContactEventListener>> *listeners;
-    
     NSLock *contactDictionaryLock;
+    
     NSMutableDictionary<NSString *, ContactEntity *> *accountDictionary;
     NSLock *accountDictionaryLock;
     
-    //    id<APIServiceProtocol> apiService;
+    
 }
 
 static ZaloContactService *sharedInstance = nil;
@@ -44,6 +44,7 @@ static ZaloContactService *sharedInstance = nil;
     _apiService = [MockAPIService new];
     
     _contactDictionary = [ContactDictionary new];
+    _lastUpdateTime = [NSDate date];
     accountDictionary = [NSMutableDictionary new];
     
     // load saved data
@@ -129,7 +130,6 @@ static ZaloContactService *sharedInstance = nil;
     [self didDeleteContact:phoneNumber];
 }
 
-
 - (ContactDictionary *)getFullContactDict {
     return _contactDictionary;
 }
@@ -137,9 +137,6 @@ static ZaloContactService *sharedInstance = nil;
 - (NSArray<ContactEntity *>*)getFullContactList {
     return [_contactDictionary.allValues flatMap:^id(id obj) { return obj; }];
 }
-
-// chắc chắn có phone number
-// đẩy phone number vào -> gọi từ dictionary -> tìm ra được thông tin -> từ cái thông tin đó tìm trong tableview =-> ra được section
 
 // Check if a friend with phone number exist
 - (ContactEntity *)getContactsWithPhoneNumber:(NSString *)phoneNumber {
@@ -149,7 +146,6 @@ static ZaloContactService *sharedInstance = nil;
 - (BOOL)isFriendWithPhoneNumber:(NSString *)phoneNumber {
     return [accountDictionary objectForKey:phoneNumber] != nil;
 }
-
 
 #pragma mark - Observer
 
@@ -203,15 +199,13 @@ static ZaloContactService *sharedInstance = nil;
             [listener onAddContact:contact];
         }
     }
-    
 }
 
 - (void)didDeleteContact:(NSString *)phoneNumber {
     [contactDictionaryLock lock];
     [accountDictionaryLock lock];
     
-    ContactEntity *contact = [accountDictionary objectForKey:phoneNumber];
-    NSLog(@"delete %@ %@", contact.fullName, contact.phoneNumber);
+    ContactEntity *contact = [accountDictionary objectForKey:phoneNumber];    
     if (contact) {
         if ([_contactDictionary objectForKey:contact.header]) {
             //        delete from to array
@@ -225,9 +219,11 @@ static ZaloContactService *sharedInstance = nil;
             if (arr.count > 0) [_contactDictionary setObject:arr forKey:contact.header];
             else [_contactDictionary removeObjectForKey:contact.header];
         }
-        
+        [accountDictionary removeObjectForKey:phoneNumber];
+    } else {
+        NSLog(@"sai sai");
     }
-    [accountDictionary removeObjectForKey:phoneNumber];
+    
     
     [contactDictionaryLock unlock];
     [accountDictionaryLock unlock];
@@ -251,7 +247,7 @@ static ZaloContactService *sharedInstance = nil;
     [accountDictionary setObject:newContact forKey:newContact.phoneNumber];
     
     if ([_contactDictionary objectForKey:contact.header]) {
-        //        delete from to array
+        // delete from to array
         NSMutableArray *arr = [_contactDictionary objectForKey:contact.header].mutableCopy;
         for (int i = 0; i < arr.count; i++) {
             if ([contact compare:arr[i]] == NSOrderedSame) {
@@ -266,7 +262,7 @@ static ZaloContactService *sharedInstance = nil;
     if (![_contactDictionary objectForKey:newContact.header]) {
         [_contactDictionary setObject:@[contact] forKey:newContact.header];
     } else {
-        //        insert to array
+        //insert to array
         NSMutableArray *arr = [_contactDictionary objectForKey:newContact.header].mutableCopy;
         for (int i = 0; i < arr.count; i++) {
             if ([newContact compare:arr[i]] == NSOrderedDescending) {
