@@ -23,6 +23,8 @@
 @property NSArray<IGListIndexPathResult *> *contactsDiff;
 @property NSArray<NSIndexPath *> *reloadIndexes;
 
+@property NSMutableArray<NSIndexPath *> *deleteIndexes;
+
 @end
 
 @implementation ContactViewModel {
@@ -32,7 +34,7 @@
     
     id<TableViewActionDelegate> actionDelegate;
     id<TableViewDiffDelegate> diffDelegate;
-    
+    id currentState;
 }
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
@@ -43,10 +45,8 @@
     
     actionDelegate = action;
     diffDelegate = diff;
-    
+    _deleteIndexes = NSMutableArray.new;
     [ZaloContactService.sharedInstance subcribe:self];
-    
-    //        contactGroups = NSMutableArray.new;
     
     
     [self setup];
@@ -62,8 +62,23 @@
     [self setNeedsUpdate];
 }
 
-- (void)onDeleteContact:(nonnull ContactEntity *)contact {
-    //    [self setNeedsUpdate];
+- (void)onDeleteContact:(nonnull ContactEntity *)contact {    
+    id newState = @(ZaloContactService.sharedInstance.getFullContactDict.description.hash);
+    if (currentState) {
+        if (currentState == newState) return;
+    }
+    currentState = newState;
+    
+//    NSIndexPath *deleteIdp = [self.tableViewDataSource indexPathForPhoneNumber: contact.phoneNumber];
+    NSIndexPath *deleteIdp = [self.tableViewDataSource indexPathForContactEntity:contact];
+    
+    if (!deleteIdp) return;
+    if (![_deleteIndexes containsObject:deleteIdp]) {
+        [_deleteIndexes addObject:deleteIdp];
+    }
+    
+    [self applyDeleteIndexes:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+    
 }
 
 - (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact {
@@ -83,6 +98,15 @@
     [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
 }
 
+- (void)applyDeleteIndexes:(NSArray<ContactGroupEntity *> *)groups {
+    _sectionDiff = [self getSectionDiff:groups];
+    _reloadIndexes = [self getReloadIndexes: contactGroups];
+    [self setContactGroups:groups];
+    if (_updateBlock) _updateBlock();
+    [diffDelegate onDiff:_sectionDiff delete:_deleteIndexes.copy reload:_reloadIndexes];
+    [self.deleteIndexes removeAllObjects];
+}
+
 - (void)updateDiff:(NSArray<ContactGroupEntity *> *)groups {
     if (contactGroups) {
         _sectionDiff = [self getSectionDiff:groups];
@@ -98,7 +122,6 @@
 
 - (void)setup {
     [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
-    //    [self checkPermissionAndFetchData];
 }
 
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
@@ -195,7 +218,7 @@
                                           image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
                                  action:^{
         
-        NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForPhoneNumber:@"(866) 420-2824"];
+        NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForPhoneNumber:@"(922) 471-2199"];
         if (idp) [weakSelf->actionDelegate scrollTo:idp];
     } ]
     ];
@@ -266,13 +289,12 @@
 
 - (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber {
     [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:phoneNumber];
-    [self updateIfNeeded];
 }
 
 - (void)performAction:(SwipeActionType)type forObject:(CellObject *)object {
     ContactObject *contactObject = (ContactObject*)object;
     if (contactObject) {
-        [self deleteContactWithPhoneNumber:contactObject.contact.phoneNumber];
+        [self performSelectorInBackground:@selector(deleteContactWithPhoneNumber:) withObject:contactObject.contact.phoneNumber];
     }
 }
 

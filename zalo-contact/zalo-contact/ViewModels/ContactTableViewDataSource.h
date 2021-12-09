@@ -20,7 +20,7 @@
 - (id _Nonnull )objectAtIndexPath:(NSIndexPath *_Nonnull)indexPath;
 - (NSIndexPath * _Nullable)indexPathForObject:(id)object;
 - (NSIndexPath * _Nullable)indexPathForPhoneNumber:(NSString *)phoneNumber;
-
+- (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *)contact;
 - (nullable HeaderObject *)headerObjectInSection:(NSInteger)index;
 - (nullable FooterObject *)footerObjectInSection:(NSInteger)index;
 - (CGFloat)tableView:(UITableView *_Nonnull)tableView heightForRowAtIndexPath:(NSIndexPath *_Nonnull)indexPath;

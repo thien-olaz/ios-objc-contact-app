@@ -79,13 +79,23 @@
     return nil;
 }
 
+- (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *)contact {    
+    if (contact) {
+        ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
+        for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
+            if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
+            return [self binarySearch:object inSection:sectionIndex];
+        }
+    }
+    return nil;
+}
+
 - (NSIndexPath * _Nullable)indexPathForPhoneNumber:(NSString *)phoneNumber {
     ContactEntity *contact = [ZaloContactService.sharedInstance getContactsWithPhoneNumber:phoneNumber];
     
     if (contact) {
         ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
         for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
-            NSLog(@"%@ %@", contact.header, sections[sectionIndex].header.letterTitle);
             if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
             return [self binarySearch:object inSection:sectionIndex];
         }
@@ -100,7 +110,6 @@
     int l = 0, r = rows.count - 1;
     while (l <= r) {
         int rowIndex = l + (r - l) / 2;
-        NSLog(@"%d", rowIndex);
         NSComparisonResult res = [object compare:[rows objectAtIndex:rowIndex]];
         
         if (res == NSOrderedSame)

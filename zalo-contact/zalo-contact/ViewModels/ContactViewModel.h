@@ -26,6 +26,7 @@ typedef void (^CompleteBlock)(void);
 @protocol TableViewDiffDelegate
 
 - (void)onDiff:(IGListIndexPathResult *)sectionDiff cells:(NSArray<IGListIndexPathResult *> *)cellDiff reload:(NSArray<NSIndexPath *> *)reloadIndexes;
+- (void)onDiff:(IGListIndexPathResult *)sectionDiff delete:(NSArray<NSIndexPath *> *)deleteIndexes reload:(NSArray<NSIndexPath *> *)reloadIndexes;
 
 @end
 
@@ -43,7 +44,7 @@ typedef void (^CompleteBlock)(void);
 - (void)setNeedsUpdate;
 - (void)fetchLocalContacts;
 - (void)setup;
-- (NSArray<SwipeActionObject *>*)getActionListForContact:(ContactEntity *)contact;
+- (NSArray<SwipeActionObject *>*)getActionListForContact;
 
 @end
 

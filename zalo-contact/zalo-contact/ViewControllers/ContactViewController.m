@@ -142,5 +142,36 @@
     
 }
 
+- (void)onDiff:(IGListIndexPathResult *)sectionDiff delete:(NSArray<NSIndexPath *> *)deleteIndexes reload:(NSArray<NSIndexPath *> *)reloadIndexes{
+    
+    __unsafe_unretained typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        NSMutableIndexSet *sectionInsert = [NSMutableIndexSet indexSet];
+        for (NSIndexPath *indexPath in [sectionDiff inserts]) {
+            [sectionInsert addIndex:indexPath.row + 3];
+        }
+        
+        NSMutableIndexSet *sectionDelete = [NSMutableIndexSet indexSet];
+        for (NSIndexPath *indexPath in [sectionDiff deletes]) {
+            [sectionDelete addIndex:indexPath.row + 3];
+        }
+        
+        [weakSelf.tableView beginUpdates];
+        
+        [weakSelf.tableView deleteSections:sectionDelete withRowAnimation:(UITableViewRowAnimationLeft)];
+        [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
+        
+
+        [weakSelf.tableView deleteRowsAtIndexPaths:deleteIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
+        
+        [weakSelf.tableView reloadRowsAtIndexPaths:reloadIndexes withRowAnimation:UITableViewRowAnimationNone];
+        
+        [weakSelf.tableView endUpdates];
+        
+    });
+    
+}
+
 @end
 
