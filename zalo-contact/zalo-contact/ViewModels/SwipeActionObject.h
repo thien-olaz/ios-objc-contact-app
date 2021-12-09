@@ -10,13 +10,20 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef void (^ActionBlock)(void);
 
+typedef NS_ENUM(NSUInteger, SwipeActionType) {
+    deleteAction,
+    markAsFavoriteAction,
+    moreAction
+};
+
 @interface SwipeActionObject : NSObject
 
+@property SwipeActionType actionType;
 @property NSString *title;
 @property UIColor *color;
 @property (copy) ActionBlock actionBlock;
 
-- (instancetype)initWithTile:(NSString *)title color:(UIColor *)color action:(ActionBlock)block;
+- (instancetype)initWithTile:(NSString *)title color:(UIColor *)color actionType:(SwipeActionType)type;
 
 @end
 

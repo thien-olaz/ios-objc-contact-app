@@ -9,11 +9,11 @@
 
 @implementation SwipeActionObject
 
-- (instancetype)initWithTile:(NSString *)title color:(UIColor *)color action:(ActionBlock)block {
+- (instancetype)initWithTile:(NSString *)title color:(UIColor *)color actionType:(SwipeActionType)type {
     self = super.init;
     _title = title;
     _color = color;
-    _actionBlock = block;
+    _actionType = type;
     return self;
 }
 

@@ -69,6 +69,8 @@
     [_tableView setDataSource:_tableViewDataSource];
     [_tableView setDelegate:_tableViewAction];
     
+    [_tableViewAction setSwipeActionDelegate:self.viewModel];
+    
     [_viewModel setTableViewDataSource:self.tableViewDataSource];
     [_viewModel setDataBlock:^{
         [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
@@ -93,16 +95,10 @@
 
 #pragma mark - TableViewActionDelegate
 - (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped {
-    if (!_tableViewAction) {
-        _tableViewAction = ContactTableViewAction.new;
-    }
     return [_tableViewAction attachToObject:object action:tapped];
 }
 
 - (CellObject *)attachToObject:(CellObject *)object swipeAction:(NSArray<SwipeActionObject *> *)actionList {
-    if (!_tableViewAction) {
-        _tableViewAction = ContactTableViewAction.new;
-    }
     return [_tableViewAction attachToObject:object swipeAction:actionList];
     
 }

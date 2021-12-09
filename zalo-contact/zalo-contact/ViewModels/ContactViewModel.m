@@ -191,11 +191,11 @@
     
     [data addObject:
          [actionDelegate attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Tìm kiếm (862) 600-2881"
+          [CommonCellObject.alloc initWithTitle:@"Tìm kiếm (866) 420-3189"
                                           image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
                                  action:^{
         
-        NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForPhoneNumber:@"(862) 600-2881"];
+        NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForPhoneNumber:@"(866) 420-2824"];
         if (idp) [weakSelf->actionDelegate scrollTo:idp];
     } ]
     ];
@@ -237,7 +237,7 @@
         for (ContactEntity *contact in group.contacts) {
             [data addObject:
                  [actionDelegate attachToObject:[ContactObject.alloc initWithContactEntity:contact]
-                                    swipeAction:[self getActionListForContact:contact]]
+                                    swipeAction:[self getActionListForContact]]
             ];
         }
         
@@ -264,18 +264,23 @@
     return data;
 }
 
-- (NSArray<SwipeActionObject *>*)getActionListForContact:(ContactEntity *)contact {
+- (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber {
+    [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:phoneNumber];
+    [self updateIfNeeded];
+}
+
+- (void)performAction:(SwipeActionType)type forObject:(CellObject *)object {
+    ContactObject *contactObject = (ContactObject*)object;
+    if (contactObject) {
+        [self deleteContactWithPhoneNumber:contactObject.contact.phoneNumber];
+    }
+}
+
+- (NSArray<SwipeActionObject *>*)getActionListForContact{
     NSMutableArray *arr = NSMutableArray.new;
-    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Xoá" color:UIColor.zaloRedColor action:^{
-        [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:contact.phoneNumber];
-        [self updateIfNeeded];
-    }]];
-    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Bạn thân" color:UIColor.zaloPrimaryColor action:^{
-        
-    }]];
-    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Thêm" color:UIColor.lightGrayColor action:^{
-        
-    }]];
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Xoá" color:UIColor.zaloRedColor actionType:(deleteAction)]];
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Bạn thân" color:UIColor.zaloPrimaryColor actionType:(markAsFavoriteAction)]];
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Thêm" color:UIColor.lightGrayColor actionType:(moreAction)]];
     return arr.copy;
 }
 

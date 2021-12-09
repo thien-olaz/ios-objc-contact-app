@@ -47,18 +47,6 @@
     return object;
 }
 
-- (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped swipeAction:(NSArray<SwipeActionObject *> *)actionList {
-    if (![self.objectToAction objectForKey:[self keyForObject:object]]) {
-        [self.objectToAction setObject:tapped forKey:[self keyForObject:object]];
-    }
-    
-    if (![self.swipeActions objectForKey:[self keyForObject:object]]) {
-        [self.swipeActions setObject:actionList forKey:[self keyForObject:object]];
-        
-    }
-    return object;
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -117,12 +105,13 @@
 - (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     id object = [(id<ZaloDataSource>)tableView.dataSource objectAtIndexPath:indexPath];
+    
     NSArray<SwipeActionObject *> *actionArray = [self.swipeActions objectForKey:[self keyForObject:object]];
     
     NSMutableArray *allActions = NSMutableArray.new;
     for (SwipeActionObject *actionObj in actionArray) {
         UIContextualAction *action = [UIContextualAction contextualActionWithStyle:(UIContextualActionStyleNormal) title:actionObj.title handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
-            actionObj.actionBlock();
+            [self.swipeActionDelegate performAction:actionObj.actionType forObject:object];
         }];
         action.backgroundColor = actionObj.color;
         [allActions addObject:action];

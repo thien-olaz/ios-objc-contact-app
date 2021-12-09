@@ -8,6 +8,7 @@
 #import "CellObject.h"
 #import "ContactEntity.h"
 #import "ContactCell.h"
+#import "SwipeActionObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

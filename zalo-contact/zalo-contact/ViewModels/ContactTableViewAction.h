@@ -11,18 +11,23 @@
 #import "ContactTableViewDataSource.h"
 #import "HeaderFooterFactory.h"
 #import "SwipeActionObject.h"
+#import "CellObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^TapBlock)(void);
 
-typedef NS_ENUM(NSUInteger, SwipeActionType) {
-    deleteAction,
-    markAsFavoriteAction,
-    moreAction
-};
+
+@protocol SwipeActionDelegate <NSObject>
+
+@required
+- (void)performAction:(SwipeActionType)type forObject:(CellObject *)object;
+
+@end
 
 @interface ContactTableViewAction : NSObject<UITableViewDelegate>
+
+@property id<SwipeActionDelegate> swipeActionDelegate;
 
 - (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped;
 - (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped swipeAction:(NSArray<SwipeActionObject *> *)actionList;

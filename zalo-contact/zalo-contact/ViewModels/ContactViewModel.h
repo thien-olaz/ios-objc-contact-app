@@ -29,7 +29,7 @@ typedef void (^CompleteBlock)(void);
 
 @end
 
-@interface ContactViewModel : NSObject
+@interface ContactViewModel : NSObject<SwipeActionDelegate>
 
 @property (nonatomic, copy) BindDataBlock dataBlock;
 @property (nonatomic, copy) BindDataBlock updateBlock;
@@ -43,6 +43,7 @@ typedef void (^CompleteBlock)(void);
 - (void)setNeedsUpdate;
 - (void)fetchLocalContacts;
 - (void)setup;
+- (NSArray<SwipeActionObject *>*)getActionListForContact:(ContactEntity *)contact;
 
 @end
 
