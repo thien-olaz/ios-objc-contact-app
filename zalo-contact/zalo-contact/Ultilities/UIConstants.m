@@ -64,5 +64,13 @@
     return 13;
 }
 
++ (CGFloat)addContactLabelHeight {
+    return 28;
+}
+
++ (CGFloat)addContactButtonHeight {
+    return 32;
+}
+
 
 @end

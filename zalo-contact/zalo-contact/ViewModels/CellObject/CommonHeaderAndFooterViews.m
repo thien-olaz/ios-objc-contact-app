@@ -48,6 +48,29 @@
 
 @end
 
+@implementation LabelHeaderObject
+
+- (instancetype)init {
+    self = [super initWithCellClass:LabelHeaderView.class];
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title {
+    self = self.init;
+    self.title = title;
+    self.alignment = NSTextAlignmentLeft;
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title andTextAlignment:(NSTextAlignment)alignment {
+    self = [self initWithTitle:title];
+    self.alignment = alignment;
+    return self;
+}
+
+@end
+
+
 @implementation NullHeaderObject
 
 - (instancetype)init {

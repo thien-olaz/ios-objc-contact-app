@@ -8,7 +8,7 @@
 #import "SceneDelegate.h"
 #import "ContactViewController.h"
 #import "ContactTableViewDataSource.h"
-
+#import "UIColorExt.h"
 @interface SceneDelegate ()
 
 @end
@@ -29,7 +29,10 @@
     
     
     //- Contact
-    UINavigationController * contactNav = [[UINavigationController alloc] init];
+    UINavigationController * contactNav = [[UINavigationController alloc] init];    
+    
+    [contactNav.navigationBar setTranslucent:NO];
+    
     contactNav.tabBarItem.title = @"Contact";
     contactNav.tabBarItem.image = [UIImage imageNamed:@"tb_contact"];
     
@@ -52,6 +55,8 @@
     [tabbar setViewControllers:tabItems animated:YES];
     
     tabbar.selectedIndex = 1;
+    
+    [tabbar.tabBar setTranslucent:NO];
     
     return tabbar;
 }

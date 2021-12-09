@@ -114,14 +114,18 @@
 #pragma mark - Equal
 - (NSComparisonResult)compare:(ContactEntity *)entity {
     NSComparisonResult res;
-    res = [self.lastName compare:entity.lastName];
+    res = [self.phoneNumber compare:entity.phoneNumber];
     if ( res != NSOrderedSame) {
         return res;
     }
-    res = [self.firstName compare:entity.firstName];
-    if ( res != NSOrderedSame) {
-        return res;
-    }
+//    res = [self.lastName compare:entity.lastName];
+//    if ( res != NSOrderedSame) {
+//        return res;
+//    }
+//    res = [self.firstName compare:entity.firstName];
+//    if ( res != NSOrderedSame) {
+//        return res;
+//    }
     
     //    res = [self.phoneNumber compare:entity.phoneNumber];
     //    if ( res != NSOrderedSame) {

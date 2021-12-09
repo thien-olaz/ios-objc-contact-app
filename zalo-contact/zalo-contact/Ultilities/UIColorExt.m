@@ -14,7 +14,11 @@
 }
 
 + (UIColor *)zaloPrimaryColor {
-    return [UIColor.alloc initWithRed:24.0f/255.0f green:90.0f/255.0f blue:226.0f/255.0f alpha:1.0f];
+    return [UIColor.alloc initWithRed:0.0f/255.0f green:104.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+}
+
++ (UIColor *)zaloRedColor {
+    return [UIColor.alloc initWithRed:255.0f/255.0f green:59.0f/255.0f blue:48.0f/255.0f alpha:1.0f];
 }
 
 + (UIColor *)neonGreen {
@@ -22,7 +26,7 @@
 }
 
 + (UIColor *)zaloLightGrayColor {
-    return [UIColor.alloc initWithRed:242.0f/255.0f green:242.0f/255.0f blue:242.0f/255.0f alpha:0.8f];
+    return [UIColor.alloc initWithRed:242.0f/255.0f green:242.0f/255.0f blue:242.0f/255.0f alpha:1.0f];
 }
 
 + (UIColor *)grayColor {

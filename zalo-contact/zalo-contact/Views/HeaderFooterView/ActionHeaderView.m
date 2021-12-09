@@ -62,7 +62,7 @@
     if (!_updateButton) {
         _updateButton = [UIButton buttonWithType:UIButtonTypeSystem];
         [_updateButton.titleLabel setFont:[UIFont systemFontOfSize:UIConstants.contactHeaderButtonFontSize weight:(UIFontWeightSemibold)]];
-        [_updateButton setTintColor:UIColor.systemBlueColor];
+        [_updateButton setTintColor:UIColor.zaloPrimaryColor];
         [_updateButton addTarget:self
                           action:@selector(didClick)
                 forControlEvents:UIControlEventTouchUpInside];

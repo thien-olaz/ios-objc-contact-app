@@ -211,7 +211,7 @@ static ZaloContactService *sharedInstance = nil;
     [accountDictionaryLock lock];
     
     ContactEntity *contact = [accountDictionary objectForKey:phoneNumber];
-    [accountDictionary removeObjectForKey:phoneNumber];
+    NSLog(@"delete %@ %@", contact.fullName, contact.phoneNumber);
     if (contact) {
         if ([_contactDictionary objectForKey:contact.header]) {
             //        delete from to array
@@ -227,6 +227,7 @@ static ZaloContactService *sharedInstance = nil;
         }
         
     }
+    [accountDictionary removeObjectForKey:phoneNumber];
     
     [contactDictionaryLock unlock];
     [accountDictionaryLock unlock];
@@ -357,7 +358,6 @@ static ZaloContactService *sharedInstance = nil;
 }
 
 - (void)save {
-    NSLog(@"save");
     NSError *err = nil;
     NSData *contactDictData = [NSKeyedArchiver archivedDataWithRootObject: self.getFullContactDict requiringSecureCoding:NO error:&err];
     if (err) {
@@ -377,7 +377,6 @@ static ZaloContactService *sharedInstance = nil;
 }
 
 - (void)load {
-    NSLog(@"load");
     NSError *err = nil;
     NSData *contactDictDecoded = [NSUserDefaults.standardUserDefaults objectForKey:@"contactDict"];
     NSSet *classes = [NSSet setWithObjects:[NSArray class], [ContactGroupEntity class] ,[ContactEntity class], [NSString class], [NSMutableDictionary class], nil];
