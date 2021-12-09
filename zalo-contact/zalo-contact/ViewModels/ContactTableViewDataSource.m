@@ -79,14 +79,28 @@
     return nil;
 }
 
+- (NSIndexPath * _Nullable)indexPathForPhoneNumber:(NSString *)phoneNumber {
+    ContactEntity *contact = [ZaloContactService.sharedInstance getContactsWithPhoneNumber:phoneNumber];
+    
+    if (contact) {
+        ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
+        for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
+            NSLog(@"%@ %@", contact.header, sections[sectionIndex].header.letterTitle);
+            if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
+            return [self binarySearch:object inSection:sectionIndex];
+        }
+    }
+    return nil;
+}
+
 
 //MARK: - time complexity - Olog(n)
-/// with the limit of 5000 contacts, the complexity is 3.7
 - (NSIndexPath *)binarySearch:(id)object inSection:(unsigned long)sectionIndex {
     NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
     int l = 0, r = rows.count - 1;
     while (l <= r) {
         int rowIndex = l + (r - l) / 2;
+        NSLog(@"%d", rowIndex);
         NSComparisonResult res = [object compare:[rows objectAtIndex:rowIndex]];
         
         if (res == NSOrderedSame)
@@ -139,14 +153,9 @@
     CellObject *object = [self objectAtIndexPath: indexPath];
     return [cellFactory tableView:tableView heightForRowWithObject:object];
 }
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        NSLog(@"delete");
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        NSLog(@"insert");
-    }
+    
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    return YES;
 }
-
 
 @end

@@ -28,6 +28,7 @@ typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictio
 - (ContactDictionary *)getFullContactDict;
 - (NSArray<ContactEntity *>*)getFullContactList;
 - (void)fetchLocalContact;
+- (ContactEntity *)getContactsWithPhoneNumber:(NSString *)phoneNumber;
 //MARK: Observer functions
 - (void)subcribe:(id<ZaloContactEventListener>)listener;
 - (void)unsubcribe:(id<ZaloContactEventListener>)listener;

@@ -14,7 +14,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^BindDataBlock)(void);
-
+typedef void (^CompleteBlock)(void);
 @protocol TableViewActionDelegate
 
 - (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped;
@@ -25,7 +25,7 @@ typedef void (^BindDataBlock)(void);
 
 @protocol TableViewDiffDelegate
 
-- (void)onDiff:(IGListIndexPathResult *)sectionDiff cells:(NSArray<IGListIndexPathResult *> *)cellDiff;
+- (void)onDiff:(IGListIndexPathResult *)sectionDiff cells:(NSArray<IGListIndexPathResult *> *)cellDiff reload:(NSArray<NSIndexPath *> *)reloadIndexes;
 
 @end
 
@@ -33,12 +33,15 @@ typedef void (^BindDataBlock)(void);
 
 @property (nonatomic, copy) BindDataBlock dataBlock;
 @property (nonatomic, copy) BindDataBlock updateBlock;
+@property (nonatomic, copy) CompleteBlock presentBlock;
+
 @property ContactTableViewDataSource *tableViewDataSource;
 @property NSMutableArray *data;
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff;
-
+- (void)setNeedsUpdate;
+- (void)fetchLocalContacts;
 - (void)setup;
 
 @end

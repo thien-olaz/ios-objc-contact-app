@@ -27,4 +27,18 @@
     return self;
 }
 
+- (instancetype)initWithTitle:(NSString *)title andTextAlignment:(NSTextAlignment)alignment
+                        color:(UIColor *)backgroundColor
+                     cellType:(LabelCellType)type {
+    self = [self initWithTitle:title];
+    self.alignment = alignment;
+    if (type == shortCell) {
+        self.cellHeight = UIConstants.addContactLabelHeight + (CGFloat)8;
+    } else {
+        self.cellHeight = UIConstants.addContactLabelHeight + (CGFloat)20 * 2;
+    }
+    self.backgroundColor = backgroundColor;
+    return self;
+}
+
 @end

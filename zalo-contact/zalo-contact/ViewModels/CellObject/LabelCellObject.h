@@ -13,13 +13,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, LabelCellType) {
+    shortCell,
+    tallCell,
+};
 
 @interface LabelCellObject : CellObject
+
 @property NSTextAlignment alignment;
 @property NSString *title;
+@property UIColor *backgroundColor;
+@property CGFloat cellHeight;
+
 - (instancetype)initWithTitle:(NSString *)title;
 - (instancetype)initWithTitle:(NSString *)title andTextAlignment:(NSTextAlignment)alignment;
-- (instancetype)init;
+- (instancetype)initWithTitle:(NSString *)title andTextAlignment:(NSTextAlignment)alignment
+                        color:(UIColor *)backgroundColor
+                     cellType:(LabelCellType)type;
 @end
 
 NS_ASSUME_NONNULL_END

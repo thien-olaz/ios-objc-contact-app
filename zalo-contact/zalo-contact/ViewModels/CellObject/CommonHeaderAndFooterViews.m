@@ -86,6 +86,15 @@
 
 @end
 
+@implementation NullFooterObject
+
+- (instancetype)init {
+    self = [super initWithFooterClass:NullFooterView.class];
+    return self;
+}
+
+@end
+
 @implementation ActionHeaderObject
 
 - (instancetype)initWithTitle:(NSString *)title andButtonTitle:(NSString *)btnTitle {

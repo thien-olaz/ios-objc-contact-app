@@ -8,7 +8,6 @@
 @import UIKit;
 @import CoreGraphics;
 @import IGListKit;
-@import FBLFunctional;
 #import "ContactViewController.h"
 #import "ContactEntity.h"
 #import "ContactsLoader.h"

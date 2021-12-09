@@ -14,11 +14,14 @@
 #import "NSStringExt.h"
 #import "GCDThrottle.h"
 #import "ZaloContactService.h"
+#import "LabelCellObject.h"
+#import "UpdateContactObject.h"
 
 @interface ContactViewModel () <ZaloContactEventListener>
 
 @property IGListIndexPathResult *sectionDiff;
 @property NSArray<IGListIndexPathResult *> *contactsDiff;
+@property NSArray<NSIndexPath *> *reloadIndexes;
 
 @end
 
@@ -60,7 +63,7 @@
 }
 
 - (void)onDeleteContact:(nonnull ContactEntity *)contact {
-//    [self setNeedsUpdate];
+    //    [self setNeedsUpdate];
 }
 
 - (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact {
@@ -69,7 +72,7 @@
 
 - (void)setNeedsUpdate {
     __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(10, GCDThrottleTypeInvokeAndIgnore, ^{
+    dispatch_throttle_by_type(2, GCDThrottleTypeInvokeAndIgnore, ^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
             [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
         });
@@ -84,6 +87,7 @@
     if (contactGroups) {
         _sectionDiff = [self getSectionDiff:groups];
         _contactsDiff = [self getCellDiff:groups];
+        _reloadIndexes = [self getReloadIndexes: contactGroups];
         [self setContactGroups:groups];
         [self updateDataWithSectionDiff:_sectionDiff cellDiff:_contactsDiff];
     } else {
@@ -111,11 +115,12 @@
 - (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {
     if (_updateBlock) _updateBlock();
     [self updateUI];
-    LOG(@"Updated UI");
+    
 }
 
 - (void)updateUI {
-    [diffDelegate onDiff:self.sectionDiff cells:self.contactsDiff];
+    LOG(@"Updated UI");
+    [diffDelegate onDiff:self.sectionDiff cells:self.contactsDiff reload:self.reloadIndexes];
 }
 
 - (IGListIndexPathResult *)getSectionDiff:(NSArray<ContactGroupEntity *> *)newGroups {
@@ -136,21 +141,31 @@
                 [contactsDiff addObject:res];
         }
     }
+    
     return contactsDiff;
+}
+
+- (NSArray<NSIndexPath *> *)getReloadIndexes:(NSArray<ContactGroupEntity *>*)newGroups {
+    NSIndexPath *totalContactsIdp0;
+    totalContactsIdp0 = [NSIndexPath indexPathForRow:0 inSection:3 + newGroups.count];
+    return @[totalContactsIdp0];
 }
 
 - (void)checkPermissionAndFetchData {
     [UserContacts checkAccessContactPermission:^(BOOL complete) {
         if (complete) {
-            [self setNeedsUpdate];
+            [self performSelectorInBackground:@selector(fetchLocalContacts) withObject:nil];
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                //                [self presentViewController:[UIAlertController contactPermisisonAlert]
-                //                                   animated:true
-                //                                 completion:nil];
+                if (_presentBlock) _presentBlock();
             });
         }
     }];
+}
+
+- (void)fetchLocalContacts {
+    [ZaloContactService.sharedInstance fetchLocalContact];
+    [self setNeedsUpdate];
 }
 
 - (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups {
@@ -176,14 +191,11 @@
     
     [data addObject:
          [actionDelegate attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Tìm kiếm"
+          [CommonCellObject.alloc initWithTitle:@"Tìm kiếm (862) 600-2881"
                                           image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
                                  action:^{
         
-        NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForObject:[ContactObject.alloc initWithContactEntity:[ContactEntity.alloc initWithFirstName:@"Thien"
-                                                                                                                                                     lastName:@"Abbott"
-                                                                                                                                                  phoneNumber:@"0123456789"
-                                                                                                                                                     subtitle:nil]]];
+        NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForPhoneNumber:@"(862) 600-2881"];
         if (idp) [weakSelf->actionDelegate scrollTo:idp];
     } ]
     ];
@@ -212,8 +224,12 @@
     }];
     
     [data addObject:contactHeaderObject];
+    
+    int totalContact = 0;
+    
     for (ContactGroupEntity *group in groups) {
         
+        totalContact += group.contacts.count;
         // Header
         [data addObject:[ShortHeaderObject.alloc initWithTitle:group.header andTitleLetter:group.header]];
         
@@ -228,18 +244,33 @@
         // Footer
         [data addObject:ContactFooterObject.new];
     }
-        
+    if (groups.count > 0) {
+        [data removeLastObject];
+    }
+    
+    [data addObject:[NullHeaderObject.alloc init]];
+    
+    [data addObject:[LabelCellObject.alloc initWithTitle:[NSString stringWithFormat:@"%d bạn", totalContact] andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloBackgroundColor cellType:shortCell]];
+    
+    [data addObject:[LabelCellObject.alloc initWithTitle:@"Nhanh chóng thêm bạn vào Zalo từ danh \nbạ điện thoại" andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloLightGrayColor cellType:tallCell]];
+    
+    [data addObject:[UpdateContactObject.alloc initWithTitle:@"Cập nhập danh bạ" andAction:^{
+        [self fetchLocalContactIntoList];
+    }]];
+    
+    [data addObject:BlankFooterObject.new];
+    
     
     return data;
 }
 
 - (NSArray<SwipeActionObject *>*)getActionListForContact:(ContactEntity *)contact {
     NSMutableArray *arr = NSMutableArray.new;
-    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Xoá" color:UIColor.redColor action:^{
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Xoá" color:UIColor.zaloRedColor action:^{
         [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:contact.phoneNumber];
         [self updateIfNeeded];
     }]];
-    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Bạn thân" color:UIColor.blueColor action:^{
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Bạn thân" color:UIColor.zaloPrimaryColor action:^{
         
     }]];
     [arr addObject:[SwipeActionObject.alloc initWithTile:@"Thêm" color:UIColor.lightGrayColor action:^{
@@ -253,8 +284,7 @@
  after added new contacts, this contact must be sync
  */
 - (void)fetchLocalContactIntoList{
-    [ZaloContactService.sharedInstance fetchLocalContact];
-    [self setNeedsUpdate];
+    [self checkPermissionAndFetchData];
 }
 
 

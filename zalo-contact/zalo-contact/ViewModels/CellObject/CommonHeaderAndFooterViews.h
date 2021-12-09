@@ -16,6 +16,8 @@
 #import "ContactFooterView.h"
 #import "LabelHeaderView.h"
 #import "CellObject.h"
+#import "NullFooterView.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - BlankFooterObject
@@ -58,6 +60,10 @@ NS_ASSUME_NONNULL_BEGIN
     
 @end
 
+#pragma mark - NullFooterObject
+@interface NullFooterObject: FooterObject
+
+@end
 
 #pragma mark - Action header
 typedef void (^ActionBlock)(void);

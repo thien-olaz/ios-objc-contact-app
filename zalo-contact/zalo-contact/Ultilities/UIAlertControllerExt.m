@@ -11,12 +11,12 @@
 
 + (UIAlertController *)contactPermisisonAlert {
     UIAlertController *alertController = [UIAlertController
-                                          alertControllerWithTitle:@"No permission"
-                                          message:@"Please go to setting and turn on contact access permission"
+                                          alertControllerWithTitle:@"Không có quyền truy cập"
+                                          message:@"Xin hãy vào cài đặt và cấp quyền truy cập danh bạ"
                                           preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *action = [UIAlertAction
-                             actionWithTitle:@"Open setting"
+                             actionWithTitle:@"Mở cài đặt"
                              style:UIAlertActionStyleDefault
                              handler:^(UIAlertAction * _Nonnull action)
                              {
@@ -24,7 +24,9 @@
         [UIApplication.sharedApplication
          openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
          options:@{}
-         completionHandler:^(BOOL Success){}];
+         completionHandler:^(BOOL Success){
+            
+        }];
     }];
     
     [alertController addAction:action];

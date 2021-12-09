@@ -18,7 +18,8 @@
 @required
 
 - (id _Nonnull )objectAtIndexPath:(NSIndexPath *_Nonnull)indexPath;
-- (NSIndexPath *)indexPathForObject:(id)object;
+- (NSIndexPath * _Nullable)indexPathForObject:(id)object;
+- (NSIndexPath * _Nullable)indexPathForPhoneNumber:(NSString *)phoneNumber;
 
 - (nullable HeaderObject *)headerObjectInSection:(NSInteger)index;
 - (nullable FooterObject *)footerObjectInSection:(NSInteger)index;

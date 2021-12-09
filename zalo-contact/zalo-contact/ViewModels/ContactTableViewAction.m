@@ -12,6 +12,7 @@
 
 @property NSMutableDictionary* objectToAction;
 @property NSMutableDictionary* swipeActions;
+@property NSMutableDictionary* heightAtIndexPath;
 
 @end
 
@@ -24,6 +25,7 @@
     _objectToAction = [NSMutableDictionary dictionary];
     _swipeActions = [NSMutableDictionary dictionary];
     viewFactory = [HeaderFooterFactory new];
+    _heightAtIndexPath = [NSMutableDictionary new];
     return self;
 }
 
@@ -112,10 +114,6 @@
     return tableView.rowHeight;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-
 - (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     id object = [(id<ZaloDataSource>)tableView.dataSource objectAtIndexPath:indexPath];
@@ -133,5 +131,15 @@
     return [UISwipeActionsConfiguration configurationWithActions:allActions];
 }
 
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSNumber *height = @(cell.frame.size.height);
+    [self.heightAtIndexPath setObject:height forKey:indexPath];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSNumber *height = [self.heightAtIndexPath objectForKey:indexPath];
+    if (height) return height.floatValue;    
+    return UITableViewAutomaticDimension;
+}
 
 @end

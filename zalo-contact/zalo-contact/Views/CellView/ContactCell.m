@@ -247,8 +247,11 @@
 
 - (void)prepareForReuse {
     [super prepareForReuse];
+    
     [self.badgeView setBackgroundColor:UIColor.clearColor];
     [self setSubtitleWith:@""];
+    [self setEditing:YES animated:YES];
+  
 }
 
 - (void)setNeedsObject:(ContactObject *)object {

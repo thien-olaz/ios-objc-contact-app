@@ -58,10 +58,11 @@
 - (void)setNeedsObject:(LabelCellObject *)object {
     [self setSectionTitle:object.title];
     [self setLabelAlignment:object.alignment];
+    [self setBackgroundColor:object.backgroundColor];
 }
 
-+ (CGFloat)heightForRowWithObject:(nonnull CellObject *)object {
-    return UIConstants.addContactLabelHeight + 20 * 2;
++ (CGFloat)heightForRowWithObject:(nonnull LabelCellObject *)object {
+    return object.cellHeight;
 }
 
 @end

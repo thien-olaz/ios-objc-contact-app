@@ -31,7 +31,7 @@
     //- Contact
     UINavigationController * contactNav = [[UINavigationController alloc] init];    
     
-    [contactNav.navigationBar setTranslucent:NO];
+//    [contactNav.navigationBar setTranslucent:NO];
     
     contactNav.tabBarItem.title = @"Contact";
     contactNav.tabBarItem.image = [UIImage imageNamed:@"tb_contact"];
@@ -56,7 +56,7 @@
     
     tabbar.selectedIndex = 1;
     
-    [tabbar.tabBar setTranslucent:NO];
+//    [tabbar.tabBar setTranslucent:NO];
     
     return tabbar;
 }
