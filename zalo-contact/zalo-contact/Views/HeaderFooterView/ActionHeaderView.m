@@ -16,14 +16,13 @@
 @end
 
 @implementation ActionHeaderView
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    [self setBackgroundColor: UIColor.zaloBackgroundColor];
-    [self addSubview:self.sectionHeaderLabel];
-    [self addSubview:self.updateButton];
+- (instancetype)initWithReuseIdentifier:(NSString *)reuseIdentifier {
+    self = [super initWithReuseIdentifier:reuseIdentifier];
+    [self.contentView setBackgroundColor: UIColor.zaloBackgroundColor];
+    [self.contentView addSubview:self.sectionHeaderLabel];
+    [self.contentView addSubview:self.updateButton];
     [self setNeedsUpdateConstraints];
-    return self;
+    return  self;
 }
 
 - (void)updateConstraints {

@@ -10,8 +10,16 @@
 @implementation HeaderFooterFactory
 
 // Config header
-- (UIView *)headerForTableViewWithObject:(HeaderObject *)object {
-    UIView *header = object.headerClass.new;
+- (UIView *)headerForTableView:(UITableView *)tableView
+                    withObject:(HeaderObject *)object {
+    UITableViewHeaderFooterView *header = nil;
+
+    NSString* identifier = NSStringFromClass(object.headerClass);
+    header = [tableView dequeueReusableHeaderFooterViewWithIdentifier:identifier];
+    
+    if (!header) {
+        header = [object.headerClass.alloc initWithReuseIdentifier:identifier];
+    }
     
     if ([header respondsToSelector:@selector(setNeedsObject:)]) {
         [(id<ZaloHeader>)header setNeedsObject:object];

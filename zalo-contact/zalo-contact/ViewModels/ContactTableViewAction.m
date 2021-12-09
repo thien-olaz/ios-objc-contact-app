@@ -75,7 +75,7 @@
     HeaderObject *headerObj = [(id<ZaloDataSource>)tableView.dataSource headerObjectInSection:section];
     
     if (headerObj) {
-        return [viewFactory headerForTableViewWithObject:headerObj];
+        return [viewFactory headerForTableView:tableView withObject:headerObj];
     }
     return UIView.new;
 }

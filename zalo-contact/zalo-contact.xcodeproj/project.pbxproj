@@ -41,7 +41,7 @@
 		AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD7275E54E000128996 /* GCDThrottle.m */; };
 		AFA3B695275F6861003B198B /* fixedContactsList.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA3B694275F6861003B198B /* fixedContactsList.vcf */; };
 		AFA3B6982760A960003B198B /* SwipeActionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6972760A960003B198B /* SwipeActionObject.m */; };
-		AFA3B69B2760EC83003B198B /* LabelHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B69A2760EC83003B198B /* LabelHeaderView.m */; };
+		AFA3B69B2760EC83003B198B /* LabelViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B69A2760EC83003B198B /* LabelViewCell.m */; };
 		AFA3B69E2760F31C003B198B /* LabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B69D2760F31C003B198B /* LabelCell.m */; };
 		AFA3B6A12760F4F8003B198B /* LabelCellObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6A02760F4F8003B198B /* LabelCellObject.m */; };
 		AFA3B6A427610218003B198B /* UpdateContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6A327610218003B198B /* UpdateContactCell.m */; };
@@ -126,8 +126,8 @@
 		AFA3B694275F6861003B198B /* fixedContactsList.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = fixedContactsList.vcf; sourceTree = "<group>"; };
 		AFA3B6962760A960003B198B /* SwipeActionObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwipeActionObject.h; sourceTree = "<group>"; };
 		AFA3B6972760A960003B198B /* SwipeActionObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwipeActionObject.m; sourceTree = "<group>"; };
-		AFA3B6992760EC83003B198B /* LabelHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabelHeaderView.h; sourceTree = "<group>"; };
-		AFA3B69A2760EC83003B198B /* LabelHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LabelHeaderView.m; sourceTree = "<group>"; };
+		AFA3B6992760EC83003B198B /* LabelViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabelViewCell.h; sourceTree = "<group>"; };
+		AFA3B69A2760EC83003B198B /* LabelViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LabelViewCell.m; sourceTree = "<group>"; };
 		AFA3B69C2760F31C003B198B /* LabelCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabelCell.h; sourceTree = "<group>"; };
 		AFA3B69D2760F31C003B198B /* LabelCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LabelCell.m; sourceTree = "<group>"; };
 		AFA3B69F2760F4F8003B198B /* LabelCellObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabelCellObject.h; sourceTree = "<group>"; };
@@ -209,16 +209,14 @@
 			children = (
 				AF0BFBEF2743A0A6006E072B /* HeaderView.h */,
 				AF0BFBF02743A0A6006E072B /* HeaderView.m */,
-				AF24F4D2274E002700A71E07 /* BlankFooterView.h */,
-				AF24F4D3274E002700A71E07 /* BlankFooterView.m */,
 				AFC3D4A62756093300FB5406 /* NullHeaderView.h */,
 				AFC3D4A72756093300FB5406 /* NullHeaderView.m */,
 				AF24F4C9274DDFBD00A71E07 /* ActionHeaderView.h */,
 				AF24F4CA274DDFBD00A71E07 /* ActionHeaderView.m */,
+				AF24F4D2274E002700A71E07 /* BlankFooterView.h */,
+				AF24F4D3274E002700A71E07 /* BlankFooterView.m */,
 				AF2C5D70275F265000DF06CF /* ContactFooterView.h */,
 				AF2C5D71275F265000DF06CF /* ContactFooterView.m */,
-				AFA3B6992760EC83003B198B /* LabelHeaderView.h */,
-				AFA3B69A2760EC83003B198B /* LabelHeaderView.m */,
 				AF471B6D2761D732004C035A /* NullFooterView.h */,
 				AF471B6E2761D732004C035A /* NullFooterView.m */,
 			);
@@ -257,7 +255,6 @@
 				AFCDDE54274279FC00500137 /* Views */,
 				AFCDDE59274283F100500137 /* ViewModels */,
 				AFCDDE53274279EF00500137 /* ViewControllers */,
-				AFCDDE52274279E300500137 /* SectionControllers */,
 				AFCDDE51274279D700500137 /* Resources */,
 			);
 			path = "zalo-contact";
@@ -305,6 +302,8 @@
 				AF0BFBED2743A071006E072B /* ContactCell.m */,
 				AFA3B69C2760F31C003B198B /* LabelCell.h */,
 				AFA3B69D2760F31C003B198B /* LabelCell.m */,
+				AFA3B6992760EC83003B198B /* LabelViewCell.h */,
+				AFA3B69A2760EC83003B198B /* LabelViewCell.m */,
 				AFA3B6A227610218003B198B /* UpdateContactCell.h */,
 				AFA3B6A327610218003B198B /* UpdateContactCell.m */,
 			);
@@ -358,13 +357,6 @@
 				AF368C5727420F3A00E17AEB /* LaunchScreen.storyboard */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		AFCDDE52274279E300500137 /* SectionControllers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = SectionControllers;
 			sourceTree = "<group>";
 		};
 		AFCDDE53274279EF00500137 /* ViewControllers */ = {
@@ -561,7 +553,7 @@
 				AF2C5D6F275E833000DF06CF /* NSArrayExt.m in Sources */,
 				AFEB1CD02754BA9F001636C6 /* ContactObject.m in Sources */,
 				AFA3B6A427610218003B198B /* UpdateContactCell.m in Sources */,
-				AFA3B69B2760EC83003B198B /* LabelHeaderView.m in Sources */,
+				AFA3B69B2760EC83003B198B /* LabelViewCell.m in Sources */,
 				AF24F4D4274E002700A71E07 /* BlankFooterView.m in Sources */,
 				AFE4CA0A2755FFD900A0190F /* CommonCellObject.m in Sources */,
 				AFE4C9FE2755D73B00A0190F /* SectionObject.m in Sources */,

@@ -51,7 +51,7 @@
 @implementation LabelHeaderObject
 
 - (instancetype)init {
-    self = [super initWithCellClass:LabelHeaderView.class];
+    self = [super initWithCellClass:LabelViewCell.class];
     return self;
 }
 

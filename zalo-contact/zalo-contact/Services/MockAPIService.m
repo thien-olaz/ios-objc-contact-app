@@ -33,10 +33,8 @@
 - (instancetype)init {
     self = super.init;
     [self getContactsFromFile];
-    
     isContact1 = YES;
     [self configContact1and2];
-//    [self mockDeleteContact];
     addIndex = 0;
     return self;
 }
@@ -50,9 +48,9 @@
 //        [self deleteContact];
     });
 
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 //        [self updateContact];
-//    });
+    });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.4 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 //        [self updateContactWithPhoneNumber];
@@ -90,11 +88,17 @@
         }
         [strongSelf fakeServerUpdate];
     });
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+
+}
+
+// MARK: Fake a api request with 1 sec delay
+- (void)fetchContacts:(OnData)block {
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
         if (!weakSelf) return;
         MockAPIService *strongSelf = weakSelf;
-        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"fixedContactsList" ofType:@"vcf"];
+        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"contacts" ofType:@"vcf"];
+//        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"fixedContactsList" ofType:@"vcf"];
         NSError *error;
         NSString *fileContents = [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:&error];
         
@@ -112,16 +116,7 @@
             LOG(error.description);
             return;
         }
-    });
-    
-}
-
-// MARK: Fake a api request with 1 sec delay
-- (void)fetchContacts:(OnData)block {
-    __weak typeof(self) weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-        if (!weakSelf) return;
-        MockAPIService *strongSelf = weakSelf;
+        
         NSMutableArray<ContactEntity *> *apiContactsResult = NSMutableArray.new;
         for (CNContact *cnct in strongSelf->fixedContactsPool) {
             ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:cnct];

@@ -14,9 +14,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface HeaderView : UIView<ZaloHeader>
+@interface HeaderView : UITableViewHeaderFooterView<ZaloHeader>
 
-- (instancetype)initWithTitle:(NSString *)title;
 - (void) setSectionTitle:(NSString *)title;
 
 @end

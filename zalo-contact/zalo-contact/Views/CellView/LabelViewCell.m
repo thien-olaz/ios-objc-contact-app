@@ -5,15 +5,15 @@
 //  Created by Thiện on 08/12/2021.
 //
 
-#import "LabelHeaderView.h"
+#import "LabelViewCell.h"
 
-@interface LabelHeaderView ()
+@interface LabelViewCell ()
 
 @property (nonatomic, strong) UILabel *sectionHeaderLabel;
 
 @end
 
-@implementation LabelHeaderView
+@implementation LabelViewCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];

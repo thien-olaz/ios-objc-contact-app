@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface LabelHeaderView : UITableViewCell<ZaloCell>
+@interface LabelViewCell : UITableViewCell<ZaloCell>
 - (instancetype)initWithTitle:(NSString *)title;
 - (void)setTextAlignment:(NSTextAlignment)alignment;
 - (void)setSectionTitle:(NSString *)title;

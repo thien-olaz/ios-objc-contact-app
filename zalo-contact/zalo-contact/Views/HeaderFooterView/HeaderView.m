@@ -16,22 +16,15 @@
 
 @implementation HeaderView
 
-- (instancetype)initWithTitle:(NSString *)title {
-    self = [super init];
+- (instancetype)initWithReuseIdentifier:(NSString *)reuseIdentifier {
+    self = [super initWithReuseIdentifier:reuseIdentifier];
     [self commonInit];
-    [self setSectionTitle:title];
-    return self;
-}
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    [self commonInit];
-    return self;
+    return  self;
 }
 
 - (void)commonInit {
-    [self setBackgroundColor: UIColor.zaloBackgroundColor];
-    [self addSubview:self.sectionHeaderLabel];
+    [self.contentView setBackgroundColor: UIColor.zaloBackgroundColor];
+    [self.contentView addSubview:self.sectionHeaderLabel];
     [self setNeedsUpdateConstraints];
 }
 

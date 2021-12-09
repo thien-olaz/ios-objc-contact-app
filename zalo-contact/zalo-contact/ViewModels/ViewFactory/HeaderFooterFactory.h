@@ -13,7 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface HeaderFooterFactory : NSObject
-- (UIView *)headerForTableViewWithObject:(HeaderObject *)object;
+- (UIView *)headerForTableView:(UITableView *)tableView withObject:(HeaderObject *)object;
 
 - (UIView *)footerForTableViewWithObject:(FooterObject *)object;
 

@@ -14,7 +14,7 @@
 #import "NullHeaderView.h"
 #import "ActionHeaderView.h"
 #import "ContactFooterView.h"
-#import "LabelHeaderView.h"
+#import "LabelViewCell.h"
 #import "CellObject.h"
 #import "NullFooterView.h"
 

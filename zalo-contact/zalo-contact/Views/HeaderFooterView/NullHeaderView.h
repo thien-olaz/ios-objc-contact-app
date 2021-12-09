@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NullHeaderView : UIView<ZaloHeader>
+@interface NullHeaderView : UITableViewHeaderFooterView<ZaloHeader>
 
 @end
 

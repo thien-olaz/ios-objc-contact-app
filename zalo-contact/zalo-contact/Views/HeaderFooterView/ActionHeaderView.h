@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^ActionBlock)(void);
 
-@interface ActionHeaderView : UIView<ZaloHeader>
+@interface ActionHeaderView : UITableViewHeaderFooterView<ZaloHeader>
 
 @property (copy) ActionBlock block;
 
