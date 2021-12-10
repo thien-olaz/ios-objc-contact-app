@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import "MockAPIService.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictionary;
@@ -17,12 +18,20 @@ typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictio
 - (void)onAddContact:(ContactEntity *)contact;
 - (void)onDeleteContact:(ContactEntity *)contact;
 - (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact;
+
 @end
 
-@interface ZaloContactService : NSObject
+@interface ZaloContactService : NSObject {
+    ContactDictionary *contactDictionary;
+    NSLock *contactDictionaryLock;
+    
+    NSMutableDictionary<NSString *, ContactEntity *> *accountDictionary;
+    NSLock *accountDictionaryLock;
+    
+    NSMutableArray<id<ZaloContactEventListener>> *listeners;
+}
 
 @property id<APIServiceProtocol> apiService;
-@property ContactDictionary *contactDictionary;
 @property NSDate *lastUpdateTime;
 
 + (ZaloContactService *)sharedInstance;
@@ -30,10 +39,7 @@ typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictio
 - (NSArray<ContactEntity *>*)getFullContactList;
 - (void)fetchLocalContact;
 - (ContactEntity *)getContactsWithPhoneNumber:(NSString *)phoneNumber;
-//MARK: Observer functions
-- (void)subcribe:(id<ZaloContactEventListener>)listener;
-- (void)unsubcribe:(id<ZaloContactEventListener>)listener;
-- (void)didAddContact:(ContactEntity *)contact;
+
 - (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber;
 
 @end

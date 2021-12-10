@@ -45,7 +45,7 @@
 //        [self addNewContact];
     });
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-//        [self deleteContact];
+        [self deleteContact];
     });
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
@@ -97,8 +97,8 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
         if (!weakSelf) return;
         MockAPIService *strongSelf = weakSelf;
-        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"contacts" ofType:@"vcf"];
-//        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"fixedContactsList" ofType:@"vcf"];
+//        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"contacts" ofType:@"vcf"];
+        NSString *filepath = [[NSBundle mainBundle] pathForResource:@"fixedContactsList" ofType:@"vcf"];
         NSError *error;
         NSString *fileContents = [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:&error];
         

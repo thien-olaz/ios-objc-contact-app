@@ -16,6 +16,7 @@
 #import "ZaloContactService.h"
 #import "LabelCellObject.h"
 #import "UpdateContactObject.h"
+#import "ZaloContactService+Observer.h"
 
 @interface ContactViewModel () <ZaloContactEventListener>
 
@@ -62,22 +63,26 @@
     [self setNeedsUpdate];
 }
 
-- (void)onDeleteContact:(nonnull ContactEntity *)contact {    
-    id newState = @(ZaloContactService.sharedInstance.getFullContactDict.description.hash);
-    if (currentState) {
-        if (currentState == newState) return;
-    }
-    currentState = newState;
+- (void)onDeleteContact:(nonnull ContactEntity *)contact {
     
-//    NSIndexPath *deleteIdp = [self.tableViewDataSource indexPathForPhoneNumber: contact.phoneNumber];
-    NSIndexPath *deleteIdp = [self.tableViewDataSource indexPathForContactEntity:contact];
+    [self setNeedsUpdate];
     
-    if (!deleteIdp) return;
-    if (![_deleteIndexes containsObject:deleteIdp]) {
-        [_deleteIndexes addObject:deleteIdp];
-    }
     
-    [self applyDeleteIndexes:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+//    id newState = @(ZaloContactService.sharedInstance.getFullContactDict.description.hash);
+//    if (currentState) {
+//        if (currentState == newState) return;
+//    }
+//    currentState = newState;
+//    
+////    NSIndexPath *deleteIdp = [self.tableViewDataSource indexPathForPhoneNumber: contact.phoneNumber];
+//    NSIndexPath *deleteIdp = [self.tableViewDataSource indexPathForContactEntity:contact];
+//    
+//    if (!deleteIdp) return;
+//    if (![_deleteIndexes containsObject:deleteIdp]) {
+//        [_deleteIndexes addObject:deleteIdp];
+//    }
+//    
+//    [self applyDeleteIndexes:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
     
 }
 
@@ -103,7 +108,7 @@
     _reloadIndexes = [self getReloadIndexes: contactGroups];
     [self setContactGroups:groups];
     if (_updateBlock) _updateBlock();
-    [diffDelegate onDiff:_sectionDiff delete:_deleteIndexes.copy reload:_reloadIndexes];
+    [self newUpdateUI];
     [self.deleteIndexes removeAllObjects];
 }
 
@@ -142,8 +147,11 @@
 }
 
 - (void)updateUI {
-    LOG(@"Updated UI");
     [diffDelegate onDiff:self.sectionDiff cells:self.contactsDiff reload:self.reloadIndexes];
+}
+
+- (void)newUpdateUI {
+    [diffDelegate onDiff:_sectionDiff delete:_deleteIndexes.copy reload:_reloadIndexes];
 }
 
 - (IGListIndexPathResult *)getSectionDiff:(NSArray<ContactGroupEntity *> *)newGroups {
@@ -151,6 +159,7 @@
     return sectionDiff;
 }
 
+// MARK: - make it dynamic please
 - (NSMutableArray<IGListIndexPathResult *> *)getCellDiff:(NSArray<ContactGroupEntity *>*)newGroups {
     
     NSMutableArray<IGListIndexPathResult *> *contactsDiff = NSMutableArray.array;
@@ -168,6 +177,7 @@
     return contactsDiff;
 }
 
+// MARK: - make it dynamic please
 - (NSArray<NSIndexPath *> *)getReloadIndexes:(NSArray<ContactGroupEntity *>*)newGroups {
     NSIndexPath *totalContactsIdp0;
     totalContactsIdp0 = [NSIndexPath indexPathForRow:0 inSection:3 + newGroups.count];
@@ -175,12 +185,13 @@
 }
 
 - (void)checkPermissionAndFetchData {
+    typeof(self) weakSelf = self;
     [UserContacts checkAccessContactPermission:^(BOOL complete) {
         if (complete) {
             [self performSelectorInBackground:@selector(fetchLocalContacts) withObject:nil];
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (_presentBlock) _presentBlock();
+                if (weakSelf.presentBlock) weakSelf.presentBlock();
             });
         }
     }];
@@ -191,10 +202,38 @@
     [self setNeedsUpdate];
 }
 
+
+- (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber {
+    [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:phoneNumber];
+}
+
+- (void)performAction:(SwipeActionType)type forObject:(CellObject *)object {
+    ContactObject *contactObject = (ContactObject*)object;
+    if (contactObject) {
+        [self performSelectorInBackground:@selector(deleteContactWithPhoneNumber:) withObject:contactObject.contact.phoneNumber];
+    }
+}
+
+- (NSArray<SwipeActionObject *>*)getActionListForContact{
+    NSMutableArray *arr = NSMutableArray.new;
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Xoá" color:UIColor.zaloRedColor actionType:(deleteAction)]];
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Bạn thân" color:UIColor.zaloPrimaryColor actionType:(markAsFavoriteAction)]];
+    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Thêm" color:UIColor.lightGrayColor actionType:(moreAction)]];
+    return arr.copy;
+}
+
+//MARK: - replace with a view controller to select which contact will be adModed into list later
+/*
+ after added new contacts, this contact must be sync
+ */
+- (void)fetchLocalContactIntoList{
+    [self checkPermissionAndFetchData];
+}
+
 - (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups {
     NSMutableArray *data = NSMutableArray.alloc.init;
     __unsafe_unretained typeof(self) weakSelf = self;
-    //MARK:  - mấy cell đầu danh bạ
+    //MARK:  -
     [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
     [data addObject:
          [actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Clear saved data"
@@ -237,7 +276,7 @@
     ];
     [data addObject:BlankFooterObject.new];
     
-    //MARK: - danh bạ
+    //MARK: - Contact
     ActionHeaderObject *contactHeaderObject = [ActionHeaderObject.alloc
                                                initWithTitle:@"Danh bạ"
                                                andButtonTitle:@"CẬP NHẬP"];
@@ -286,33 +325,5 @@
     
     return data;
 }
-
-- (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber {
-    [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:phoneNumber];
-}
-
-- (void)performAction:(SwipeActionType)type forObject:(CellObject *)object {
-    ContactObject *contactObject = (ContactObject*)object;
-    if (contactObject) {
-        [self performSelectorInBackground:@selector(deleteContactWithPhoneNumber:) withObject:contactObject.contact.phoneNumber];
-    }
-}
-
-- (NSArray<SwipeActionObject *>*)getActionListForContact{
-    NSMutableArray *arr = NSMutableArray.new;
-    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Xoá" color:UIColor.zaloRedColor actionType:(deleteAction)]];
-    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Bạn thân" color:UIColor.zaloPrimaryColor actionType:(markAsFavoriteAction)]];
-    [arr addObject:[SwipeActionObject.alloc initWithTile:@"Thêm" color:UIColor.lightGrayColor actionType:(moreAction)]];
-    return arr.copy;
-}
-
-//MARK: - replace with a view controller to select which contact will be adModed into list later
-/*
- after added new contacts, this contact must be sync
- */
-- (void)fetchLocalContactIntoList{
-    [self checkPermissionAndFetchData];
-}
-
 
 @end

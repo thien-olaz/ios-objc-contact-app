@@ -31,6 +31,8 @@
 		AF426F622754DE41004C541E /* FooterObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AF426F612754DE41004C541E /* FooterObject.m */; };
 		AF426F672754E915004C541E /* ContactTableViewAction.m in Sources */ = {isa = PBXBuildFile; fileRef = AF426F662754E915004C541E /* ContactTableViewAction.m */; };
 		AF471B6F2761D732004C035A /* NullFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF471B6E2761D732004C035A /* NullFooterView.m */; };
+		AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */; };
+		AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */ = {isa = PBXBuildFile; fileRef = AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */; };
 		AF9201B52746004500E1581C /* ContactGroupEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B42746004500E1581C /* ContactGroupEntity.m */; };
 		AF9201B827460EB300E1581C /* UIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B727460EB300E1581C /* UIConstants.m */; };
 		AFA2BDC9275E092200128996 /* MockAPIService.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDC8275E092200128996 /* MockAPIService.m */; };
@@ -108,6 +110,10 @@
 		AF426F662754E915004C541E /* ContactTableViewAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewAction.m; sourceTree = "<group>"; };
 		AF471B6D2761D732004C035A /* NullFooterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullFooterView.h; sourceTree = "<group>"; };
 		AF471B6E2761D732004C035A /* NullFooterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullFooterView.m; sourceTree = "<group>"; };
+		AF5178442762FB2C00FC8BCA /* ZaloContactService+Storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+Storage.h"; sourceTree = "<group>"; };
+		AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+Storage.m"; sourceTree = "<group>"; };
+		AF517847276301BF00FC8BCA /* ZaloContactService+Observer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+Observer.h"; sourceTree = "<group>"; };
+		AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+Observer.m"; sourceTree = "<group>"; };
 		AF9201B32746004500E1581C /* ContactGroupEntity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactGroupEntity.h; sourceTree = "<group>"; };
 		AF9201B42746004500E1581C /* ContactGroupEntity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactGroupEntity.m; sourceTree = "<group>"; };
 		AF9201B627460EB300E1581C /* UIConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIConstants.h; sourceTree = "<group>"; };
@@ -317,6 +323,10 @@
 				AFA2BDC8275E092200128996 /* MockAPIService.m */,
 				AFA2BDCB275E094300128996 /* ZaloContactService.h */,
 				AFA2BDCC275E094300128996 /* ZaloContactService.m */,
+				AF5178442762FB2C00FC8BCA /* ZaloContactService+Storage.h */,
+				AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */,
+				AF517847276301BF00FC8BCA /* ZaloContactService+Observer.h */,
+				AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */,
 				AFA2BDCE275E104300128996 /* contacts.vcf */,
 				AFA3B694275F6861003B198B /* fixedContactsList.vcf */,
 			);
@@ -523,6 +533,8 @@
 				AF3E8BE72757295C00BB8AE4 /* ContactViewModel.m in Sources */,
 				AF471B6F2761D732004C035A /* NullFooterView.m in Sources */,
 				AF2C5D72275F265000DF06CF /* ContactFooterView.m in Sources */,
+				AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */,
+				AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */,
 				AF24F4C8274C9E5900A71E07 /* ContactTableViewDataSource.m in Sources */,
 				AFA2BDCD275E094300128996 /* ZaloContactService.m in Sources */,
 				AF0BFBF727456B88006E072B /* ContactEntityAdapter.m in Sources */,
