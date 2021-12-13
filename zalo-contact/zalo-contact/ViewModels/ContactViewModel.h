@@ -6,7 +6,6 @@
 //
 
 @import Foundation;
-#import "ContactsLoader.h"
 #import "CellObject.h"
 #import "ContactTableViewAction.h"
 #import "MockAPIService.h"
@@ -27,7 +26,11 @@ typedef void (^CompleteBlock)(void);
 
 - (void)onDiff:(IGListIndexPathResult *)sectionDiff cells:(NSArray<IGListIndexPathResult *> *)cellDiff reload:(NSArray<NSIndexPath *> *)reloadIndexes;
 - (void)onDiff:(IGListIndexPathResult *)sectionDiff delete:(NSArray<NSIndexPath *> *)deleteIndexes reload:(NSArray<NSIndexPath *> *)reloadIndexes;
-
+- (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
+                  sectionRemove:(NSIndexSet *)sectionRemove
+                        addCell:(NSArray<NSIndexPath *>*)addIndexes
+                     removeCell:(NSArray<NSIndexPath *>*)removeIndexes
+                  andUpdateCell:(NSArray<NSIndexPath *>*)updateIndexes;
 @end
 
 @interface ContactViewModel : NSObject<SwipeActionDelegate>
@@ -41,7 +44,7 @@ typedef void (^CompleteBlock)(void);
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff;
-- (void)setNeedsUpdate;
+
 - (void)fetchLocalContacts;
 - (void)setup;
 - (NSArray<SwipeActionObject *>*)getActionListForContact;

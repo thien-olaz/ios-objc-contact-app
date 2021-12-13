@@ -100,7 +100,6 @@
 
 - (CellObject *)attachToObject:(CellObject *)object swipeAction:(NSArray<SwipeActionObject *> *)actionList {
     return [_tableViewAction attachToObject:object swipeAction:actionList];
-    
 }
 
 - (void) scrollTo:(NSIndexPath *)indexPath {
@@ -142,33 +141,26 @@
     
 }
 
-- (void)onDiff:(IGListIndexPathResult *)sectionDiff delete:(NSArray<NSIndexPath *> *)deleteIndexes reload:(NSArray<NSIndexPath *> *)reloadIndexes{
-    
+#pragma mark - trying my own diff
+
+- (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
+                  sectionRemove:(NSIndexSet *)sectionRemove
+                        addCell:(NSArray<NSIndexPath *> *)addIndexes
+                     removeCell:(NSArray<NSIndexPath *> *)removeIndexes
+                  andUpdateCell:(NSArray<NSIndexPath *> *)updateIndexes {
     __unsafe_unretained typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        NSMutableIndexSet *sectionInsert = [NSMutableIndexSet indexSet];
-        for (NSIndexPath *indexPath in [sectionDiff inserts]) {
-            [sectionInsert addIndex:indexPath.row + 3];
-        }
-        
-        NSMutableIndexSet *sectionDelete = [NSMutableIndexSet indexSet];
-        for (NSIndexPath *indexPath in [sectionDiff deletes]) {
-            [sectionDelete addIndex:indexPath.row + 3];
-        }
-        
         [weakSelf.tableView beginUpdates];
         
-        [weakSelf.tableView deleteSections:sectionDelete withRowAnimation:(UITableViewRowAnimationLeft)];
         [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
-        
+        [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
 
-        [weakSelf.tableView deleteRowsAtIndexPaths:deleteIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
-        
-        [weakSelf.tableView reloadRowsAtIndexPaths:reloadIndexes withRowAnimation:UITableViewRowAnimationNone];
+        [weakSelf.tableView insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
+        [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
+        [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationNone];
         
         [weakSelf.tableView endUpdates];
-        
     });
     
 }

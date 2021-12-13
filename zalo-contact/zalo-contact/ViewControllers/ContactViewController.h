@@ -10,7 +10,6 @@
 @import IGListKit;
 #import "ContactViewController.h"
 #import "ContactEntity.h"
-#import "ContactsLoader.h"
 #import "ContactTableViewDataSource.h"
 
 NS_ASSUME_NONNULL_BEGIN

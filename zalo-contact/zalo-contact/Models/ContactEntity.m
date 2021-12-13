@@ -112,6 +112,13 @@
 }
 
 #pragma mark - Equal
+
+//compare to get update index
+- (NSComparisonResult)comparePhoneNumber:(ContactEntity *)entity {
+    return [self.phoneNumber compare:entity.phoneNumber];
+}
+
+//compare to get order
 - (NSComparisonResult)compare:(ContactEntity *)entity {
     NSComparisonResult res;
 
@@ -123,17 +130,19 @@
     if ( res != NSOrderedSame) {
         return res;
     }
+    //MARK: - phone number có thể trùng 
     res = [self.phoneNumber compare:entity.phoneNumber];
     if ( res != NSOrderedSame) {
         return res;
     }
-    
-    //    res = [self.phoneNumber compare:entity.phoneNumber];
-    //    if ( res != NSOrderedSame) {
-    //        return res;
-    //    }
-    
+
     return NSOrderedSame;
+}
+
+- (BOOL)isEqual:(id)object {
+    ContactEntity *entity = (ContactEntity *)object;
+    if (!entity) return false;
+    return [self compare:entity] == NSOrderedSame;
 }
 
 #pragma mark - sort 2 array

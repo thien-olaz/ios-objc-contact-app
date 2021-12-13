@@ -17,38 +17,33 @@
 #import "LabelCellObject.h"
 #import "UpdateContactObject.h"
 #import "ZaloContactService+Observer.h"
+#import "ContactGroupEntity.h"
 
 @interface ContactViewModel () <ZaloContactEventListener>
 
 @property IGListIndexPathResult *sectionDiff;
 @property NSArray<IGListIndexPathResult *> *contactsDiff;
 @property NSArray<NSIndexPath *> *reloadIndexes;
-
 @property NSMutableArray<NSIndexPath *> *deleteIndexes;
 
 @end
 
 @implementation ContactViewModel {
-    ContactsLoader *loader;
     NSMutableArray<ContactGroupEntity *> *contactGroups;
-    
-    
     id<TableViewActionDelegate> actionDelegate;
     id<TableViewDiffDelegate> diffDelegate;
     id currentState;
+    NSLock *updateUILock;
 }
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff{
     self = super.init;
     
-    loader = ContactsLoader.new;
-    
     actionDelegate = action;
     diffDelegate = diff;
     _deleteIndexes = NSMutableArray.new;
     [ZaloContactService.sharedInstance subcribe:self];
-    
     
     [self setup];
     return self;
@@ -59,60 +54,88 @@
     [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
 }
 
-- (void)onAddContact:(nonnull ContactEntity *)contact {
-    [self setNeedsUpdate];
-}
-
 - (void)onDeleteContact:(nonnull ContactEntity *)contact {
-    
-    [self setNeedsUpdate];
-    
-    
-//    id newState = @(ZaloContactService.sharedInstance.getFullContactDict.description.hash);
-//    if (currentState) {
-//        if (currentState == newState) return;
-//    }
-//    currentState = newState;
-//    
-////    NSIndexPath *deleteIdp = [self.tableViewDataSource indexPathForPhoneNumber: contact.phoneNumber];
-//    NSIndexPath *deleteIdp = [self.tableViewDataSource indexPathForContactEntity:contact];
-//    
-//    if (!deleteIdp) return;
-//    if (![_deleteIndexes containsObject:deleteIdp]) {
-//        [_deleteIndexes addObject:deleteIdp];
-//    }
-//    
-//    [self applyDeleteIndexes:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
-    
+
 }
 
-- (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact {
-    [self setNeedsUpdate];
+// Tìm indexpath dựa trên contact entity trong tableview
+- (NSArray<NSIndexPath*>*)getIndexesInTablviewFromContactArray:(ContactEntityArray*)array exceptInSecion:(NSArray<NSString *>*)exception {
+    NSMutableArray<NSIndexPath *> *indexes = [NSMutableArray new];
+    for (ContactEntity *contact in array) {
+        if ([exception containsObject:contact.header]) continue;
+        NSIndexPath *indexPath = [self.tableViewDataSource indexPathForContactEntity:contact];
+        if (indexPath && ![indexes containsObject:indexPath]) {
+            [indexes addObject:indexPath];
+        }
+    }
+    return indexes.copy;
 }
 
-- (void)setNeedsUpdate {
-    __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(2, GCDThrottleTypeInvokeAndIgnore, ^{
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
-            [weakSelf updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
-        });
-    });
+
+- (NSArray<NSIndexPath*>*)getInsertIndexesInTablviewFromContactArray:(ContactEntityArray*)array exceptInSecion:(NSArray<NSString *>*)exception{
+    NSMutableArray<NSIndexPath *> *indexes = [NSMutableArray new];
+    for (ContactEntity *contact in array) {
+        if ([exception containsObject:contact.header]) continue;
+        NSIndexPath *indexPath = [self.tableViewDataSource insertIndexPathForContactEntity:contact];
+        if (indexPath) [indexes addObject:indexPath];
+        
+    }
+    return indexes.copy;
 }
 
-- (void)updateIfNeeded {
-    [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+- (NSIndexSet*)getSectionInsertIndexesInTablviewFromSectionArray:(NSArray<NSString*>*)array {
+    NSMutableArray *headerList = ((NSArray*)[contactGroups valueForKey:@"header"]).mutableCopy;
+    NSMutableIndexSet *indexes = [NSMutableIndexSet new];
+    for (NSString *header in array) {
+        NSUInteger foundIndex = [headerList indexOfObject:header inSortedRange:NSMakeRange(0, [headerList count]) options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
+            return [obj1 compare:obj2];
+        }];
+        [headerList insertObject:header atIndex:foundIndex];
+    }
+    for (NSString *header in array) {
+        NSUInteger foundIndex = [headerList indexOfObject:header inSortedRange:NSMakeRange(0, [headerList count]) options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
+            return [obj1 compare:obj2];
+        }];
+        [indexes addIndex:foundIndex + 3];
+    }
+    return indexes.copy;
 }
 
-- (void)applyDeleteIndexes:(NSArray<ContactGroupEntity *> *)groups {
-    _sectionDiff = [self getSectionDiff:groups];
-    _reloadIndexes = [self getReloadIndexes: contactGroups];
-    [self setContactGroups:groups];
+- (NSIndexSet*)getSectionIndexesInTablviewFromSectionArray:(NSArray<NSString*>*)array {
+    NSArray *headerList = [contactGroups valueForKey:@"header"];
+    NSMutableIndexSet *indexes = [NSMutableIndexSet new];
+    for (NSString *header in array) {
+        NSUInteger foundIndex = [headerList indexOfObject:header];
+        if (foundIndex != NSNotFound) [indexes addIndex:foundIndex + 3];
+    }
+    return indexes.copy;
+}
+
+- (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *>*)addSectionList
+                                        removeSectionList:(NSMutableArray<NSString *>*)removeSectionList
+                              addContact:(ContactEntityArray*)addContacts
+                              removeContact:(ContactEntityArray*)removeContacts
+                           updateContact:(ContactEntityArray*)updateContacts {
+    
+    NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTablviewFromContactArray:removeContacts exceptInSecion:removeSectionList];
+
+    NSIndexSet *sectionRemove = [self getSectionIndexesInTablviewFromSectionArray:removeSectionList];
+    
+    //cập nhập bản data mới nhất vào data của view model
+    [self setContactGroups:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+    //cập nhập datasource của tableview
     if (_updateBlock) _updateBlock();
-    [self newUpdateUI];
-    [self.deleteIndexes removeAllObjects];
+    
+    NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTablviewFromContactArray:addContacts exceptInSecion:addSectionList];
+    NSIndexSet *sectionInsert = [self getSectionIndexesInTablviewFromSectionArray:addSectionList];
+    
+    NSArray<NSIndexPath *> *updateIndexes = [self getIndexesInTablviewFromContactArray:updateContacts exceptInSecion:@[]];
+    
+    [diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];    
 }
 
 - (void)updateDiff:(NSArray<ContactGroupEntity *> *)groups {
+    [updateUILock lock];
     if (contactGroups) {
         _sectionDiff = [self getSectionDiff:groups];
         _contactsDiff = [self getCellDiff:groups];
@@ -123,6 +146,7 @@
         [self setContactGroups:groups];
         [self completeFetchingData];
     }
+    [updateUILock unlock];
 }
 
 - (void)setup {
@@ -132,6 +156,9 @@
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
     contactGroups = [NSMutableArray.alloc initWithArray: groups];
     _data = [self compileGroupToTableData:contactGroups];
+    NSLog(@"==============================");
+    NSLog(@"======New update circle=======");
+    NSLog(@"==============================");
 }
 
 
@@ -142,16 +169,7 @@
 
 - (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {
     if (_updateBlock) _updateBlock();
-    [self updateUI];
-    
-}
-
-- (void)updateUI {
     [diffDelegate onDiff:self.sectionDiff cells:self.contactsDiff reload:self.reloadIndexes];
-}
-
-- (void)newUpdateUI {
-    [diffDelegate onDiff:_sectionDiff delete:_deleteIndexes.copy reload:_reloadIndexes];
 }
 
 - (IGListIndexPathResult *)getSectionDiff:(NSArray<ContactGroupEntity *> *)newGroups {
@@ -186,22 +204,20 @@
 
 - (void)checkPermissionAndFetchData {
     typeof(self) weakSelf = self;
-    [UserContacts checkAccessContactPermission:^(BOOL complete) {
-        if (complete) {
-            [self performSelectorInBackground:@selector(fetchLocalContacts) withObject:nil];
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (weakSelf.presentBlock) weakSelf.presentBlock();
-            });
-        }
-    }];
+//    [UserContacts checkAccessContactPermission:^(BOOL complete) {
+//        if (complete) {
+//            [self performSelectorInBackground:@selector(fetchLocalContacts) withObject:nil];
+//        } else {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                if (weakSelf.presentBlock) weakSelf.presentBlock();
+//            });
+//        }
+//    }];
 }
 
 - (void)fetchLocalContacts {
     [ZaloContactService.sharedInstance fetchLocalContact];
-    [self setNeedsUpdate];
 }
-
 
 - (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber {
     [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:phoneNumber];
@@ -220,14 +236,6 @@
     [arr addObject:[SwipeActionObject.alloc initWithTile:@"Bạn thân" color:UIColor.zaloPrimaryColor actionType:(markAsFavoriteAction)]];
     [arr addObject:[SwipeActionObject.alloc initWithTile:@"Thêm" color:UIColor.lightGrayColor actionType:(moreAction)]];
     return arr.copy;
-}
-
-//MARK: - replace with a view controller to select which contact will be adModed into list later
-/*
- after added new contacts, this contact must be sync
- */
-- (void)fetchLocalContactIntoList{
-    [self checkPermissionAndFetchData];
 }
 
 - (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups {
@@ -251,38 +259,27 @@
                                  action:^{} ]
     ];
     
-    [data addObject:
-         [actionDelegate attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Tìm kiếm (866) 420-3189"
-                                          image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                 action:^{
-        
+    [data addObject:[actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Tìm kiếm (866) 420-3189" image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor] action:^{
         NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForPhoneNumber:@"(922) 471-2199"];
         if (idp) [weakSelf->actionDelegate scrollTo:idp];
-    } ]
-    ];
+    }]];
     
     [data addObject:BlankFooterObject.new];
     
     //MARK:  - bạn thân
     [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn thân"]];
-    [data addObject:
-         [actionDelegate attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Chọn bạn thường liên lạc"
-                                          image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.zaloPrimaryColor]
-                                 action:^{
+    
+    [data addObject:[actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Chọn bạn thường liên lạc" image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.zaloPrimaryColor] action:^{
         NSLog(@"Tapped");
-    } ]
-    ];
+    }]];
+    
     [data addObject:BlankFooterObject.new];
     
     //MARK: - Contact
-    ActionHeaderObject *contactHeaderObject = [ActionHeaderObject.alloc
-                                               initWithTitle:@"Danh bạ"
-                                               andButtonTitle:@"CẬP NHẬP"];
+    ActionHeaderObject *contactHeaderObject = [[ActionHeaderObject alloc] initWithTitle:@"Danh bạ" andButtonTitle:@"CẬP NHẬP"];
     
     [contactHeaderObject setBlock:^{
-        [self fetchLocalContactIntoList];
+        [self checkPermissionAndFetchData];
     }];
     
     [data addObject:contactHeaderObject];
@@ -302,7 +299,6 @@
                                     swipeAction:[self getActionListForContact]]
             ];
         }
-        
         // Footer
         [data addObject:ContactFooterObject.new];
     }
@@ -317,7 +313,7 @@
     [data addObject:[LabelCellObject.alloc initWithTitle:@"Nhanh chóng thêm bạn vào Zalo từ danh \nbạ điện thoại" andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloLightGrayColor cellType:tallCell]];
     
     [data addObject:[UpdateContactObject.alloc initWithTitle:@"Cập nhập danh bạ" andAction:^{
-        [self fetchLocalContactIntoList];
+        [self checkPermissionAndFetchData];
     }]];
     
     [data addObject:BlankFooterObject.new];

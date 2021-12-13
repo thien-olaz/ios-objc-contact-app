@@ -6,12 +6,12 @@
 //
 #import "ContactTableViewDataSource.h"
 #import "SectionObject.h"
+#import "ZaloContactService.h"
 
 @implementation ContactTableViewDataSource {
     NSMutableArray<SectionObject *> *sections;
     NSMutableArray<NSString *> *sectionTitles;
     NSMutableArray<NSNumber *> *remapedSectionIndex;
-    
     CellFactory *cellFactory;
 }
 
@@ -56,7 +56,7 @@
     }
     
     if (currentSection) [sectionsArray addObject:currentSection];
-    
+
     sections = sectionsArray;
 }
 
@@ -84,7 +84,12 @@
         ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
         for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
             if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
-            return [self binarySearch:object inSection:sectionIndex];
+            NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
+            NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
+                return [obj1 compare:obj2];
+            }];
+            if (foundIndex == NSNotFound) return nil;
+            return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
         }
     }
     return nil;
@@ -97,12 +102,31 @@
         ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
         for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
             if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
-            return [self binarySearch:object inSection:sectionIndex];
+            NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
+            NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
+                return [obj1 compare:obj2];
+            }];
+            if (foundIndex == NSNotFound) return nil;
+            return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
         }
     }
     return nil;
 }
 
+- (NSIndexPath * _Nullable)insertIndexPathForContactEntity:(ContactEntity *)contact {
+    if (contact) {
+        ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
+        for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
+            if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
+            NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
+            NSUInteger insertIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
+                return [obj1 compare:obj2];
+            }];
+            return [NSIndexPath indexPathForRow:insertIndex inSection:sectionIndex];
+        }
+    }
+    return nil;
+}
 
 //MARK: - time complexity - Olog(n)
 - (NSIndexPath *)binarySearch:(id)object inSection:(unsigned long)sectionIndex {
@@ -162,7 +186,7 @@
     CellObject *object = [self objectAtIndexPath: indexPath];
     return [cellFactory tableView:tableView heightForRowWithObject:object];
 }
-    
+
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return YES;
 }

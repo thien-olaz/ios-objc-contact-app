@@ -31,9 +31,7 @@
     if (!contact) {
         return NO;
     }
-    
     return [self.contact compare:contact.contact];
-    
 }
 
 @end

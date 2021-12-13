@@ -17,4 +17,6 @@ target 'zalo-contact' do
   #image cache
   pod 'SDWebImage'
   
+  pod 'MessageThrottle'
+  
 end

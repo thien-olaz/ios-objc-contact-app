@@ -11,14 +11,14 @@
 @implementation ZaloContactService (Observer)
 
 #pragma mark - Observer
-
+// Check thread safe
 - (void)subcribe:(id<ZaloContactEventListener>)listener {
     if (!listeners) {
         listeners = NSMutableArray.new;
     }
     [listeners addObject:listener];
 }
-
+// Check thread safe
 - (void)unsubcribe:(id<ZaloContactEventListener>)listener {
     if (!listeners) {
         return;
@@ -27,27 +27,30 @@
 }
 
 - (void)didAddContact:(ContactEntity *)contact {
+    //MARK: - dictionary thread safe
     [contactDictionaryLock lock];
     [accountDictionaryLock lock];
     
     [accountDictionary setObject:contact forKey:contact.phoneNumber.copy];
     if (![contactDictionary objectForKey:contact.header]) {
-        [contactDictionary setObject:@[contact] forKey:contact.header];
+        [contactDictionary setObject:[NSMutableArray.alloc initWithArray:@[contact]] forKey:contact.header];
     } else {
-        //        insert to array
+        //MARK - chưa ổn - mutableCopy O(n)
         NSMutableArray *arr = [contactDictionary objectForKey:contact.header].mutableCopy;
         for (int i = 0; i < arr.count; i++) {
+            // uique key
+            //MARK - compare chưa ổn
+            // binary
             if ([contact compare:arr[i]] == NSOrderedDescending) {
-                
                 if (i + 1 < arr.count && [contact compare:arr[i + 1]] == NSOrderedSame) {
                     continue;
                 } else {
                     [arr insertObject:contact atIndex:i];
                 }
-                
                 break;
             }
         }
+        // MARK - tạo liên tục
         [contactDictionary setObject:arr forKey:contact.header];
     }
     
@@ -72,6 +75,7 @@
     if (contact) {
         if ([contactDictionary objectForKey:contact.header]) {
             //        delete from to array
+            // MARK: tránh copy - để dùng removeObject
             NSMutableArray *arr = [contactDictionary objectForKey:contact.header].mutableCopy;
             for (int i = 0; i < arr.count; i++) {
                 if ([contact compare:arr[i]] == NSOrderedSame) {
@@ -83,9 +87,7 @@
             else [contactDictionary removeObjectForKey:contact.header];
         }
         [accountDictionary removeObjectForKey:phoneNumber];
-    } else {
-        NSLog(@"sai sai");
-    }
+    } 
     
     
     [contactDictionaryLock unlock];
@@ -220,7 +222,7 @@
     for (ContactEntity *contact in sortedArray) {
         
         if (![contact.header isEqualToString:currentHeader]) {
-            [temp setObject:tempArray.copy forKey:currentHeader];
+            [temp setObject:tempArray.mutableCopy forKey:currentHeader];
             
             currentHeader = contact.header;
             tempArray = NSMutableArray.new;
@@ -228,7 +230,7 @@
         [tempArray addObject:contact];
         [accountDictionary setObject:contact forKey:contact.phoneNumber.copy];
     }
-    [temp setObject:tempArray.copy forKey:currentHeader];
+    [temp setObject:tempArray forKey:currentHeader];
     
     contactDictionary = temp;
     

@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact;
 - (void)didUpdateContactWihPhoneNumber:(NSString *)phoneNumber toContact:(ContactEntity *)newContact;
 - (void)didReceiveNewFullList:(NSArray<ContactEntity *>*)sortedArray;
+
 @end
 
 NS_ASSUME_NONNULL_END

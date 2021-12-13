@@ -26,6 +26,9 @@
 		AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF368C5527420F3A00E17AEB /* Assets.xcassets */; };
 		AF368C5927420F3A00E17AEB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF368C5727420F3A00E17AEB /* LaunchScreen.storyboard */; };
 		AF368C5C27420F3A00E17AEB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AF368C5B27420F3A00E17AEB /* main.m */; };
+		AF36B9192767587B00B8AC56 /* short-contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF36B9182767587B00B8AC56 /* short-contacts.vcf */; };
+		AF36B91B2767A2AA00B8AC56 /* medium-contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF36B91A2767A2AA00B8AC56 /* medium-contacts.vcf */; };
+		AF36B91D2767A4FB00B8AC56 /* medium-contacts2.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */; };
 		AF3E8BE72757295C00BB8AE4 /* ContactViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = AF3E8BE62757295C00BB8AE4 /* ContactViewModel.m */; };
 		AF426F5F2754DC4C004C541E /* HeaderObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AF426F5E2754DC4C004C541E /* HeaderObject.m */; };
 		AF426F622754DE41004C541E /* FooterObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AF426F612754DE41004C541E /* FooterObject.m */; };
@@ -37,11 +40,11 @@
 		AF9201B827460EB300E1581C /* UIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B727460EB300E1581C /* UIConstants.m */; };
 		AFA2BDC9275E092200128996 /* MockAPIService.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDC8275E092200128996 /* MockAPIService.m */; };
 		AFA2BDCD275E094300128996 /* ZaloContactService.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDCC275E094300128996 /* ZaloContactService.m */; };
-		AFA2BDCF275E104300128996 /* contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA2BDCE275E104300128996 /* contacts.vcf */; };
+		AFA2BDCF275E104300128996 /* super-long-contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA2BDCE275E104300128996 /* super-long-contacts.vcf */; };
 		AFA2BDD2275E14A000128996 /* NSStringExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD1275E14A000128996 /* NSStringExt.m */; };
 		AFA2BDD5275E4A2700128996 /* NSObject+Debounce.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD4275E4A2700128996 /* NSObject+Debounce.m */; };
 		AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD7275E54E000128996 /* GCDThrottle.m */; };
-		AFA3B695275F6861003B198B /* fixedContactsList.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA3B694275F6861003B198B /* fixedContactsList.vcf */; };
+		AFA3B695275F6861003B198B /* normal-contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA3B694275F6861003B198B /* normal-contacts.vcf */; };
 		AFA3B6982760A960003B198B /* SwipeActionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6972760A960003B198B /* SwipeActionObject.m */; };
 		AFA3B69B2760EC83003B198B /* LabelViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B69A2760EC83003B198B /* LabelViewCell.m */; };
 		AFA3B69E2760F31C003B198B /* LabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B69D2760F31C003B198B /* LabelCell.m */; };
@@ -51,7 +54,6 @@
 		AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4A72756093300FB5406 /* NullHeaderView.m */; };
 		AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */; };
 		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
-		AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5B274284A500500137 /* ContactsLoader.m */; };
 		AFCDDE5F2742875200500137 /* ContactEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5E2742875200500137 /* ContactEntity.m */; };
 		AFE4C9FE2755D73B00A0190F /* SectionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE4C9FD2755D73B00A0190F /* SectionObject.m */; };
 		AFE4CA072755F45600A0190F /* HeaderFooterFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE4CA062755F45600A0190F /* HeaderFooterFactory.m */; };
@@ -100,6 +102,9 @@
 		AF368C5827420F3A00E17AEB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AF368C5A27420F3A00E17AEB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AF368C5B27420F3A00E17AEB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AF36B9182767587B00B8AC56 /* short-contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "short-contacts.vcf"; sourceTree = "<group>"; };
+		AF36B91A2767A2AA00B8AC56 /* medium-contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "medium-contacts.vcf"; sourceTree = "<group>"; };
+		AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "medium-contacts2.vcf"; sourceTree = "<group>"; };
 		AF3E8BE52757295C00BB8AE4 /* ContactViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactViewModel.h; sourceTree = "<group>"; };
 		AF3E8BE62757295C00BB8AE4 /* ContactViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactViewModel.m; sourceTree = "<group>"; };
 		AF426F5D2754DC4C004C541E /* HeaderObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeaderObject.h; sourceTree = "<group>"; };
@@ -122,14 +127,14 @@
 		AFA2BDC8275E092200128996 /* MockAPIService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MockAPIService.m; sourceTree = "<group>"; };
 		AFA2BDCB275E094300128996 /* ZaloContactService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZaloContactService.h; sourceTree = "<group>"; };
 		AFA2BDCC275E094300128996 /* ZaloContactService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZaloContactService.m; sourceTree = "<group>"; };
-		AFA2BDCE275E104300128996 /* contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = contacts.vcf; sourceTree = "<group>"; };
+		AFA2BDCE275E104300128996 /* super-long-contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "super-long-contacts.vcf"; sourceTree = "<group>"; };
 		AFA2BDD0275E14A000128996 /* NSStringExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSStringExt.h; sourceTree = "<group>"; };
 		AFA2BDD1275E14A000128996 /* NSStringExt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSStringExt.m; sourceTree = "<group>"; };
 		AFA2BDD3275E4A2700128996 /* NSObject+Debounce.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+Debounce.h"; sourceTree = "<group>"; };
 		AFA2BDD4275E4A2700128996 /* NSObject+Debounce.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Debounce.m"; sourceTree = "<group>"; };
 		AFA2BDD6275E54E000128996 /* GCDThrottle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDThrottle.h; sourceTree = "<group>"; };
 		AFA2BDD7275E54E000128996 /* GCDThrottle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDThrottle.m; sourceTree = "<group>"; };
-		AFA3B694275F6861003B198B /* fixedContactsList.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = fixedContactsList.vcf; sourceTree = "<group>"; };
+		AFA3B694275F6861003B198B /* normal-contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "normal-contacts.vcf"; sourceTree = "<group>"; };
 		AFA3B6962760A960003B198B /* SwipeActionObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwipeActionObject.h; sourceTree = "<group>"; };
 		AFA3B6972760A960003B198B /* SwipeActionObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwipeActionObject.m; sourceTree = "<group>"; };
 		AFA3B6992760EC83003B198B /* LabelViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabelViewCell.h; sourceTree = "<group>"; };
@@ -148,8 +153,6 @@
 		AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommonHeaderAndFooterViews.m; sourceTree = "<group>"; };
 		AFCDDE5527427A4E00500137 /* ContactViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactViewController.h; sourceTree = "<group>"; };
 		AFCDDE5627427A4E00500137 /* ContactViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactViewController.m; sourceTree = "<group>"; };
-		AFCDDE5A274284A500500137 /* ContactsLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactsLoader.h; sourceTree = "<group>"; };
-		AFCDDE5B274284A500500137 /* ContactsLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactsLoader.m; sourceTree = "<group>"; };
 		AFCDDE5D2742875200500137 /* ContactEntity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactEntity.h; sourceTree = "<group>"; };
 		AFCDDE5E2742875200500137 /* ContactEntity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactEntity.m; sourceTree = "<group>"; };
 		AFE4C9FC2755D73B00A0190F /* SectionObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SectionObject.h; sourceTree = "<group>"; };
@@ -200,12 +203,12 @@
 				AF24F4D6274F375B00A71E07 /* UIAlertControllerExt.m */,
 				AFA2BDD0275E14A000128996 /* NSStringExt.h */,
 				AFA2BDD1275E14A000128996 /* NSStringExt.m */,
+				AF2C5D6D275E833000DF06CF /* NSArrayExt.h */,
+				AF2C5D6E275E833000DF06CF /* NSArrayExt.m */,
 				AFA2BDD3275E4A2700128996 /* NSObject+Debounce.h */,
 				AFA2BDD4275E4A2700128996 /* NSObject+Debounce.m */,
 				AFA2BDD6275E54E000128996 /* GCDThrottle.h */,
 				AFA2BDD7275E54E000128996 /* GCDThrottle.m */,
-				AF2C5D6D275E833000DF06CF /* NSArrayExt.h */,
-				AF2C5D6E275E833000DF06CF /* NSArrayExt.m */,
 			);
 			path = Ultilities;
 			sourceTree = "<group>";
@@ -327,8 +330,11 @@
 				AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */,
 				AF517847276301BF00FC8BCA /* ZaloContactService+Observer.h */,
 				AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */,
-				AFA2BDCE275E104300128996 /* contacts.vcf */,
-				AFA3B694275F6861003B198B /* fixedContactsList.vcf */,
+				AFA2BDCE275E104300128996 /* super-long-contacts.vcf */,
+				AF36B9182767587B00B8AC56 /* short-contacts.vcf */,
+				AFA3B694275F6861003B198B /* normal-contacts.vcf */,
+				AF36B91A2767A2AA00B8AC56 /* medium-contacts.vcf */,
+				AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -392,16 +398,14 @@
 			children = (
 				AFCD453C2757B20A00825C0E /* ViewFactory */,
 				AF426F642754DEA9004C541E /* CellObject */,
+				AFA3B6962760A960003B198B /* SwipeActionObject.h */,
+				AFA3B6972760A960003B198B /* SwipeActionObject.m */,
 				AF24F4C6274C9E5900A71E07 /* ContactTableViewDataSource.h */,
 				AF24F4C7274C9E5900A71E07 /* ContactTableViewDataSource.m */,
 				AF426F652754E915004C541E /* ContactTableViewAction.h */,
 				AF426F662754E915004C541E /* ContactTableViewAction.m */,
-				AFCDDE5A274284A500500137 /* ContactsLoader.h */,
-				AFCDDE5B274284A500500137 /* ContactsLoader.m */,
 				AF3E8BE52757295C00BB8AE4 /* ContactViewModel.h */,
 				AF3E8BE62757295C00BB8AE4 /* ContactViewModel.m */,
-				AFA3B6962760A960003B198B /* SwipeActionObject.h */,
-				AFA3B6972760A960003B198B /* SwipeActionObject.m */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -473,10 +477,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF36B91D2767A4FB00B8AC56 /* medium-contacts2.vcf in Resources */,
+				AF36B91B2767A2AA00B8AC56 /* medium-contacts.vcf in Resources */,
+				AF36B9192767587B00B8AC56 /* short-contacts.vcf in Resources */,
 				AF368C5927420F3A00E17AEB /* LaunchScreen.storyboard in Resources */,
-				AFA3B695275F6861003B198B /* fixedContactsList.vcf in Resources */,
+				AFA3B695275F6861003B198B /* normal-contacts.vcf in Resources */,
 				AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */,
-				AFA2BDCF275E104300128996 /* contacts.vcf in Resources */,
+				AFA2BDCF275E104300128996 /* super-long-contacts.vcf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,7 +550,6 @@
 				AF24F4D7274F375B00A71E07 /* UIAlertControllerExt.m in Sources */,
 				AF426F672754E915004C541E /* ContactTableViewAction.m in Sources */,
 				AF426F5F2754DC4C004C541E /* HeaderObject.m in Sources */,
-				AFCDDE5C274284A500500137 /* ContactsLoader.m in Sources */,
 				AF24F4CE274DE4A900A71E07 /* CommonCell.m in Sources */,
 				AFA3B6A12760F4F8003B198B /* LabelCellObject.m in Sources */,
 				AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */,

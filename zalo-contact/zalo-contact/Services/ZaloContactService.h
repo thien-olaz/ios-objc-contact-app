@@ -9,8 +9,8 @@
 #import "MockAPIService.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictionary;
+typedef NSMutableArray<ContactEntity *> ContactEntityArray;
+typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> ContactDictionary;
 
 @protocol ZaloContactEventListener <NSObject>
 
@@ -18,7 +18,11 @@ typedef NSMutableDictionary<NSString *, NSArray<ContactEntity *>*> ContactDictio
 - (void)onAddContact:(ContactEntity *)contact;
 - (void)onDeleteContact:(ContactEntity *)contact;
 - (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact;
-
+- (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *>*)addSectionList
+                       removeSectionList:(NSMutableArray<NSString *>*)removeSectionList
+                              addContact:(ContactEntityArray*)addContacts
+                           removeContact:(ContactEntityArray*)removeContacts
+                           updateContact:(ContactEntityArray*)updateContacts;
 @end
 
 @interface ZaloContactService : NSObject {

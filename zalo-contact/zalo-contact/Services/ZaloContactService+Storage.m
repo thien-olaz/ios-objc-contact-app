@@ -34,6 +34,9 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+// background
+// tạo 1 queue riêng - chạy tuần tự
+// add vào - không replace
 - (void)load {
     NSError *err = nil;
     NSData *contactDictDecoded = [NSUserDefaults.standardUserDefaults objectForKey:@"contactDict"];
@@ -43,14 +46,14 @@
     if (err) {
         NSLog(@"loadSavedData error %@", err.description);
     }
-    if (contactDict) contactDictionary = contactDict;
+//    if (contactDict) contactDictionary = contactDict;
     
     NSData *accountDictDecoded = [NSUserDefaults.standardUserDefaults objectForKey:@"accountDict"];
     NSMutableDictionary<NSString *, ContactEntity *> *accountDict = (NSMutableDictionary<NSString *, ContactEntity *> *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:accountDictDecoded error:&err];
     if (err) {
         NSLog(@"loadSavedData error %@", err.description);
     }
-    if (accountDict) accountDictionary = accountDict;
+//    if (accountDict) accountDictionary = accountDict;
 }
 
 @end

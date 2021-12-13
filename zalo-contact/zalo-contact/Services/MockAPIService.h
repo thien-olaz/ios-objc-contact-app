@@ -27,9 +27,7 @@ typedef void (^OnContactUpdateWithPhoneNumberBLock) (NSString *, ContactEntity *
 
 - (void)getContactList;
 - (void)fetchContacts:(OnData)block;
-//- (void)contactChanged;
-//- (void)contactDeleted;
-//- (void)contactAdded;
+- (NSArray<CNContact *>*)getDataFromFile:(NSString *)fileName;
 
 @end
 

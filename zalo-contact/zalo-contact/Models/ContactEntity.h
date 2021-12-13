@@ -33,7 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<NSObject>)diffIdentifier;
 - (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object;
 - (NSComparisonResult)compare:(ContactEntity *)entity;
-
+- (NSComparisonResult)comparePhoneNumber:(ContactEntity *)entity;
+- (BOOL)isEqual:(id)object;
 // MARK: Class method
 + (NSArray<ContactEntity*>*) insertionSort:(NSArray<ContactEntity*> *)array;
 + (NSString *)headerFromFirstName:(nullable NSString *)firstName andLastName:(nullable NSString *)lastName;

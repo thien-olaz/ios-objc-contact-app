@@ -83,11 +83,12 @@ void dispatch_throttle_by_type_on_queue(NSTimeInterval threshold, GCDThrottleTyp
         dispatch_source_t source = scheduledSources[key];
         if (source) { return; }
         
-        block();
+        
         source = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
         dispatch_source_set_timer(source, dispatch_time(DISPATCH_TIME_NOW, threshold * NSEC_PER_SEC), DISPATCH_TIME_FOREVER, 0);
         dispatch_source_set_event_handler(source, ^{
             dispatch_source_cancel(source);
+            block();
             [scheduledSources removeObjectForKey:key];
         });
         dispatch_resume(source);

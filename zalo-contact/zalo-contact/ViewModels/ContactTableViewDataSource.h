@@ -7,9 +7,9 @@
 
 #import <Foundation/Foundation.h>
 #import "ContactTableViewDataSource.h"
-#import "ContactsLoader.h"
 #import "CellFactory.h"
 #import "ContactObject.h"
+
 @import UIKit;
 @import CoreGraphics;
 
@@ -21,6 +21,7 @@
 - (NSIndexPath * _Nullable)indexPathForObject:(id)object;
 - (NSIndexPath * _Nullable)indexPathForPhoneNumber:(NSString *)phoneNumber;
 - (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *)contact;
+- (NSIndexPath * _Nullable)insertIndexPathForContactEntity:(ContactEntity *)contact;
 - (nullable HeaderObject *)headerObjectInSection:(NSInteger)index;
 - (nullable FooterObject *)footerObjectInSection:(NSInteger)index;
 - (CGFloat)tableView:(UITableView *_Nonnull)tableView heightForRowAtIndexPath:(NSIndexPath *_Nonnull)indexPath;
