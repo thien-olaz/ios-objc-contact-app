@@ -15,10 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)subcribe:(id<ZaloContactEventListener>)listener;
 - (void)unsubcribe:(id<ZaloContactEventListener>)listener;
 
-- (void)didAddContact:(ContactEntity *)contact;
-- (void)didDeleteContact:(NSString *)phoneNumber;
-- (void)didUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact;
-- (void)didUpdateContactWihPhoneNumber:(NSString *)phoneNumber toContact:(ContactEntity *)newContact;
 - (void)didReceiveNewFullList:(NSArray<ContactEntity *>*)sortedArray;
 
 @end

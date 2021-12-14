@@ -36,6 +36,7 @@
 		AF471B6F2761D732004C035A /* NullFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF471B6E2761D732004C035A /* NullFooterView.m */; };
 		AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */; };
 		AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */ = {isa = PBXBuildFile; fileRef = AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */; };
+		AF63595827685A9300DFE352 /* normal-contacts2.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF63595727685A9300DFE352 /* normal-contacts2.vcf */; };
 		AF9201B52746004500E1581C /* ContactGroupEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B42746004500E1581C /* ContactGroupEntity.m */; };
 		AF9201B827460EB300E1581C /* UIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B727460EB300E1581C /* UIConstants.m */; };
 		AFA2BDC9275E092200128996 /* MockAPIService.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDC8275E092200128996 /* MockAPIService.m */; };
@@ -119,6 +120,7 @@
 		AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+Storage.m"; sourceTree = "<group>"; };
 		AF517847276301BF00FC8BCA /* ZaloContactService+Observer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+Observer.h"; sourceTree = "<group>"; };
 		AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+Observer.m"; sourceTree = "<group>"; };
+		AF63595727685A9300DFE352 /* normal-contacts2.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "normal-contacts2.vcf"; sourceTree = "<group>"; };
 		AF9201B32746004500E1581C /* ContactGroupEntity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactGroupEntity.h; sourceTree = "<group>"; };
 		AF9201B42746004500E1581C /* ContactGroupEntity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactGroupEntity.m; sourceTree = "<group>"; };
 		AF9201B627460EB300E1581C /* UIConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIConstants.h; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 				AFA2BDCE275E104300128996 /* super-long-contacts.vcf */,
 				AF36B9182767587B00B8AC56 /* short-contacts.vcf */,
 				AFA3B694275F6861003B198B /* normal-contacts.vcf */,
+				AF63595727685A9300DFE352 /* normal-contacts2.vcf */,
 				AF36B91A2767A2AA00B8AC56 /* medium-contacts.vcf */,
 				AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */,
 			);
@@ -484,6 +487,7 @@
 				AFA3B695275F6861003B198B /* normal-contacts.vcf in Resources */,
 				AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */,
 				AFA2BDCF275E104300128996 /* super-long-contacts.vcf in Resources */,
+				AF63595827685A9300DFE352 /* normal-contacts2.vcf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

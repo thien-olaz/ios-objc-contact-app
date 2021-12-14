@@ -14,11 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *fullName;
 @property NSString *header;
 @property NSString *subtitle;
+@property NSString *email;
 
 - (id)initWithFirstName:(NSString *)firstName
                lastName:(NSString *)lastName
             phoneNumber:(NSString *)phoneNumber
-               subtitle:(nullable NSString *)subtitle;
+               subtitle:(nullable NSString *)subtitle
+                  email:(NSString *)email;
 
 - (id)initWithFirstName:(NSString *)firstName
                lastName:(NSString *)lastName

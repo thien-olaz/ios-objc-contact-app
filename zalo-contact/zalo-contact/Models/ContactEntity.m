@@ -19,18 +19,20 @@
 @implementation ContactEntity
 
 - (id)init {
-    return [self initWithFirstName:@"" lastName:@"" phoneNumber:@"" subtitle:nil];
+    return [self initWithFirstName:@"" lastName:@"" phoneNumber:@"" subtitle:nil email:@""];
 }
 
 - (id)initWithFirstName:(NSString *)firstName
                lastName:(NSString *)lastName
             phoneNumber:(NSString *)phoneNumber
-               subtitle:(nullable NSString *)subtitle{
+               subtitle:(nullable NSString *)subtitle
+                  email:(NSString *)email {
     self = super.init;
     _firstName = firstName;
     _lastName = lastName;
     _phoneNumber = phoneNumber;
-    self.subtitle = subtitle;
+    _subtitle = subtitle;
+    _email = email;
     [self update];
     return self;
 }
@@ -40,13 +42,9 @@
             phoneNumber:(NSString *)phoneNumber
                imageUrl:(NSString *)url
                subtitle:(nullable NSString *)subtitle {
-    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle];
+    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle email:@""];
     _imageUrl = url;
     return self;
-}
-
-- (NSString *)lastName {
-    return _lastName;
 }
 
 - (NSString *)phoneNumber {
@@ -57,11 +55,6 @@
     self.header = [ContactEntity headerFromFirstName:_firstName andLastName:_lastName];
     self.fullName = [NSString stringWithFormat:@"%@ %@", _lastName, _firstName];
 }
-
-- (NSString * __nullable)imageUrl {
-    return _imageUrl;
-}
-
 #pragma mark - NSSecureEncoding
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
@@ -70,7 +63,9 @@
     NSString *phoneNumber = [coder decodeObjectForKey:@"pnumber"];
     NSString *imageUrl = [coder decodeObjectForKey:@"imageUrl"];
     NSString *subtitle = [coder decodeObjectForKey:@"subtitle"];
-    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber imageUrl:imageUrl subtitle:subtitle];
+    NSString *email = [coder decodeObjectForKey:@"email"];
+    
+    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle email:email];
     return self;
 }
 
@@ -80,6 +75,7 @@
     [coder encodeObject:_phoneNumber forKey:@"pnumber"];
     [coder encodeObject:_imageUrl forKey:@"imageUrl"];
     [coder encodeObject:self.subtitle forKey:@"subtitle"];
+    [coder encodeObject:self.email forKey:@"email"];
 }
 
 + (BOOL)supportsSecureCoding {

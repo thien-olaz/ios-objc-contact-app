@@ -9,11 +9,12 @@
 #import "MockAPIService.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
 typedef NSMutableArray<ContactEntity *> ContactEntityArray;
 typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> ContactDictionary;
 
 @protocol ZaloContactEventListener <NSObject>
-
+- (void)onLoadSavedDataComplete:(ContactDictionary *)loadedData;
 - (void)onReceiveNewList;
 - (void)onAddContact:(ContactEntity *)contact;
 - (void)onDeleteContact:(ContactEntity *)contact;
@@ -26,24 +27,19 @@ typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> Contac
 @end
 
 @interface ZaloContactService : NSObject {
+    NSLock *serviceLock;
     ContactDictionary *contactDictionary;
-    NSLock *contactDictionaryLock;
-    
     NSMutableDictionary<NSString *, ContactEntity *> *accountDictionary;
-    NSLock *accountDictionaryLock;
-    
     NSMutableArray<id<ZaloContactEventListener>> *listeners;
 }
 
 @property id<APIServiceProtocol> apiService;
-@property NSDate *lastUpdateTime;
 
 + (ZaloContactService *)sharedInstance;
 - (ContactDictionary *)getFullContactDict;
 - (NSArray<ContactEntity *>*)getFullContactList;
 - (void)fetchLocalContact;
 - (ContactEntity *)getContactsWithPhoneNumber:(NSString *)phoneNumber;
-
 - (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber;
 
 @end

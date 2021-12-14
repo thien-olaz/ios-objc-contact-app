@@ -41,6 +41,7 @@ typedef void (^CompleteBlock)(void);
 
 @property ContactTableViewDataSource *tableViewDataSource;
 @property NSMutableArray *data;
+@property NSLock *updateUILock;
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff;

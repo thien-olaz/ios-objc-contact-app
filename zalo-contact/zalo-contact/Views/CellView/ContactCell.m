@@ -257,7 +257,7 @@
 - (void)setNeedsObject:(ContactObject *)object {
     [self setNameWith:object.contact.fullName];
     [self setAvatarImageUrl:object.contact.imageUrl];
-    [self setSubtitleWith:object.contact.phoneNumber];
+    [self setSubtitleWith:object.contact.email];
 }
 
 + (CGFloat)heightForRowWithObject:(CellObject *)object {

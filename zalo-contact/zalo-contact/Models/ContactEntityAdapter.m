@@ -20,8 +20,12 @@
     if (hasPhoneNumber) {
         pn = ((CNPhoneNumber *)contact.phoneNumbers[0].value).stringValue;
     }
+    NSString *email = @"";
+    if (contact.emailAddresses.count) {
+        email = contact.emailAddresses[0].value;
+    }
     
-    self = [super initWithFirstName:contact.givenName lastName:contact.familyName phoneNumber:pn subtitle:nil];
+    self = [super initWithFirstName:contact.givenName lastName:contact.familyName phoneNumber:pn subtitle:nil email:email];
     
     _contact = contact;
     

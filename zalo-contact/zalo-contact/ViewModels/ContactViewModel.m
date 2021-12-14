@@ -26,6 +26,9 @@
 @property NSArray<NSIndexPath *> *reloadIndexes;
 @property NSMutableArray<NSIndexPath *> *deleteIndexes;
 
+//sync datasource and tableview update to avoid crash
+@property NSLock *updateTableViewLock;
+
 @end
 
 @implementation ContactViewModel {
@@ -33,29 +36,28 @@
     id<TableViewActionDelegate> actionDelegate;
     id<TableViewDiffDelegate> diffDelegate;
     id currentState;
-    NSLock *updateUILock;
 }
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff{
     self = super.init;
-    
     actionDelegate = action;
     diffDelegate = diff;
-    _deleteIndexes = NSMutableArray.new;
+    _deleteIndexes = [NSMutableArray new];
+    _updateTableViewLock = [NSLock new];
     [ZaloContactService.sharedInstance subcribe:self];
-    
     [self setup];
     return self;
 }
 
-// MARK: Zalo contact service observer
-- (void)onReceiveNewList {
-    [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
-}
-
-- (void)onDeleteContact:(nonnull ContactEntity *)contact {
-
+///double check if load data from device take time
+///if data loaded from server is called before device 
+- (void)onLoadSavedDataComplete:(ContactDictionary *)loadedData {
+    if (contactGroups.count) return;
+    if (!loadedData.count) return;
+        
+    [self setContactGroups:[ContactGroupEntity groupFromContacts:loadedData]];
+    if (_dataBlock) _dataBlock();
 }
 
 // Tìm indexpath dựa trên contact entity trong tableview
@@ -71,37 +73,7 @@
     return indexes.copy;
 }
 
-
-- (NSArray<NSIndexPath*>*)getInsertIndexesInTablviewFromContactArray:(ContactEntityArray*)array exceptInSecion:(NSArray<NSString *>*)exception{
-    NSMutableArray<NSIndexPath *> *indexes = [NSMutableArray new];
-    for (ContactEntity *contact in array) {
-        if ([exception containsObject:contact.header]) continue;
-        NSIndexPath *indexPath = [self.tableViewDataSource insertIndexPathForContactEntity:contact];
-        if (indexPath) [indexes addObject:indexPath];
-        
-    }
-    return indexes.copy;
-}
-
-- (NSIndexSet*)getSectionInsertIndexesInTablviewFromSectionArray:(NSArray<NSString*>*)array {
-    NSMutableArray *headerList = ((NSArray*)[contactGroups valueForKey:@"header"]).mutableCopy;
-    NSMutableIndexSet *indexes = [NSMutableIndexSet new];
-    for (NSString *header in array) {
-        NSUInteger foundIndex = [headerList indexOfObject:header inSortedRange:NSMakeRange(0, [headerList count]) options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
-            return [obj1 compare:obj2];
-        }];
-        [headerList insertObject:header atIndex:foundIndex];
-    }
-    for (NSString *header in array) {
-        NSUInteger foundIndex = [headerList indexOfObject:header inSortedRange:NSMakeRange(0, [headerList count]) options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
-            return [obj1 compare:obj2];
-        }];
-        [indexes addIndex:foundIndex + 3];
-    }
-    return indexes.copy;
-}
-
-- (NSIndexSet*)getSectionIndexesInTablviewFromSectionArray:(NSArray<NSString*>*)array {
+- (NSIndexSet*)getSectionIndexesInTableviewFromSectionArray:(NSArray<NSString*>*)array {
     NSArray *headerList = [contactGroups valueForKey:@"header"];
     NSMutableIndexSet *indexes = [NSMutableIndexSet new];
     for (NSString *header in array) {
@@ -112,45 +84,31 @@
 }
 
 - (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *>*)addSectionList
-                                        removeSectionList:(NSMutableArray<NSString *>*)removeSectionList
+                       removeSectionList:(NSMutableArray<NSString *>*)removeSectionList
                               addContact:(ContactEntityArray*)addContacts
-                              removeContact:(ContactEntityArray*)removeContacts
+                           removeContact:(ContactEntityArray*)removeContacts
                            updateContact:(ContactEntityArray*)updateContacts {
-    
+    NSMutableDictionary *contactDict = ZaloContactService.sharedInstance.getFullContactDict;
+    [_updateUILock lock];
+        
     NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTablviewFromContactArray:removeContacts exceptInSecion:removeSectionList];
-
-    NSIndexSet *sectionRemove = [self getSectionIndexesInTablviewFromSectionArray:removeSectionList];
+    NSIndexSet *sectionRemove = [self getSectionIndexesInTableviewFromSectionArray:removeSectionList];
+    NSArray<NSIndexPath *> *updateIndexes = [self getIndexesInTablviewFromContactArray:updateContacts exceptInSecion:@[]];
     
-    //cập nhập bản data mới nhất vào data của view model
-    [self setContactGroups:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
-    //cập nhập datasource của tableview
+    //compile the latest data
+    [self setContactGroups:[ContactGroupEntity groupFromContacts:contactDict]];
+    //update view model data
     if (_updateBlock) _updateBlock();
     
     NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTablviewFromContactArray:addContacts exceptInSecion:addSectionList];
-    NSIndexSet *sectionInsert = [self getSectionIndexesInTablviewFromSectionArray:addSectionList];
-    
-    NSArray<NSIndexPath *> *updateIndexes = [self getIndexesInTablviewFromContactArray:updateContacts exceptInSecion:@[]];
-    
-    [diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];    
-}
-
-- (void)updateDiff:(NSArray<ContactGroupEntity *> *)groups {
-    [updateUILock lock];
-    if (contactGroups) {
-        _sectionDiff = [self getSectionDiff:groups];
-        _contactsDiff = [self getCellDiff:groups];
-        _reloadIndexes = [self getReloadIndexes: contactGroups];
-        [self setContactGroups:groups];
-        [self updateDataWithSectionDiff:_sectionDiff cellDiff:_contactsDiff];
-    } else {
-        [self setContactGroups:groups];
-        [self completeFetchingData];
-    }
-    [updateUILock unlock];
+    NSIndexSet *sectionInsert = [self getSectionIndexesInTableviewFromSectionArray:addSectionList];
+        
+    [diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
 }
 
 - (void)setup {
-    [self updateDiff:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+    [self setContactGroups:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
+    if (_dataBlock) _dataBlock();
 }
 
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
@@ -159,12 +117,6 @@
     NSLog(@"==============================");
     NSLog(@"======New update circle=======");
     NSLog(@"==============================");
-}
-
-
-- (void)completeFetchingData {
-    _data = [self compileGroupToTableData:contactGroups];
-    if (_dataBlock) _dataBlock();
 }
 
 - (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {

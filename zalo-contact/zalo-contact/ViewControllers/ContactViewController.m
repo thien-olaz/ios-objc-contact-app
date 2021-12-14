@@ -153,14 +153,20 @@
         
         [weakSelf.tableView beginUpdates];
         
-        [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
-        [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
-
-        [weakSelf.tableView insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
-        [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
         [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationNone];
         
+        [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
+        [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
+        
+        [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];                
+        [weakSelf.tableView insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];        
+        
+        
         [weakSelf.tableView endUpdates];
+        [weakSelf.viewModel.updateUILock unlock];
+//        NSLog(@"===========Reloaded===========");
+//        NSLog(@"==============================");
+
     });
     
 }

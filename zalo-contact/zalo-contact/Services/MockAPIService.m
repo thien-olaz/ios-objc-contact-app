@@ -8,19 +8,17 @@
 #import "MockAPIService.h"
 #import "NSStringExt.h"
 #import "ContactEntityAdapter.h"
+#include <stdlib.h>
 
 @implementation MockAPIService {
     NSArray<CNContact *> *defaultData;
     NSArray<CNContact *> *dataToPush;
     NSArray<CNContact *> *dataToDelete;
+    NSArray<CNContact *> *dataToUpdate;
     
     int addIndex;
     int deleteIndex;
-    
-    //
-    BOOL isContact1;
-    ContactEntity *contact1;
-    ContactEntity *contact2;
+    int updateIndex;
 }
 
 @synthesize onContactUpdated;
@@ -34,9 +32,9 @@
 - (instancetype)init {
     self = super.init;
     [self getContactsFromFile];
-    isContact1 = YES;
-    [self configContact1and2];
+    deleteIndex = 0;
     addIndex = 0;
+    updateIndex = 0;
     return self;
 }
 
@@ -46,11 +44,11 @@
         [self addNewContact];
     });
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{        
-        [self deleteContact];
+//        [self deleteContact];
     });
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-//        [self updateContact];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        [self updateContact];
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
@@ -58,25 +56,12 @@
     });
 }
 
-- (void)configContact1and2 {
-    contact1 = [ContactEntity.alloc initWithFirstName:@"Nguyễn" lastName:@"Thiện" phoneNumber:@"0123456789" subtitle:@"Subtitle 1"];
-    
-    contact2 = [ContactEntity.alloc initWithFirstName:@"Nguyễn" lastName:@"Thiện" phoneNumber:@"0123456789" subtitle:@"Subtitle 2"];
-}
-
 - (NSArray<CNContact *>*)getDataFromFile:(NSString *)fileName {
     NSString *filepath = [[NSBundle mainBundle] pathForResource:fileName ofType:@"vcf"];
-
     NSError *error;
     NSString *fileContents = [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:&error];
-    
-    if (error) {
-        LOG(error.description);
-    }
-    
+    if (error) LOG(error.description);
     NSData *data = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
-
-    
     return [CNContactVCardSerialization contactsWithData:data error:&error];
 }
 
@@ -89,8 +74,8 @@
         
         strongSelf->defaultData = [strongSelf getDataFromFile:@"normal-contacts"];
         strongSelf->dataToPush = [strongSelf getDataFromFile:@"medium-contacts"];
-        strongSelf->dataToDelete = [strongSelf getDataFromFile:@"normal-contacts"];
-        
+        strongSelf->dataToDelete = [strongSelf getDataFromFile:@"medium-contacts"];
+        strongSelf->dataToUpdate = [strongSelf getDataFromFile:@"normal-contacts2"];
         [strongSelf fakeServerUpdate];
     });
 
@@ -122,11 +107,11 @@
         NSLog(@"++ %@", enity.fullName);
         onContactAdded(enity);
         addIndex += 1;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        int random = arc4random_uniform(20);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 10.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self addNewContact];
         });
     };
-    
 }
 
 - (void)deleteContact {
@@ -137,44 +122,26 @@
         NSLog(@"-- %@", entity.fullName);
         onContactDeleted(entity.phoneNumber);
         deleteIndex += 1;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        int random = arc4random_uniform(50);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (2 + random / 10.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self deleteContact];
         });
     };
-    
 }
 
 - (void)updateContact {
     if (!onContactUpdated) return;
     
-//    use contact 2
-    if (isContact1) {
-        onContactUpdated(contact1, contact2);
-    } else {
-        onContactUpdated(contact2, contact1);
-    }
-    isContact1 = !isContact1;
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-        [self updateContact];
-    });
-}
-
-- (void)updateContactWithPhoneNumber {
-    if (!onContactUpdatedWithPhoneNumber) return;
-    
-//    use contact 2
-    if (isContact1) {
-        onContactUpdatedWithPhoneNumber(contact1.phoneNumber, contact2);
-    } else {
-        onContactUpdatedWithPhoneNumber(contact2.phoneNumber, contact1);
-    }
-    isContact1 = !isContact1;
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-        [self updateContactWithPhoneNumber];
-    });
-
+    if (updateIndex < dataToUpdate.count) {
+        ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:dataToUpdate[updateIndex]];
+        NSLog(@"~~ %@", enity.fullName);
+        onContactUpdated(enity);
+        updateIndex += 1;
+        int random = arc4random_uniform(20);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 10.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+            [self updateContact];
+        });
+    };
 }
 
 @end

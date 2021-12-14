@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OnData) (NSArray<ContactEntity *>*);
 typedef void (^OnContactChangeBlock) (ContactEntity *);
 typedef void (^OnContactDeleteBlock) (NSString *);
-typedef void (^OnContactUpdateBlock) (ContactEntity *, ContactEntity *);
+typedef void (^OnContactUpdateBlock) (ContactEntity *);
 typedef void (^OnContactUpdateWithPhoneNumberBLock) (NSString *, ContactEntity *);
 
 @protocol APIServiceProtocol
