@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactEntity:(ContactEntity *)contact;
 - (BOOL)isEqual:(id)object;
 - (NSComparisonResult)compare:(ContactObject *)object;
-
+- (NSComparisonResult)compareToSearch:(ContactObject *)object;
 @end
 
 NS_ASSUME_NONNULL_END

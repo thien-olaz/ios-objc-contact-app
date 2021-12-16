@@ -114,12 +114,12 @@
         
         NSMutableIndexSet *sectionInsert = [NSMutableIndexSet indexSet];
         for (NSIndexPath *indexPath in [sectionDiff inserts]) {
-            [sectionInsert addIndex:indexPath.row + 3];
+            [sectionInsert addIndex:indexPath.row + [UIConstants getContactIndex]];
         }
         
         NSMutableIndexSet *sectionDelete = [NSMutableIndexSet indexSet];
         for (NSIndexPath *indexPath in [sectionDiff deletes]) {
-            [sectionDelete addIndex:indexPath.row + 3];
+            [sectionDelete addIndex:indexPath.row + [UIConstants getContactIndex]];
         }
         
         [weakSelf.tableView beginUpdates];
@@ -154,19 +154,16 @@
         [weakSelf.tableView beginUpdates];
         
         [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationNone];
-        
-        [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
         [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
         
-        [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];                
+        [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];                
+        [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
+        
         [weakSelf.tableView insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];        
         
         
         [weakSelf.tableView endUpdates];
         [weakSelf.viewModel.updateUILock unlock];
-//        NSLog(@"===========Reloaded===========");
-//        NSLog(@"==============================");
-
     });
     
 }

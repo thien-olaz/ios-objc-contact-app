@@ -11,6 +11,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NSMutableArray<ContactEntity *> ContactEntityArray;
+typedef NSMutableDictionary<NSString *, ContactEntity *> AccountDictionary;
+typedef NSMutableSet<NSString *> AccountIdSet;
+typedef NSMutableArray<OnlineContactEntity *> OnlineContactEntityArray;
 typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> ContactDictionary;
 
 @protocol ZaloContactEventListener <NSObject>
@@ -19,28 +22,36 @@ typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> Contac
 - (void)onAddContact:(ContactEntity *)contact;
 - (void)onDeleteContact:(ContactEntity *)contact;
 - (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact;
+
 - (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *>*)addSectionList
                        removeSectionList:(NSMutableArray<NSString *>*)removeSectionList
-                              addContact:(ContactEntityArray*)addContacts
-                           removeContact:(ContactEntityArray*)removeContacts
-                           updateContact:(ContactEntityArray*)updateContacts;
+                              addContact:(AccountIdSet*)addContacts
+                           removeContact:(AccountIdSet*)removeContacts
+                           updateContact:(AccountIdSet*)updateContacts
+                          newContactDict:(ContactDictionary*)contactDict
+                          newAccountDict:(AccountDictionary*)accountDict;
+
+- (void)onServerChangeOnlineFriendsWithAddContact:(ContactEntityArray*)addContacts
+                                    removeContact:(ContactEntityArray*)removeContacts
+                                    updateContact:(ContactEntityArray*)updateContacts;
 @end
 
-@interface ZaloContactService : NSObject {
-    NSLock *serviceLock;
+@interface ZaloContactService : NSObject {    
     ContactDictionary *contactDictionary;
     NSMutableDictionary<NSString *, ContactEntity *> *accountDictionary;
+    OnlineContactEntityArray *onlineList;
     NSMutableArray<id<ZaloContactEventListener>> *listeners;
 }
 
 @property id<APIServiceProtocol> apiService;
 
 + (ZaloContactService *)sharedInstance;
+- (OnlineContactEntityArray *)getOnlineContactList;
 - (ContactDictionary *)getFullContactDict;
 - (NSArray<ContactEntity *>*)getFullContactList;
 - (void)fetchLocalContact;
 - (ContactEntity *)getContactsWithPhoneNumber:(NSString *)phoneNumber;
-- (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber;
+- (void)deleteContactWithId:(NSString *)accountId;
 
 @end
 

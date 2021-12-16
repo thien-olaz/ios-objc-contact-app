@@ -16,7 +16,7 @@
     [self.rows addObject:object];
 }
 
-// Crash just like get cell for outrange indexpath
+
 - (CellObject *)getObjectForRow:(NSInteger)index {
     return self.rows[index];
 }

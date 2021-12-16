@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface CommonCellObject : CellObject
 
+@property UIViewContentMode logoMode;
 @property NSString *title;
 @property UIImage *image;
 @property UIColor *tintColor;

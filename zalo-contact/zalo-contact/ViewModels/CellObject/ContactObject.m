@@ -34,6 +34,28 @@
     return [self.contact compare:contact.contact];
 }
 
+- (NSComparisonResult)compareToSearch:(ContactObject *)object {
+    NSComparisonResult res;
+    if ([self.contact.accountId compare:object.contact.accountId] == NSOrderedSame) return NSOrderedSame;
+    
+    res = [self.contact.lastName compare:object.contact.lastName];
+    if ( res != NSOrderedSame) {
+        return res;
+    }
+    
+    res = [self.contact.firstName compare:object.contact.firstName];
+    if ( res != NSOrderedSame) {
+        return res;
+    }
+
+    res = [self.contact.phoneNumber compare:object.contact.phoneNumber];
+    if ( res != NSOrderedSame) {
+        return res;
+    }
+
+    return [self.contact.accountId compare:object.contact.accountId];
+}
+
 @end
 
 

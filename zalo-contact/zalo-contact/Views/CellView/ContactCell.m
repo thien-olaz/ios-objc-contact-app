@@ -6,6 +6,7 @@
 //
 
 #import "ContactCell.h"
+#import "OnlineContactObject.h"
 
 @interface ContactCell ()
 
@@ -46,6 +47,10 @@
 
 - (void)setOnline {
     [self.badgeView setBackgroundColor:UIColor.badgeColor];
+}
+
+- (void)setOffline {
+    [self.badgeView setBackgroundColor:UIColor.clearColor];
 }
 
 - (void)setNameWith:(NSString *)name {
@@ -114,6 +119,10 @@
         [self.nameView autoPinEdge:ALEdgeLeft
                             toEdge:ALEdgeRight
                             ofView:self.avatarImageView
+                        withOffset:UIConstants.contactMinHorizontalSpacing];
+        [self.nameView autoPinEdge:ALEdgeRight
+                            toEdge:ALEdgeLeft
+                            ofView:self.callButton
                         withOffset:UIConstants.contactMinHorizontalSpacing];
         
         //subtitle label here
@@ -247,14 +256,18 @@
 
 - (void)prepareForReuse {
     [super prepareForReuse];
-    
-    [self.badgeView setBackgroundColor:UIColor.clearColor];
+    [self setOffline];
     [self setSubtitleWith:@""];
     [self setEditing:YES animated:YES];
   
 }
 
 - (void)setNeedsObject:(ContactObject *)object {
+    if ([object.contact isKindOfClass:OnlineContactEntity.class]) {
+        [self setOnline];
+    } else {
+        [self setOffline];
+    }
     [self setNameWith:object.contact.fullName];
     [self setAvatarImageUrl:object.contact.imageUrl];
     [self setSubtitleWith:object.contact.email];

@@ -8,6 +8,10 @@
 #import "UIConstants.h"
 
 @implementation UIConstants
+
+static int _ctIndex;
+static int _onlineCtIndex;
+
 + (UIEdgeInsets) contactHeaderEdgeInset {
     return UIEdgeInsetsMake(0, 0, 15, 0);
 }
@@ -72,5 +76,22 @@
     return 32;
 }
 
++ (int)getContactIndex {
+    if (!_ctIndex) _ctIndex = 4;
+    return _ctIndex;
+}
+
++ (void)setContactIndex:(int)index {
+    _ctIndex = index;
+}
+
++ (int)getOnlineContactIndex {
+    if (!_onlineCtIndex) _onlineCtIndex = 2;
+    return _onlineCtIndex;
+}
+
++ (void)setOnlineContactIndex:(int)index {
+    _onlineCtIndex = index;
+}
 
 @end

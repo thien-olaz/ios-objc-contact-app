@@ -25,7 +25,7 @@
 @property NSArray<IGListIndexPathResult *> *contactsDiff;
 @property NSArray<NSIndexPath *> *reloadIndexes;
 @property NSMutableArray<NSIndexPath *> *deleteIndexes;
-
+@property AccountDictionary *accountDictionary;
 //sync datasource and tableview update to avoid crash
 @property NSLock *updateTableViewLock;
 
@@ -33,9 +33,11 @@
 
 @implementation ContactViewModel {
     NSMutableArray<ContactGroupEntity *> *contactGroups;
+    OnlineContactEntityArray *onlineContacts;
     id<TableViewActionDelegate> actionDelegate;
     id<TableViewDiffDelegate> diffDelegate;
     id currentState;
+    ContactDictionary *oldctd;
 }
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
@@ -55,17 +57,89 @@
 - (void)onLoadSavedDataComplete:(ContactDictionary *)loadedData {
     if (contactGroups.count) return;
     if (!loadedData.count) return;
-        
+    
     [self setContactGroups:[ContactGroupEntity groupFromContacts:loadedData]];
     if (_dataBlock) _dataBlock();
 }
 
-// Tìm indexpath dựa trên contact entity trong tableview
-- (NSArray<NSIndexPath*>*)getIndexesInTablviewFromContactArray:(ContactEntityArray*)array exceptInSecion:(NSArray<NSString *>*)exception {
+// find indexpath with contact entity
+- (NSArray<NSIndexPath*>*)indexesFromIdArray:(NSArray<NSString *>*)array exceptInSecion:(NSArray<NSString *>*)exception {
     NSMutableArray<NSIndexPath *> *indexes = [NSMutableArray new];
-    for (ContactEntity *contact in array) {
-        if ([exception containsObject:contact.header]) continue;
+    for (NSString *accountId in array) {
+        ContactEntity *contact = [self.accountDictionary objectForKey:accountId];
+        if (!contact) {
+            NSLog(@"cant found cntact %@", accountId);
+            continue;
+        }
+//        if ([exception containsObject:contact.header]) continue;
         NSIndexPath *indexPath = [self.tableViewDataSource indexPathForContactEntity:contact];
+        if (indexPath && ![indexes containsObject:indexPath]) {
+            [indexes addObject:indexPath];
+        } else {
+            NSLog(@"cant found index %@", contact);
+        }
+    }
+    return indexes.copy;
+}
+
+- (NSIndexSet*)sectionIndexesFromHeaderArray:(NSArray<NSString*>*)array {
+    NSArray *headerList = [contactGroups valueForKey:@"header"];
+    NSMutableIndexSet *indexes = [NSMutableIndexSet new];
+    for (NSString *header in array) {
+        NSUInteger foundIndex = [headerList indexOfObject:header];
+        if (foundIndex != NSNotFound) [indexes addIndex:foundIndex + [UIConstants getContactIndex]];
+    }
+    return indexes.copy;
+}
+
+- (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *> *)addSectionList
+                       removeSectionList:(NSMutableArray<NSString *> *)removeSectionList
+                              addContact:(AccountIdSet *)addContacts
+                           removeContact:(AccountIdSet *)removeContacts
+                           updateContact:(AccountIdSet *)updateContacts
+                          newContactDict:(ContactDictionary *)contactDict
+                          newAccountDict:(AccountDictionary *)accountDict {
+    [_updateUILock lock];
+    
+    
+    NSArray<NSIndexPath *> *removeIndexes = [self indexesFromIdArray:removeContacts.copy exceptInSecion:removeSectionList];
+//    NSLog(@"remove index %lu contacts %lu", removeIndexes.count, removeContacts.count);
+    NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
+    NSArray<NSIndexPath *> *updateIndexes = [self indexesFromIdArray:updateContacts.copy exceptInSecion:@[]];
+    
+    //compile the latest data
+//    NSLog(@" old%d new%d tableview old%d new%d", _accountDictionary.count, accountDict.count);
+    NSUInteger total1 = 0;
+    for (NSString* key in oldctd) {
+      total1 += [[oldctd objectForKey:key] count];
+    }
+    NSUInteger total2 = 0;
+    for (NSString* key in contactDict) {
+      total2 += [[contactDict objectForKey:key] count];
+    }
+//    NSLog(@" tableview old%d new%d",total1, total2);
+    self.accountDictionary = accountDict;
+    [self setContactGroups:[ContactGroupEntity groupFromContacts:contactDict]];
+    oldctd = contactDict;
+    //update view model data
+    if (_updateBlock) _updateBlock();
+    NSArray<NSIndexPath *> *addIndexes = [self indexesFromIdArray:addContacts.copy exceptInSecion:addSectionList];
+//    NSLog(@"add index %lu contacts %lu", addIndexes.count, addContacts.count);
+    NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];
+
+    //tableview - copy data -> tableview
+    [diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
+    
+    NSLog(@"==============================");
+    NSLog(@"======New update circle=======");
+    NSLog(@"==============================");
+    
+}
+
+- (NSArray<NSIndexPath*>*)getIndexesInTableViewFromOnlineContactArray:(OnlineContactEntityArray*)array {
+    NSMutableArray<NSIndexPath *> *indexes = [NSMutableArray new];
+    for (OnlineContactEntity *contact in array) {
+        NSIndexPath *indexPath = [self.tableViewDataSource indexPathForOnlineContactEntity:contact];
         if (indexPath && ![indexes containsObject:indexPath]) {
             [indexes addObject:indexPath];
         }
@@ -73,37 +147,19 @@
     return indexes.copy;
 }
 
-- (NSIndexSet*)getSectionIndexesInTableviewFromSectionArray:(NSArray<NSString*>*)array {
-    NSArray *headerList = [contactGroups valueForKey:@"header"];
-    NSMutableIndexSet *indexes = [NSMutableIndexSet new];
-    for (NSString *header in array) {
-        NSUInteger foundIndex = [headerList indexOfObject:header];
-        if (foundIndex != NSNotFound) [indexes addIndex:foundIndex + 3];
-    }
-    return indexes.copy;
-}
-
-- (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *>*)addSectionList
-                       removeSectionList:(NSMutableArray<NSString *>*)removeSectionList
-                              addContact:(ContactEntityArray*)addContacts
-                           removeContact:(ContactEntityArray*)removeContacts
-                           updateContact:(ContactEntityArray*)updateContacts {
-    NSMutableDictionary *contactDict = ZaloContactService.sharedInstance.getFullContactDict;
-    [_updateUILock lock];
-        
-    NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTablviewFromContactArray:removeContacts exceptInSecion:removeSectionList];
-    NSIndexSet *sectionRemove = [self getSectionIndexesInTableviewFromSectionArray:removeSectionList];
-    NSArray<NSIndexPath *> *updateIndexes = [self getIndexesInTablviewFromContactArray:updateContacts exceptInSecion:@[]];
+- (void)onServerChangeOnlineFriendsWithAddContact:(OnlineContactEntityArray*)addContacts
+                                    removeContact:(OnlineContactEntityArray*)removeContacts
+                                    updateContact:(OnlineContactEntityArray*)updateContacts {
     
-    //compile the latest data
-    [self setContactGroups:[ContactGroupEntity groupFromContacts:contactDict]];
+    [_updateUILock lock];
+    NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTableViewFromOnlineContactArray:removeContacts];
+    [self setOnlineContact:ZaloContactService.sharedInstance.getOnlineContactList];
+    
     //update view model data
     if (_updateBlock) _updateBlock();
+    NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTableViewFromOnlineContactArray:addContacts];
     
-    NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTablviewFromContactArray:addContacts exceptInSecion:addSectionList];
-    NSIndexSet *sectionInsert = [self getSectionIndexesInTableviewFromSectionArray:addSectionList];
-        
-    [diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
+    [diffDelegate onDiffWithSectionInsert:[NSIndexSet new] sectionRemove:[NSIndexSet new] addCell:addIndexes removeCell:removeIndexes andUpdateCell:@[]];
 }
 
 - (void)setup {
@@ -111,12 +167,15 @@
     if (_dataBlock) _dataBlock();
 }
 
+- (void)setOnlineContact:(OnlineContactEntityArray*)contacts {
+    onlineContacts = contacts;
+    _data = [self compileGroupToTableData:contactGroups onlineContacts:onlineContacts];
+}
+
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
     contactGroups = [NSMutableArray.alloc initWithArray: groups];
-    _data = [self compileGroupToTableData:contactGroups];
-    NSLog(@"==============================");
-    NSLog(@"======New update circle=======");
-    NSLog(@"==============================");
+    _data = [self compileGroupToTableData:contactGroups onlineContacts:onlineContacts];
+
 }
 
 - (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {
@@ -138,7 +197,7 @@
         NSUInteger oldIndex = [contactGroups indexOfObject:oldGroup];
         NSUInteger foundIndex = [newGroups indexOfObject:oldGroup];
         if (foundIndex != NSNotFound) {
-            IGListIndexPathResult * res = IGListDiffPaths(oldIndex + 3, foundIndex + 3, oldGroup.contacts, newGroups[foundIndex].contacts, IGListDiffEquality).resultForBatchUpdates;
+            IGListIndexPathResult * res = IGListDiffPaths(oldIndex + [UIConstants getContactIndex], foundIndex + [UIConstants getContactIndex], oldGroup.contacts, newGroups[foundIndex].contacts, IGListDiffEquality).resultForBatchUpdates;
             if (res.inserts.count >0 || res.deletes.count > 0 || res.updates.count > 0)
                 [contactsDiff addObject:res];
         }
@@ -150,35 +209,35 @@
 // MARK: - make it dynamic please
 - (NSArray<NSIndexPath *> *)getReloadIndexes:(NSArray<ContactGroupEntity *>*)newGroups {
     NSIndexPath *totalContactsIdp0;
-    totalContactsIdp0 = [NSIndexPath indexPathForRow:0 inSection:3 + newGroups.count];
+    totalContactsIdp0 = [NSIndexPath indexPathForRow:0 inSection:[UIConstants getContactIndex] + newGroups.count];
     return @[totalContactsIdp0];
 }
 
 - (void)checkPermissionAndFetchData {
     typeof(self) weakSelf = self;
-//    [UserContacts checkAccessContactPermission:^(BOOL complete) {
-//        if (complete) {
-//            [self performSelectorInBackground:@selector(fetchLocalContacts) withObject:nil];
-//        } else {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                if (weakSelf.presentBlock) weakSelf.presentBlock();
-//            });
-//        }
-//    }];
+    //    [UserContacts checkAccessContactPermission:^(BOOL complete) {
+    //        if (complete) {
+    //            [self performSelectorInBackground:@selector(fetchLocalContacts) withObject:nil];
+    //        } else {
+    //            dispatch_async(dispatch_get_main_queue(), ^{
+    //                if (weakSelf.presentBlock) weakSelf.presentBlock();
+    //            });
+    //        }
+    //    }];
 }
 
 - (void)fetchLocalContacts {
     [ZaloContactService.sharedInstance fetchLocalContact];
 }
 
-- (void)deleteContactWithPhoneNumber:(NSString *)phoneNumber {
-    [ZaloContactService.sharedInstance deleteContactWithPhoneNumber:phoneNumber];
+- (void)deleteContactWithId:(NSString *)accountId {
+    [ZaloContactService.sharedInstance deleteContactWithId:accountId];
 }
 
 - (void)performAction:(SwipeActionType)type forObject:(CellObject *)object {
     ContactObject *contactObject = (ContactObject*)object;
     if (contactObject) {
-        [self performSelectorInBackground:@selector(deleteContactWithPhoneNumber:) withObject:contactObject.contact.phoneNumber];
+        [self performSelectorInBackground:@selector(deleteContactWithId:) withObject:contactObject.contact.accountId];
     }
 }
 
@@ -190,7 +249,7 @@
     return arr.copy;
 }
 
-- (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups {
+- (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups onlineContacts:(OnlineContactEntityArray*)onlineContacts{
     NSMutableArray *data = NSMutableArray.alloc.init;
     __unsafe_unretained typeof(self) weakSelf = self;
     //MARK:  -
@@ -212,8 +271,7 @@
     ];
     
     [data addObject:[actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Tìm kiếm (866) 420-3189" image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor] action:^{
-        NSIndexPath *idp = [weakSelf.tableViewDataSource indexPathForPhoneNumber:@"(922) 471-2199"];
-        if (idp) [weakSelf->actionDelegate scrollTo:idp];
+        
     }]];
     
     [data addObject:BlankFooterObject.new];
@@ -225,6 +283,18 @@
         NSLog(@"Tapped");
     }]];
     
+    [data addObject:BlankFooterObject.new];
+    
+    //MARK:  - bạn mới online
+    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn bè mới truy cập"]];
+    if (!onlineContacts || ![onlineContacts count]) {
+        
+    } else {
+        for (OnlineContactEntity *entity in [onlineContacts reverseObjectEnumerator]) {
+            [data addObject:[OnlineContactObject.alloc initWithContactEntity:entity]];
+        }
+        
+    }
     [data addObject:BlankFooterObject.new];
     
     //MARK: - Contact

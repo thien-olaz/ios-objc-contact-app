@@ -6,30 +6,31 @@
 //
 
 #import "ContactEntity.h"
+@interface ContactEntity () {
+    NSString *accountId;
+    NSString *fullName;
+    NSString *firstName;
+    NSString *lastName;
+}
 
-@interface ContactEntity ()
-
-@property NSString *firstName;
-@property NSString *lastName;
-
-@property (nonatomic) NSString *phoneNumber;
-@property (nullable) NSString *imageUrl;
 @end
 
 @implementation ContactEntity
+@synthesize accountId;
+@synthesize fullName;
+@synthesize firstName;
+@synthesize lastName;
 
-- (id)init {
-    return [self initWithFirstName:@"" lastName:@"" phoneNumber:@"" subtitle:nil email:@""];
-}
-
-- (id)initWithFirstName:(NSString *)firstName
-               lastName:(NSString *)lastName
+- (id)initWithAccountId:(NSString *)Id
+              firstName:(NSString *)fname
+               lastName:(NSString *)lname
             phoneNumber:(NSString *)phoneNumber
                subtitle:(nullable NSString *)subtitle
                   email:(NSString *)email {
     self = super.init;
-    _firstName = firstName;
-    _lastName = lastName;
+    accountId = [Id stringByReplacingOccurrencesOfString:@" " withString:@""];
+    firstName = fname;
+    lastName = lname;
     _phoneNumber = phoneNumber;
     _subtitle = subtitle;
     _email = email;
@@ -37,27 +38,24 @@
     return self;
 }
 
-- (id)initWithFirstName:(NSString *)firstName
-               lastName:(NSString *)lastName
-            phoneNumber:(NSString *)phoneNumber
-               imageUrl:(NSString *)url
-               subtitle:(nullable NSString *)subtitle {
-    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle email:@""];
-    _imageUrl = url;
-    return self;
+- (void)setFirstName:(NSString *)name {
+    firstName = name;
+    [self update];
 }
 
-- (NSString *)phoneNumber {
-    return _phoneNumber;
+- (void)setLastName:(NSString *)name {
+    lastName = name;
+    [self update];
 }
 
 - (void)update {
-    self.header = [ContactEntity headerFromFirstName:_firstName andLastName:_lastName];
-    self.fullName = [NSString stringWithFormat:@"%@ %@", _lastName, _firstName];
+    self.header = [ContactEntity headerFromFirstName:firstName andLastName:lastName];
+    fullName = [NSString stringWithFormat:@"%@ %@", lastName, firstName];
 }
 #pragma mark - NSSecureEncoding
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
+    NSString *accountId = [coder decodeObjectForKey:@"accountId"];
     NSString *firstName = [coder decodeObjectForKey:@"fname"];
     NSString *lastName = [coder decodeObjectForKey:@"lname"];
     NSString *phoneNumber = [coder decodeObjectForKey:@"pnumber"];
@@ -65,13 +63,14 @@
     NSString *subtitle = [coder decodeObjectForKey:@"subtitle"];
     NSString *email = [coder decodeObjectForKey:@"email"];
     
-    self = [self initWithFirstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle email:email];
+    self = [self initWithAccountId:accountId firstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle email:email];
     return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-    [coder encodeObject:_firstName forKey:@"fname"];
-    [coder encodeObject:_lastName forKey:@"lname"];
+    [coder encodeObject:accountId forKey:@"accountId"];
+    [coder encodeObject:firstName forKey:@"fname"];
+    [coder encodeObject:lastName forKey:@"lname"];
     [coder encodeObject:_phoneNumber forKey:@"pnumber"];
     [coder encodeObject:_imageUrl forKey:@"imageUrl"];
     [coder encodeObject:self.subtitle forKey:@"subtitle"];
@@ -109,11 +108,6 @@
 
 #pragma mark - Equal
 
-//compare to get update index
-- (NSComparisonResult)comparePhoneNumber:(ContactEntity *)entity {
-    return [self.phoneNumber compare:entity.phoneNumber];
-}
-
 //compare to get order
 - (NSComparisonResult)compare:(ContactEntity *)entity {
     NSComparisonResult res;
@@ -122,17 +116,18 @@
     if ( res != NSOrderedSame) {
         return res;
     }
+    
     res = [self.firstName compare:entity.firstName];
     if ( res != NSOrderedSame) {
         return res;
     }
-    //MARK: - phone number có thể trùng 
+
     res = [self.phoneNumber compare:entity.phoneNumber];
     if ( res != NSOrderedSame) {
         return res;
     }
 
-    return NSOrderedSame;
+    return [self.accountId compare:entity.accountId];
 }
 
 - (BOOL)isEqual:(id)object {

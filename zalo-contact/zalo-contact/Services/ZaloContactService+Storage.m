@@ -12,7 +12,7 @@
 
 // MARK: Perform some extra operation when data changed
 - (void)didChange {
-    [self save];
+//    [self save];
 }
 
 - (void)save {

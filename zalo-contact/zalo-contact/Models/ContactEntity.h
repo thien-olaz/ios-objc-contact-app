@@ -11,32 +11,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactEntity : NSObject<NSSecureCoding, IGListDiffable>
 
-@property NSString *fullName;
+@property (readonly) NSString *accountId;
+
 @property NSString *header;
 @property NSString *subtitle;
 @property NSString *email;
+@property (readonly) NSString *firstName;
+@property (readonly) NSString *lastName;
+@property (readonly) NSString *fullName;
+@property (nonatomic) NSString *phoneNumber;
+@property (nullable) NSString *imageUrl;
 
-- (id)initWithFirstName:(NSString *)firstName
-               lastName:(NSString *)lastName
+- (id)initWithAccountId:(NSString *)Id
+              firstName:(NSString *)fname
+               lastName:(NSString *)lname
             phoneNumber:(NSString *)phoneNumber
                subtitle:(nullable NSString *)subtitle
                   email:(NSString *)email;
 
-- (id)initWithFirstName:(NSString *)firstName
-               lastName:(NSString *)lastName
-            phoneNumber:(NSString *)phoneNumber
-               imageUrl:(NSString *)url
-               subtitle:(nullable NSString *)subtitle;
-
-- (NSString *)lastName;
-- (NSString *)phoneNumber;
-
 - (NSString * __nullable)imageUrl;
 - (id<NSObject>)diffIdentifier;
 - (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object;
+
 - (NSComparisonResult)compare:(ContactEntity *)entity;
-- (NSComparisonResult)comparePhoneNumber:(ContactEntity *)entity;
 - (BOOL)isEqual:(id)object;
+
 // MARK: Class method
 + (NSArray<ContactEntity*>*) insertionSort:(NSArray<ContactEntity*> *)array;
 + (NSString *)headerFromFirstName:(nullable NSString *)firstName andLastName:(nullable NSString *)lastName;

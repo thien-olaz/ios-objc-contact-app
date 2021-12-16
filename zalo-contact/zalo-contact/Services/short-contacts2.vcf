@@ -1,0 +1,22 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Washington Puckett
+N:Arr;Powers;;;
+EMAIL;TYPE=INTERNET:caseycotton@2.com
+EMAIL;TYPE=INTERNET:perryfranks@2.com
+EMAIL;TYPE=INTERNET:brewercantrell@overfork.com
+TEL;TYPE=MOBILE:(857) 512-2120
+TEL;TYPE=MOBILE:(819) 451-2980
+NOTE:est
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Washington Puckett
+N:Brr;Powers;;;
+EMAIL;TYPE=INTERNET:caseycotton@3.com
+EMAIL;TYPE=INTERNET:perryfranks@3.com
+EMAIL;TYPE=INTERNET:brewercantrell@overfork.com
+TEL;TYPE=MOBILE:(857) 512-2120
+TEL;TYPE=MOBILE:(819) 451-2980
+NOTE:est
+END:VCARD

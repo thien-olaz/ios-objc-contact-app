@@ -1,17 +1,17 @@
 //
-//  ContactAdapter.m
+//  OnlineContactEntityAdapter.m
 //  zalo-contact
 //
-//  Created by Thiện on 17/11/2021.
+//  Created by Thiện on 15/12/2021.
 //
 
-#import "ContactEntityAdapter.h"
+#import "OnlineContactEntityAdapter.h"
 
-@interface ContactEntityAdapter ()
+@interface OnlineContactEntityAdapter ()
 @property CNContact *contact;
 @end
 
-@implementation ContactEntityAdapter
+@implementation OnlineContactEntityAdapter
 
 - (id)initWithCNContact:(CNContact *)contact {
     

@@ -35,6 +35,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (CGFloat)addContactLabelHeight;
 + (CGFloat)addContactButtonHeight;
 
++ (int)getContactIndex;
++ (void)setContactIndex:(int)index;
+
++ (int)getOnlineContactIndex;
++ (void)setOnlineContactIndex:(int)index;
+
 @end
 
 NS_ASSUME_NONNULL_END

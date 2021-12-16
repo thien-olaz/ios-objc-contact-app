@@ -71,7 +71,7 @@
     }
     
     // Find exact section
-    for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
+    for (NSUInteger sectionIndex = [UIConstants getContactIndex]; sectionIndex < [sections count]; sectionIndex++) {
         if (![[object header] isEqual: sections[sectionIndex].header]) continue;
         return [self binarySearch:object inSection:sectionIndex];
     }
@@ -79,50 +79,33 @@
     return nil;
 }
 
+- (NSIndexPath * _Nullable)indexPathForOnlineContactEntity:(OnlineContactEntity *)contact {
+    if (contact) {
+        OnlineContactObject *object = [OnlineContactObject.alloc initWithContactEntity:contact];
+        NSUInteger sectionIndex = [UIConstants getOnlineContactIndex];
+        NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
+        NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(OnlineContactObject *obj1, OnlineContactObject *obj2) {
+            return [obj1 revertCompare:obj2];
+        }];
+        if (foundIndex == NSNotFound) {
+            return nil;
+        }
+        return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
+    }
+    return nil;
+}
+
 - (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *)contact {    
     if (contact) {
         ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
-        for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
+        for (NSUInteger sectionIndex = [UIConstants getContactIndex]; sectionIndex < [sections count]; sectionIndex++) {
             if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
             NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
             NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
-                return [obj1 compare:obj2];
+                return [obj1 compareToSearch:obj2];
             }];
             if (foundIndex == NSNotFound) return nil;
             return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
-        }
-    }
-    return nil;
-}
-
-- (NSIndexPath * _Nullable)indexPathForPhoneNumber:(NSString *)phoneNumber {
-    ContactEntity *contact = [ZaloContactService.sharedInstance getContactsWithPhoneNumber:phoneNumber];
-    
-    if (contact) {
-        ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
-        for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
-            if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
-            NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
-            NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
-                return [obj1 compare:obj2];
-            }];
-            if (foundIndex == NSNotFound) return nil;
-            return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
-        }
-    }
-    return nil;
-}
-
-- (NSIndexPath * _Nullable)insertIndexPathForContactEntity:(ContactEntity *)contact {
-    if (contact) {
-        ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
-        for (NSUInteger sectionIndex = 3; sectionIndex < [sections count]; sectionIndex++) {
-            if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
-            NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
-            NSUInteger insertIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
-                return [obj1 compare:obj2];
-            }];
-            return [NSIndexPath indexPathForRow:insertIndex inSection:sectionIndex];
         }
     }
     return nil;

@@ -8,6 +8,7 @@
 #import "MockAPIService.h"
 #import "NSStringExt.h"
 #import "ContactEntityAdapter.h"
+#import "OnlineContactEntityAdapter.h"
 #include <stdlib.h>
 
 @implementation MockAPIService {
@@ -15,17 +16,23 @@
     NSArray<CNContact *> *dataToPush;
     NSArray<CNContact *> *dataToDelete;
     NSArray<CNContact *> *dataToUpdate;
+    NSArray<CNContact *> *dataToPushToOnlineGroup;
     
     int addIndex;
     int deleteIndex;
     int updateIndex;
+    int onlineIndex;
 }
+@synthesize onOnlineContactAdded;
+
+@synthesize onOnlineContactDeleted;
 
 @synthesize onContactUpdated;
 
 @synthesize onContactAdded;
 
 @synthesize onContactDeleted;
+
 
 @synthesize onContactUpdatedWithPhoneNumber;
 
@@ -35,6 +42,7 @@
     deleteIndex = 0;
     addIndex = 0;
     updateIndex = 0;
+    onlineIndex = 0;
     return self;
 }
 
@@ -43,16 +51,20 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
         [self addNewContact];
     });
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{        
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
 //        [self deleteContact];
     });
-
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
         [self updateContact];
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-//        [self updateContactWithPhoneNumber];
+        //        [self updateContactWithPhoneNumber];
+    });
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+//                [self pushOnlineContact];
     });
 }
 
@@ -74,11 +86,13 @@
         
         strongSelf->defaultData = [strongSelf getDataFromFile:@"normal-contacts"];
         strongSelf->dataToPush = [strongSelf getDataFromFile:@"medium-contacts"];
-        strongSelf->dataToDelete = [strongSelf getDataFromFile:@"medium-contacts"];
-        strongSelf->dataToUpdate = [strongSelf getDataFromFile:@"normal-contacts2"];
+        strongSelf->dataToDelete = [strongSelf getDataFromFile:@"normal-contacts3"];
+        strongSelf->dataToUpdate = [strongSelf getDataFromFile:@"medium-contacts2"];
+        
+        strongSelf->dataToPushToOnlineGroup = [strongSelf getDataFromFile:@"online-contacts"];
+        
         [strongSelf fakeServerUpdate];
     });
-
 }
 
 // MARK: Fake a api request with 1 sec delay
@@ -87,7 +101,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
         if (!weakSelf) return;
         MockAPIService *strongSelf = weakSelf;
-               
+        
         NSMutableArray<ContactEntity *> *apiContactsResult = NSMutableArray.new;
         for (CNContact *cnct in strongSelf->defaultData) {
             ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:cnct];
@@ -107,8 +121,8 @@
         NSLog(@"++ %@", enity.fullName);
         onContactAdded(enity);
         addIndex += 1;
-        int random = arc4random_uniform(20);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 10.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        int random = arc4random_uniform(300);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 100) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self addNewContact];
         });
     };
@@ -116,14 +130,14 @@
 
 - (void)deleteContact {
     if (!onContactDeleted) return;
-    
+     
     if (deleteIndex < dataToDelete.count) {
         ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:dataToDelete[deleteIndex]];
         NSLog(@"-- %@", entity.fullName);
-        onContactDeleted(entity.phoneNumber);
+        onContactDeleted(entity.accountId);
         deleteIndex += 1;
-        int random = arc4random_uniform(50);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (2 + random / 10.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        int random = arc4random_uniform(700);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 100.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self deleteContact];
         });
     };
@@ -137,9 +151,27 @@
         NSLog(@"~~ %@", enity.fullName);
         onContactUpdated(enity);
         updateIndex += 1;
-        int random = arc4random_uniform(20);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 10.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        int random = arc4random_uniform(700);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 100.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self updateContact];
+        });
+    };
+}
+
+- (void)pushOnlineContact {
+    if (!onOnlineContactAdded) return;
+    
+    if (onlineIndex < dataToPushToOnlineGroup.count) {
+        OnlineContactEntityAdapter *contact = [[OnlineContactEntityAdapter alloc] initWithCNContact:dataToPushToOnlineGroup[onlineIndex]];
+        
+        [contact setOnlineTime:[NSDate date]];
+        
+        NSLog(@"@@ %@", contact.fullName);
+        onOnlineContactAdded(contact);
+        onlineIndex += 1;
+        int random = arc4random_uniform(70);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 10.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+            [self pushOnlineContact];
         });
     };
 }

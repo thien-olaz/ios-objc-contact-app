@@ -68,7 +68,7 @@
     [self.titleLabel setText:title];
 }
 
-- (void)setIconImage:(nonnull UIImage*)image {
+- (void)setIconImage:(UIImage*)image {
     [self.iconImageView setImage:image];
 }
 
@@ -94,6 +94,8 @@
 - (void)setNeedsObject:(CommonCellObject *)object {
     [self setTitle:object.title];
     [self setIconImage:object.image];
+    if (object.logoMode) [self.iconImageView setContentMode:object.logoMode];
+    else [self.iconImageView setContentMode:(UIViewContentModeScaleAspectFit)];
     [self setTitleTintColor:object.tintColor];
 }
 
