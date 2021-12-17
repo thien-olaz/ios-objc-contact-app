@@ -10,23 +10,25 @@
 
 @implementation ZaloContactService (Storage)
 
-// MARK: Perform some extra operation when data changed
-- (void)didChange {
-//    [self save];
+- (void)didChangeWithContactDict:(ContactMutableDictionary *)contactDict
+                  andAccountDict:(AccountMutableDictionary *)accountDict {
+    
+    [self saveContactDict:contactDict andAccountDict:accountDict];
 }
 
-- (void)save {
+- (void)saveContactDict:(ContactMutableDictionary *)contactDict
+         andAccountDict:(AccountMutableDictionary *)accountDict {
     NSError *err = nil;
-    NSData *contactDictData = [NSKeyedArchiver archivedDataWithRootObject: self.getFullContactDict.mutableCopy requiringSecureCoding:NO error:&err];
+    NSData *contactDictData = [NSKeyedArchiver archivedDataWithRootObject: contactDict requiringSecureCoding:NO error:&err];
     if (err) {
-        NSLog(@"saveData error %@", err.description);
+        NSLog(@"SaveData error %@", err.description);
         return;
     }
     [[NSUserDefaults standardUserDefaults] setObject:contactDictData forKey:@"contactDict"];
     
-    NSData *acountData = [NSKeyedArchiver archivedDataWithRootObject: accountDictionary.mutableCopy requiringSecureCoding:NO error:&err];
+    NSData *acountData = [NSKeyedArchiver archivedDataWithRootObject: accountDict requiringSecureCoding:NO error:&err];
     if (err) {
-        NSLog(@"saveData error %@", err.description);
+        NSLog(@"SaveData error %@", err.description);
         return;
     }
     [[NSUserDefaults standardUserDefaults] setObject:acountData forKey:@"accountDict"];
@@ -34,34 +36,29 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-// background
-// tạo 1 queue riêng - chạy tuần tự
-// add vào - không replace
-- (void)load {
+- (nullable ContactMutableDictionary *)loadContactDictionary {
     NSError *err = nil;
     NSData *contactDictDecoded = [NSUserDefaults.standardUserDefaults objectForKey:@"contactDict"];
-    NSSet *classes = [NSSet setWithObjects:[NSArray class], [ContactGroupEntity class] ,[ContactEntity class], [NSString class], [NSMutableDictionary class], [NSDictionary class], [ContactDictionary class], nil];
+    NSSet *classes = [NSSet setWithObjects:[NSArray class], [ContactGroupEntity class] ,[ContactEntity class], [NSString class], [NSMutableDictionary class], [NSDictionary class], [ContactMutableDictionary class], nil];
     
-    ContactDictionary *contactDict = (ContactDictionary *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:contactDictDecoded error:&err];
+    ContactMutableDictionary *contactDict = (ContactMutableDictionary *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:contactDictDecoded error:&err];
     if (err) {
-        NSLog(@"loadSavedData error %@", err.description);
+        NSLog(@"Load ContactMutableDictionary error %@", err.description);
+        return nil;
     }
-    NSLog(@"/contactDictionary/");
-    if (contactDict) contactDictionary = contactDict.mutableCopy;
     
+    return contactDict;
+}
+
+- (nullable AccountMutableDictionary *)loadAccountDictionary {
+    NSError *err = nil;
     NSData *accountDictDecoded = [NSUserDefaults.standardUserDefaults objectForKey:@"accountDict"];
+    NSSet *classes = [NSSet setWithObjects:[NSArray class], [ContactGroupEntity class] ,[ContactEntity class], [NSString class], [NSMutableDictionary class], [NSDictionary class], [ContactMutableDictionary class], nil];
     NSMutableDictionary<NSString *, ContactEntity *> *accountDict = (NSMutableDictionary<NSString *, ContactEntity *> *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:accountDictDecoded error:&err];
     if (err) {
-        NSLog(@"loadSavedData error %@", err.description);
+        NSLog(@"load AccountMutableDictionary error %@", err.description);
     }
-    if (accountDict) accountDictionary = accountDict.mutableCopy;
-    
-    
-    for (id<ZaloContactEventListener> listener in listeners) {
-        if ([listener respondsToSelector:@selector(onLoadSavedDataComplete:)]) {
-            [listener onLoadSavedDataComplete:contactDict.mutableCopy];
-        }
-    }
+    return accountDict;
 }
 
 @end

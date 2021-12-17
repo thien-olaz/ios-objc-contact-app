@@ -19,27 +19,30 @@
  */
 
 @interface ZaloContactService () {
-    NSMutableDictionary<NSString *,ContactEntity *> *cacheContactDictionary;
-    
-    AccountIdSet *addSet;
-    AccountIdSet *removeSet;
-    AccountIdSet *updateSet;
-    
-    NSMutableArray<NSString *> *addSectionList;
-    NSMutableArray<NSString *> *removeSectionList;
-    BOOL bounceLastUpdate;
+    AccountIdMutableSet *addSet;
+    AccountIdMutableSet *removeSet;
+    AccountIdMutableSet *updateSet;
     
     NSMutableArray<ContactEntity *> *addOnlineList;
     NSMutableArray<ContactEntity *> *removeOnlineList;
 }
+@property id<APIServiceProtocol> apiService;
+
 @property dispatch_queue_t contactServiceQueue;
 @property dispatch_queue_t apiServicesQueue;
-@property NSLock *dataLock;
-@property NSLock *serviceLock;
 
+@property BOOL bounceLastUpdate;
+
+@property ContactMutableDictionary *oldContactDictionary;
+@property AccountMutableDictionary *oldAccountDictionary;
+
+@property ContactMutableDictionary *contactDictionary;
+@property AccountMutableDictionary *accountDictionary;
+
+@property NSMutableArray<id<ZaloContactEventListener>> *listeners;
 @end
 
-@implementation ZaloContactService 
+@implementation ZaloContactService
 
 static ZaloContactService *sharedInstance = nil;
 
@@ -55,39 +58,46 @@ static ZaloContactService *sharedInstance = nil;
 - (instancetype)init {
     self = super.init;
     
-    _serviceLock = [NSLock new];
+    self.apiService = [MockAPIService new];
     
-    _apiService = [MockAPIService new];
+    addSet = [AccountIdMutableSet new];
+    removeSet = [AccountIdMutableSet new];
+    updateSet = [AccountIdMutableSet new];
     
-    cacheContactDictionary = [NSMutableDictionary new];
     
-    addSet = [AccountIdSet new];
-    removeSet = [AccountIdSet new];
-    updateSet = [AccountIdSet new];
-    
-    addSectionList = [NSMutableArray new];
-    removeSectionList = [NSMutableArray new];
-    contactDictionary = [ContactDictionary new];
-    bounceLastUpdate = NO;
+    self.contactDictionary = [ContactMutableDictionary new];
+    self.bounceLastUpdate = NO;
     
     onlineList = [NSMutableArray new];
     addOnlineList = [NSMutableArray new];
     removeOnlineList = [NSMutableArray new];
     
-    _dataLock = [NSLock new];
     
-    accountDictionary = [NSMutableDictionary new];
+    self.accountDictionary = [AccountMutableDictionary new];
     
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _contactServiceQueue = dispatch_queue_create("_contactServiceQueue", qos);
     _apiServicesQueue = dispatch_queue_create("_apiServicesQueue", qos);
     
     dispatch_async(self.contactServiceQueue, ^{
-        //        [self load];
+//        if ([self.accountDictionary count]) return;
+//        ContactMutableDictionary *loadContact = [self loadContactDictionary];
+//        AccountMutableDictionary *loadAccount = [self loadAccountDictionary];
+//        if (!loadContact || !loadAccount || ![loadContact count] || ![loadAccount count]) return;
+//        dispatch_async(self.apiServicesQueue, ^{
+//            self.contactDictionary = loadContact;
+//            self.accountDictionary = loadAccount;
+//            for (id<ZaloContactEventListener> listener in self.listeners) {
+//                if ([listener respondsToSelector:@selector(onLoadSavedDataCompleteWithContact:andAccount:)]) {
+//                    [listener onLoadSavedDataCompleteWithContact:self.contactDictionary.mutableCopy andAccount:self.accountDictionary.mutableCopy];
+//                }
+//            }
+//        });
     });
     [self setUp];
     //fetching data form server
-    __weak typeof(self) weakSelf = self;
+    
+    //    __weak typeof(self) weakSelf = self;
     
     //    [_apiService fetchContacts:^(NSArray<ContactEntity *> * contactsFromServer) {
     //        if (contactsFromServer.count <= 0) return;
@@ -98,16 +108,6 @@ static ZaloContactService *sharedInstance = nil;
     //    }];
     
     return self;
-}
-
-- (void)fetchLocalContact {
-    [UserContacts.sharedInstance fetchLocalContacts];
-    contactDictionary = [ContactEntity mergeContactDict:UserContacts.sharedInstance.getContactDictionary toDict:contactDictionary];
-    
-    // Complexity == all contacts
-    for (NSArray<ContactEntity *> *contacts in [contactDictionary allValues]) {
-        for (ContactEntity *contact in contacts) [accountDictionary setObject:contact forKey:contact.phoneNumber.copy];
-    }
 }
 
 - (void)setUp {
@@ -145,65 +145,83 @@ static ZaloContactService *sharedInstance = nil;
 
 
 - (void)addContact:(ContactEntity*)contact {
-    if (![accountDictionary objectForKey:contact.accountId]) {
-        [self addContactToDataSource:contact];
-        [self incomingAddWithContact:contact];
+    if (![self.accountDictionary objectForKey:contact.accountId]) {
+        [self addContact:contact toContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
+        [self incommingAddWithContact:contact];
     } else {
         [self updateContactInDataSource:contact];
-        [self incomingUpdateWithContact:contact];
+        [self incommingUpdateWithContact:contact];
     }
     [self throttleUpdateDataSource];
 }
 
 - (void)removeContact:(NSString*)accountId {
+    ContactEntity *contact = [self.accountDictionary objectForKey:accountId];
     // if exist -> remove
-    if ([accountDictionary objectForKey:accountId]) {
-        // if delete sucess
-        if ([self deleteContactInDataSource:[accountDictionary objectForKey:accountId]]) {
-            [self incomingRemoveWithContact:accountId];
-        }
+    if (!contact) return;
+    // if delete sucess
+    if ([self deleteContact:contact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary]) {
+        [self incommingRemoveWithContact:contact];
         [self throttleUpdateDataSource];
     }
 }
 
 - (void)updateContact:(ContactEntity*)contact {
     //    if exist -> remove
-    ContactEntity *oldContact = [accountDictionary objectForKey:contact.accountId];
+    ContactEntity *oldContact = [self.accountDictionary objectForKey:contact.accountId];
     if (!oldContact) return;
     
     [self updateContactInDataSource:contact];
     // not change first name - last name - or phone number - affect order in list
     if ([oldContact compare:contact] == NSOrderedSame) {
-        [self incomingUpdateWithContact:contact];
+        [self incommingUpdateWithContact:contact];
     } else {
-        [self deleteContactInDataSource:oldContact];
-        [self addContactToDataSource:contact];
-        [self incomingReorderWithContact:contact];        
+        [self deleteContact:oldContact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
+        [self addContact:contact toContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
+        [self incommingReorderWithContact:contact];
     }
     
     [self throttleUpdateDataSource];
 }
 
 - (void)deleteContactWithId:(NSString *)accountId {
-    ContactEntity *removeContact = [accountDictionary objectForKey:accountId];
-    if (!removeContact) return;
-    if ([self deleteContactInDataSource:[accountDictionary objectForKey:accountId]]) {
-        [self incomingRemoveWithContact:accountId];
-        [self updateDataSource];
-        bounceLastUpdate = YES;
-    }
+    ContactEntity *contact = [self.oldAccountDictionary objectForKey:accountId];
+    if (!contact) return;
+    
+    dispatch_async(self.apiServicesQueue, ^{
+        
+        if ([self deleteContact:contact inContactDict:self.oldContactDictionary andAccountDict:self.oldAccountDictionary]) {
+            
+            ContactEntity *curContact = [self.accountDictionary objectForKey:accountId];
+            if (curContact) {
+                [self deleteContact:curContact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
+                [self->addSet removeObject:accountId];
+                [self->removeSet removeObject:accountId];
+                [self->updateSet removeObject:accountId];
+            }
+            
+            NSMutableArray *removeSection = [NSMutableArray new];
+            if (![self.oldContactDictionary objectForKey:contact.header]) {
+                [removeSection addObject:contact.header];
+            }
+            
+            [self notifyListenerWithAddSectionList:@[] removeSectionList:removeSection.copy addContact:[NSSet new]  removeContact:[NSSet setWithArray:@[accountId]] updateContact:[NSSet new] newContactDict:self.oldContactDictionary.copy newAccountDict:self.oldAccountDictionary.copy];
+            self.bounceLastUpdate = YES;
+            
+        }
+    });
 }
 
-- (ContactDictionary *)getFullContactDict {
-    return contactDictionary.copy;
+- (ContactMutableDictionary *)getFullContactDict {
+    return self.contactDictionary.copy;
 }
 
-- (OnlineContactEntityArray *)getOnlineContactList {
+- (OnlineContactEntityMutableArray *)getOnlineContactList {
     return onlineList.copy;
 }
 
-- (NSArray<ContactEntity *>*)getFullContactList {
-    return accountDictionary.allValues;
+- (NSArray<ContactEntity *>*)getAccountList {
+    return self.accountDictionary.copy;
 }
 
 #pragma mark - udpate data handler
@@ -218,38 +236,57 @@ static ZaloContactService *sharedInstance = nil;
 }
 
 - (void)updateDataSource {
-    if (bounceLastUpdate) {
+    if (self.bounceLastUpdate) {
         [self throttleUpdateDataSource];
-        bounceLastUpdate = NO;
+        self.bounceLastUpdate = NO;
         return;
     }
+    
+    NSSet *oldSet = [NSSet setWithArray:self.oldContactDictionary.allKeys.copy];
+    NSSet *newSet = [NSSet setWithArray:self.contactDictionary.allKeys.copy];
+    
+    NSMutableSet *removeHeaderSet = oldSet.mutableCopy;
+    [removeHeaderSet minusSet:newSet];
+    NSMutableSet *addHeaderSet = newSet.mutableCopy;
+    [addHeaderSet minusSet:oldSet];
+    
+    [self notifyListenerWithAddSectionList:addHeaderSet.copy removeSectionList:removeHeaderSet.copy addContact:addSet.copy removeContact:removeSet.copy updateContact:updateSet.copy newContactDict:self.contactDictionary.copy newAccountDict:self.accountDictionary.copy];
+    
+    [self cacheChanges];
+    [self cleanUpIncommingData];
+}
 
-    for (id<ZaloContactEventListener> listener in listeners) {
+// cache old data to quick compare
+- (void)cacheChanges {
+    self.oldContactDictionary = [NSMutableDictionary new];
+    for (NSString *key in self.contactDictionary.keyEnumerator) {
+        [self.oldContactDictionary setObject:self.contactDictionary[key].mutableCopy forKey:key];
+    }
+    self.oldAccountDictionary = self.accountDictionary.mutableCopy;
+}
+
+- (void)notifyListenerWithAddSectionList:(NSArray *)addSections
+                       removeSectionList:(NSArray *)removeSections
+                              addContact:(NSSet *)addContacts
+                           removeContact:(NSSet *)removeContacts
+                           updateContact:(NSSet *)updateContacts
+                          newContactDict:(NSDictionary *)contactDict
+                          newAccountDict:(NSDictionary *)accountDict {
+    
+    for (id<ZaloContactEventListener> listener in self.listeners) {
         if ([listener respondsToSelector:@selector(onServerChangeWithAddSectionList:removeSectionList:addContact:removeContact:updateContact:newContactDict:newAccountDict:)]) {
-            [listener onServerChangeWithAddSectionList:addSectionList.copy
-                                     removeSectionList:removeSectionList.copy
-                                            addContact:addSet.copy
-                                         removeContact:removeSet.copy
-                                         updateContact:updateSet.copy
-                                        newContactDict:contactDictionary.copy
-                                        newAccountDict:accountDictionary.copy];
+            [listener onServerChangeWithAddSectionList:addSections.copy
+                                     removeSectionList:removeSections.copy
+                                            addContact:addContacts.copy
+                                         removeContact:removeContacts.copy
+                                         updateContact:updateContacts.copy
+                                        newContactDict:contactDict.copy
+                                        newAccountDict:accountDict.copy];
         }
     }
-    
-    [self cleanUpUpdateData];
 }
 
-//clean up after all changed data is applied
-- (void)cleanUpUpdateData {
-    [addSet removeAllObjects];
-    [removeSet removeAllObjects];
-    [updateSet removeAllObjects];
-    [removeSectionList removeAllObjects];
-    [addSectionList removeAllObjects];
-    [cacheContactDictionary removeAllObjects];
-}
-
-- (void)incomingAddWithContact:(ContactEntity*)contact {
+- (void)incommingAddWithContact:(ContactEntity*)contact {
     if ([removeSet containsObject:contact.accountId]) {
         [removeSet removeObject:contact.accountId];
         [self updateContact:contact];
@@ -260,19 +297,19 @@ static ZaloContactService *sharedInstance = nil;
     }
 }
 
-- (void)incomingRemoveWithContact:(NSString*)accountId {
-    if ([addSet containsObject:accountId]) {
-        [addSet removeObject:accountId];
-    } else if ([updateSet containsObject:accountId]) {
-        [updateSet removeObject:accountId];
+- (void)incommingRemoveWithContact:(ContactEntity*)contact {
+    if ([addSet containsObject:contact.accountId]) {
+        [addSet removeObject:contact.accountId];
+    } else if ([updateSet containsObject:contact.accountId]) {
+        [updateSet removeObject:contact.accountId];
     }
-    [removeSet addObject:accountId];
+    [removeSet addObject:contact.accountId];
 }
 
 
-- (void)incomingUpdateWithContact:(ContactEntity*)contact {
+- (void)incommingUpdateWithContact:(ContactEntity*)contact {
     if ([addSet containsObject:contact.accountId]) {
-        [self incomingAddWithContact:contact];
+        [self incommingAddWithContact:contact];
     } else if ([removeSet containsObject:contact.accountId]) {
         return;
     } else {
@@ -280,52 +317,62 @@ static ZaloContactService *sharedInstance = nil;
     }
 }
 
-- (void)incomingReorderWithContact:(ContactEntity*)contact {
+- (void)incommingReorderWithContact:(ContactEntity*)contact {
     [removeSet addObject:contact.accountId];
     [addSet addObject:contact.accountId];
 }
+//clean up after all changed data is applied
+- (void)cleanUpIncommingData {
+    [addSet removeAllObjects];
+    [removeSet removeAllObjects];
+    [updateSet removeAllObjects];
+}
 
+# pragma mark: Update data source
 // if exist -> update. if not exist -> add
 // return YES if add, NO if udpate
--(void) addContactToDataSource:(ContactEntity*)contact {
+-(void) addContact:(ContactEntity*)contact toContactDict:(ContactMutableDictionary *)contactDict andAccountDict:(AccountMutableDictionary *)accountDict {
     // no section -> create new section
-    if (![contactDictionary objectForKey:contact.header] || ![[contactDictionary objectForKey:contact.header] count]) {
+    if (![contactDict objectForKey:contact.header] || ![[contactDict objectForKey:contact.header] count]) {
         // not have a section -> add section
-        [contactDictionary setObject:[[NSMutableArray alloc] initWithArray:@[contact]] forKey:contact.header];
-        [accountDictionary setObject:contact forKey:contact.accountId];
-        
-        // move out side
-        if ([removeSectionList containsObject:contact.header]) {
-            [removeSectionList removeObject:contact.header];
-        } else {
-            [addSectionList addObject:contact.header];
-        }
+        [contactDict setObject:[[NSMutableArray alloc] initWithArray:@[contact]] forKey:contact.header];
+        [accountDict setObject:contact forKey:contact.accountId];
     } else {
         // has a section -> insert
-        NSMutableArray<ContactEntity *> *sortedContactArray = [contactDictionary objectForKey:contact.header];
+        NSMutableArray<ContactEntity *> *sortedContactArray = [contactDict objectForKey:contact.header];
         NSUInteger insertIndex = [sortedContactArray indexOfObject:contact
                                                      inSortedRange:(NSRange){0, [sortedContactArray count]}
                                                            options:NSBinarySearchingInsertionIndex
                                                    usingComparator:^NSComparisonResult(ContactEntity *obj1, ContactEntity *obj2) {
             return [obj1 compare:obj2];
         }];
-        [accountDictionary setObject:contact forKey:contact.accountId];
+        [accountDict setObject:contact forKey:contact.accountId];
         [sortedContactArray insertObject:contact atIndex:insertIndex];
     }
+    
+    [self saveLatestChanges];
+}
+
+- (void)saveLatestChanges {
     dispatch_async(self.contactServiceQueue, ^{
-        [self didChange];
+        NSMutableDictionary* saveContact = [NSMutableDictionary new];
+        for (NSString *key in self.contactDictionary.keyEnumerator) {
+            [saveContact setObject:self.contactDictionary[key].mutableCopy forKey:key];
+        }
+        NSMutableDictionary *saveAccount = self.accountDictionary.mutableCopy;
+        [self didChangeWithContactDict:saveContact.mutableCopy andAccountDict:saveAccount];
     });
 }
 
 // if not exist -> do nothing. if exist -> replace
 - (void)updateContactInDataSource:(ContactEntity*)contact {
     // update the contact with the newest contact
-    [accountDictionary setObject:contact forKey:contact.accountId];
+    [self.accountDictionary setObject:contact forKey:contact.accountId];
     
     // no section -> can not update
-    if (![contactDictionary objectForKey:contact.header]) return;
+    if (![self.contactDictionary objectForKey:contact.header]) return;
     
-    NSMutableArray<ContactEntity *> *sortedContactArray = [contactDictionary objectForKey:contact.header];
+    NSMutableArray<ContactEntity *> *sortedContactArray = [self.contactDictionary objectForKey:contact.header];
     NSUInteger replaceIndex = [sortedContactArray indexOfObject:contact
                                                   inSortedRange:(NSRange){0, [sortedContactArray count]}
                                                         options:NSBinarySearchingFirstEqual
@@ -337,18 +384,16 @@ static ZaloContactService *sharedInstance = nil;
     
     // add to section
     [sortedContactArray replaceObjectAtIndex:replaceIndex withObject:contact];
-    dispatch_async(self.contactServiceQueue, ^{
-        [self didChange];
-    });
+    [self saveLatestChanges];
     
 }
 
 // return YES if exist and deleted, return NO if not exist
-- (BOOL)deleteContactInDataSource:(ContactEntity*)contact {
-    [accountDictionary removeObjectForKey:contact.accountId];
+- (BOOL)deleteContact:(ContactEntity*)contact inContactDict:(ContactMutableDictionary *)contactDict andAccountDict:(AccountMutableDictionary *)accountDict {
+    [accountDict removeObjectForKey:contact.accountId];
     // no section -> return NO
-    if (![contactDictionary objectForKey:contact.header]) return NO;
-    NSMutableArray<ContactEntity *> *sortedContactArray = [contactDictionary objectForKey:contact.header];
+    if (![contactDict objectForKey:contact.header]) return NO;
+    NSMutableArray<ContactEntity *> *sortedContactArray = [contactDict objectForKey:contact.header];
     NSUInteger deleteIndex = [sortedContactArray indexOfObject:contact
                                                  inSortedRange:(NSRange){0, [sortedContactArray count]}
                                                        options:NSBinarySearchingFirstEqual
@@ -358,26 +403,17 @@ static ZaloContactService *sharedInstance = nil;
     // has section but not found -> return NO
     if (deleteIndex == NSNotFound) return NO;
     
-    [[contactDictionary objectForKey:contact.header] removeObjectAtIndex:deleteIndex];
+    [[contactDict objectForKey:contact.header] removeObjectAtIndex:deleteIndex];
     
     // section become e mpty after delete -> remove section then YES
-    if ([contactDictionary objectForKey:contact.header].count) {
-        dispatch_async(self.contactServiceQueue, ^{
-            [self didChange];
-        });
+    if ([contactDict objectForKey:contact.header].count) {
+        [self saveLatestChanges];
         return YES;
     }
-    [contactDictionary removeObjectForKey:contact.header];
     
-    // move out side
-    if ([addSectionList containsObject:contact.header]) {
-        [addSectionList removeObject:contact.header];
-    } else {
-        [removeSectionList addObject:contact.header];
-    }
-    dispatch_async(self.contactServiceQueue, ^{
-        [self didChange];
-    });
+    [contactDict removeObjectForKey:contact.header];
+    
+    [self saveLatestChanges];
     // delete success
     return YES;
 }
@@ -407,7 +443,7 @@ static ZaloContactService *sharedInstance = nil;
         [onlineList insertObject:contact atIndex:foundIndex];
     }
     
-    for (id<ZaloContactEventListener> listener in listeners) {
+    for (id<ZaloContactEventListener> listener in self.listeners) {
         if ([listener respondsToSelector:@selector(onServerChangeOnlineFriendsWithAddContact:removeContact:updateContact:)]) {
             [listener onServerChangeOnlineFriendsWithAddContact:addOnlineList.mutableCopy removeContact:removeOnlineList.mutableCopy updateContact:@[].mutableCopy];
         }
@@ -415,30 +451,16 @@ static ZaloContactService *sharedInstance = nil;
     
     [removeOnlineList removeAllObjects];
     [addOnlineList removeAllObjects];
-
+    
 }
 
-- (void)addOnlineContact:(ContactEntity *)contact {
-    if ([addOnlineList containsObject:contact]) {
-        [addOnlineList removeObject:contact];
-    }
-    [addOnlineList addObject:contact];
-    [self throttleUpdateOnlineFriend];
-}
-
-- (void)removeOnlineContact:(ContactEntity *)contact {
-    [addOnlineList addObject:contact];
+- (void)fetchLocalContact {
+    [UserContacts.sharedInstance fetchLocalContacts];
+    //    self.contactDictionary = [ContactEntity mergeContactDict:UserContacts.sharedInstance.getContactDictionary toDict:self.contactDictionary];
     
-    // server marked online then offline -> remove from online list
-    if ([addOnlineList containsObject:contact]) {
-        [addOnlineList removeObject:contact];
-    }
-    
-    if (![removeOnlineList containsObject:contact]) {
-        [removeOnlineList addObject:contact];
-    }
-    
-    [self throttleUpdateOnlineFriend];
+    //    for (NSArray<ContactEntity *> *contacts in [self.contactDictionary allValues]) {
+    //        for (ContactEntity *contact in contacts) [self.accountDictionary setObject:contact forKey:contact.phoneNumber.copy];
+    //    }
 }
 
 @end

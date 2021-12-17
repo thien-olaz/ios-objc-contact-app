@@ -12,9 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZaloContactService (Storage)
 
-- (void)didChange;
-- (void)save;
-- (void)load;
+- (void)didChangeWithContactDict:(ContactMutableDictionary *)contactDict andAccountDict:(AccountMutableDictionary *)accountDict;
+
+- (nullable ContactMutableDictionary *)loadContactDictionary;
+- (nullable AccountMutableDictionary *)loadAccountDictionary;
+
 
 @end
 

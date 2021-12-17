@@ -21,7 +21,7 @@ typedef void (^PermissionCompletion) (BOOL);
 
 - (void)fetchLocalContacts;
 - (NSArray<CNContact *> *)getContactList;
-- (ContactDictionary *)getContactDictionary;
+- (ContactMutableDictionary *)getContactDictionary;
 
 @end
 

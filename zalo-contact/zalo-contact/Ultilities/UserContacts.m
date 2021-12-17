@@ -11,7 +11,7 @@
 
 @interface UserContacts ()
 @property NSMutableArray<CNContact *> *contactList;
-@property ContactDictionary *contactDictionary;
+@property ContactMutableDictionary *contactDictionary;
 @end
 
 @implementation UserContacts
@@ -45,10 +45,10 @@ static UserContacts *sharedInstance = nil;
     _contactDictionary = [self getDeviceContactEntities];
 }
 
-- (ContactDictionary *)getDeviceContactEntities {
+- (ContactMutableDictionary *)getDeviceContactEntities {
     CNContactStore *ctstore = [CNContactStore.alloc init];
     
-    ContactDictionary *contactDictionary = [ContactDictionary dictionary];
+    ContactMutableDictionary *contactDictionary = [ContactMutableDictionary dictionary];
     
     [ctstore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
         if (granted == YES && !error) {
@@ -95,9 +95,9 @@ static UserContacts *sharedInstance = nil;
     return _contactList;
 }
 
-- (ContactDictionary *)getContactDictionary {
+- (ContactMutableDictionary *)getContactDictionary {
     if (!_contactDictionary) {
-        _contactDictionary = [ContactDictionary new];
+        _contactDictionary = [ContactMutableDictionary new];
     }
     return _contactDictionary;;
     

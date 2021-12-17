@@ -10,47 +10,42 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NSMutableArray<ContactEntity *> ContactEntityArray;
-typedef NSMutableDictionary<NSString *, ContactEntity *> AccountDictionary;
-typedef NSMutableSet<NSString *> AccountIdSet;
-typedef NSMutableArray<OnlineContactEntity *> OnlineContactEntityArray;
-typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> ContactDictionary;
+typedef NSMutableArray<ContactEntity *> ContactEntityMutableArray;
+typedef NSMutableDictionary<NSString *, ContactEntity *> AccountMutableDictionary;
+typedef NSMutableSet<NSString *> AccountIdMutableSet;
+typedef NSMutableArray<OnlineContactEntity *> OnlineContactEntityMutableArray;
+typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> ContactMutableDictionary;
 
 @protocol ZaloContactEventListener <NSObject>
-- (void)onLoadSavedDataComplete:(ContactDictionary *)loadedData;
-- (void)onReceiveNewList;
-- (void)onAddContact:(ContactEntity *)contact;
-- (void)onDeleteContact:(ContactEntity *)contact;
-- (void)onUpdateContact:(ContactEntity *)contact toContact:(ContactEntity *)newContact;
 
+- (void)onLoadSavedDataCompleteWithContact:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount;
+- (void)onReceiveNewList;
 - (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *>*)addSectionList
                        removeSectionList:(NSMutableArray<NSString *>*)removeSectionList
-                              addContact:(AccountIdSet*)addContacts
-                           removeContact:(AccountIdSet*)removeContacts
-                           updateContact:(AccountIdSet*)updateContacts
-                          newContactDict:(ContactDictionary*)contactDict
-                          newAccountDict:(AccountDictionary*)accountDict;
-
-- (void)onServerChangeOnlineFriendsWithAddContact:(ContactEntityArray*)addContacts
-                                    removeContact:(ContactEntityArray*)removeContacts
-                                    updateContact:(ContactEntityArray*)updateContacts;
+                              addContact:(AccountIdMutableSet*)addContacts
+                           removeContact:(AccountIdMutableSet*)removeContacts
+                           updateContact:(AccountIdMutableSet*)updateContacts
+                          newContactDict:(ContactMutableDictionary*)contactDict
+                          newAccountDict:(AccountMutableDictionary*)accountDict;
+- (void)onServerChangeOnlineFriendsWithAddContact:(ContactEntityMutableArray*)addContacts
+                                    removeContact:(ContactEntityMutableArray*)removeContacts
+                                    updateContact:(ContactEntityMutableArray*)updateContacts;
 @end
 
-@interface ZaloContactService : NSObject {    
-    ContactDictionary *contactDictionary;
-    NSMutableDictionary<NSString *, ContactEntity *> *accountDictionary;
-    OnlineContactEntityArray *onlineList;
-    NSMutableArray<id<ZaloContactEventListener>> *listeners;
+
+@interface ZaloContactService : NSObject {
+    OnlineContactEntityMutableArray *onlineList;
 }
 
-@property id<APIServiceProtocol> apiService;
+@property (readonly) NSMutableArray<id<ZaloContactEventListener>> *listeners;
 
 + (ZaloContactService *)sharedInstance;
-- (OnlineContactEntityArray *)getOnlineContactList;
-- (ContactDictionary *)getFullContactDict;
-- (NSArray<ContactEntity *>*)getFullContactList;
-- (void)fetchLocalContact;
-- (ContactEntity *)getContactsWithPhoneNumber:(NSString *)phoneNumber;
+
+- (OnlineContactEntityMutableArray *)getOnlineContactList;
+
+- (ContactMutableDictionary *)getFullContactDict;
+- (AccountMutableDictionary *)getAccountList;
+
 - (void)deleteContactWithId:(NSString *)accountId;
 
 @end

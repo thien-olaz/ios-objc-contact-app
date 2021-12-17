@@ -153,7 +153,7 @@
         
         [weakSelf.tableView beginUpdates];
         
-        [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationNone];
+        [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
         [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
         
         [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];                

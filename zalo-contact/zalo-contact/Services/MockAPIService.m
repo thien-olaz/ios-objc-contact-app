@@ -17,7 +17,7 @@
     NSArray<CNContact *> *dataToDelete;
     NSArray<CNContact *> *dataToUpdate;
     NSArray<CNContact *> *dataToPushToOnlineGroup;
-    
+    CGFloat secDevideConstant;
     int addIndex;
     int deleteIndex;
     int updateIndex;
@@ -43,6 +43,7 @@
     addIndex = 0;
     updateIndex = 0;
     onlineIndex = 0;
+    secDevideConstant = 1000.0;
     return self;
 }
 
@@ -51,8 +52,9 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
         [self addNewContact];
     });
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-//        [self deleteContact];
+        [self deleteContact];
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
@@ -86,7 +88,7 @@
         
         strongSelf->defaultData = [strongSelf getDataFromFile:@"normal-contacts"];
         strongSelf->dataToPush = [strongSelf getDataFromFile:@"medium-contacts"];
-        strongSelf->dataToDelete = [strongSelf getDataFromFile:@"normal-contacts3"];
+        strongSelf->dataToDelete = [strongSelf getDataFromFile:@"medium-contacts"];
         strongSelf->dataToUpdate = [strongSelf getDataFromFile:@"medium-contacts2"];
         
         strongSelf->dataToPushToOnlineGroup = [strongSelf getDataFromFile:@"online-contacts"];
@@ -122,7 +124,7 @@
         onContactAdded(enity);
         addIndex += 1;
         int random = arc4random_uniform(300);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 100) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self addNewContact];
         });
     };
@@ -137,7 +139,7 @@
         onContactDeleted(entity.accountId);
         deleteIndex += 1;
         int random = arc4random_uniform(700);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 100.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self deleteContact];
         });
     };
@@ -151,8 +153,8 @@
         NSLog(@"~~ %@", enity.fullName);
         onContactUpdated(enity);
         updateIndex += 1;
-        int random = arc4random_uniform(700);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 100.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        int random = arc4random_uniform(300);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self updateContact];
         });
     };

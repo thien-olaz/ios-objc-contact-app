@@ -21,11 +21,7 @@
 
 @interface ContactViewModel () <ZaloContactEventListener>
 
-@property IGListIndexPathResult *sectionDiff;
-@property NSArray<IGListIndexPathResult *> *contactsDiff;
-@property NSArray<NSIndexPath *> *reloadIndexes;
-@property NSMutableArray<NSIndexPath *> *deleteIndexes;
-@property AccountDictionary *accountDictionary;
+@property AccountMutableDictionary *accountDictionary;
 //sync datasource and tableview update to avoid crash
 @property NSLock *updateTableViewLock;
 
@@ -33,11 +29,9 @@
 
 @implementation ContactViewModel {
     NSMutableArray<ContactGroupEntity *> *contactGroups;
-    OnlineContactEntityArray *onlineContacts;
+    OnlineContactEntityMutableArray *onlineContacts;
     id<TableViewActionDelegate> actionDelegate;
     id<TableViewDiffDelegate> diffDelegate;
-    id currentState;
-    ContactDictionary *oldctd;
 }
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
@@ -45,20 +39,20 @@
     self = super.init;
     actionDelegate = action;
     diffDelegate = diff;
-    _deleteIndexes = [NSMutableArray new];
     _updateTableViewLock = [NSLock new];
+        
     [ZaloContactService.sharedInstance subcribe:self];
+    
     [self setup];
     return self;
 }
 
 ///double check if load data from device take time
 ///if data loaded from server is called before device 
-- (void)onLoadSavedDataComplete:(ContactDictionary *)loadedData {
+- (void)onLoadSavedDataCompleteWithContact:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
     if (contactGroups.count) return;
-    if (!loadedData.count) return;
-    
-    [self setContactGroups:[ContactGroupEntity groupFromContacts:loadedData]];
+    self.accountDictionary = loadAccount;
+    [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
     if (_dataBlock) _dataBlock();
 }
 
@@ -68,15 +62,15 @@
     for (NSString *accountId in array) {
         ContactEntity *contact = [self.accountDictionary objectForKey:accountId];
         if (!contact) {
-            NSLog(@"cant found cntact %@", accountId);
+            NSLog(@"Not found contact with Id %@", accountId);
             continue;
         }
-//        if ([exception containsObject:contact.header]) continue;
+        if ([exception containsObject:contact.header]) continue;
         NSIndexPath *indexPath = [self.tableViewDataSource indexPathForContactEntity:contact];
         if (indexPath && ![indexes containsObject:indexPath]) {
             [indexes addObject:indexPath];
         } else {
-            NSLog(@"cant found index %@", contact);
+            NSLog(@"Not found contact with Id %@", contact);
         }
     }
     return indexes.copy;
@@ -94,39 +88,25 @@
 
 - (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *> *)addSectionList
                        removeSectionList:(NSMutableArray<NSString *> *)removeSectionList
-                              addContact:(AccountIdSet *)addContacts
-                           removeContact:(AccountIdSet *)removeContacts
-                           updateContact:(AccountIdSet *)updateContacts
-                          newContactDict:(ContactDictionary *)contactDict
-                          newAccountDict:(AccountDictionary *)accountDict {
+                              addContact:(AccountIdMutableSet *)addContacts
+                           removeContact:(AccountIdMutableSet *)removeContacts
+                           updateContact:(AccountIdMutableSet *)updateContacts
+                          newContactDict:(ContactMutableDictionary *)contactDict
+                          newAccountDict:(AccountMutableDictionary *)accountDict {
     [_updateUILock lock];
-    
-    
+
     NSArray<NSIndexPath *> *removeIndexes = [self indexesFromIdArray:removeContacts.copy exceptInSecion:removeSectionList];
-//    NSLog(@"remove index %lu contacts %lu", removeIndexes.count, removeContacts.count);
     NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
-    NSArray<NSIndexPath *> *updateIndexes = [self indexesFromIdArray:updateContacts.copy exceptInSecion:@[]];
-    
-    //compile the latest data
-//    NSLog(@" old%d new%d tableview old%d new%d", _accountDictionary.count, accountDict.count);
-    NSUInteger total1 = 0;
-    for (NSString* key in oldctd) {
-      total1 += [[oldctd objectForKey:key] count];
-    }
-    NSUInteger total2 = 0;
-    for (NSString* key in contactDict) {
-      total2 += [[contactDict objectForKey:key] count];
-    }
-//    NSLog(@" tableview old%d new%d",total1, total2);
+
     self.accountDictionary = accountDict;
     [self setContactGroups:[ContactGroupEntity groupFromContacts:contactDict]];
-    oldctd = contactDict;
+    
+    NSArray<NSIndexPath *> *updateIndexes = [self indexesFromIdArray:updateContacts.copy exceptInSecion:@[]];
     //update view model data
     if (_updateBlock) _updateBlock();
     NSArray<NSIndexPath *> *addIndexes = [self indexesFromIdArray:addContacts.copy exceptInSecion:addSectionList];
-//    NSLog(@"add index %lu contacts %lu", addIndexes.count, addContacts.count);
     NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];
-
+    
     //tableview - copy data -> tableview
     [diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
     
@@ -136,7 +116,7 @@
     
 }
 
-- (NSArray<NSIndexPath*>*)getIndexesInTableViewFromOnlineContactArray:(OnlineContactEntityArray*)array {
+- (NSArray<NSIndexPath*>*)getIndexesInTableViewFromOnlineContactArray:(OnlineContactEntityMutableArray*)array {
     NSMutableArray<NSIndexPath *> *indexes = [NSMutableArray new];
     for (OnlineContactEntity *contact in array) {
         NSIndexPath *indexPath = [self.tableViewDataSource indexPathForOnlineContactEntity:contact];
@@ -147,9 +127,9 @@
     return indexes.copy;
 }
 
-- (void)onServerChangeOnlineFriendsWithAddContact:(OnlineContactEntityArray*)addContacts
-                                    removeContact:(OnlineContactEntityArray*)removeContacts
-                                    updateContact:(OnlineContactEntityArray*)updateContacts {
+- (void)onServerChangeOnlineFriendsWithAddContact:(OnlineContactEntityMutableArray*)addContacts
+                                    removeContact:(OnlineContactEntityMutableArray*)removeContacts
+                                    updateContact:(OnlineContactEntityMutableArray*)updateContacts {
     
     [_updateUILock lock];
     NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTableViewFromOnlineContactArray:removeContacts];
@@ -163,11 +143,12 @@
 }
 
 - (void)setup {
+    self.accountDictionary = ZaloContactService.sharedInstance.getAccountList;
     [self setContactGroups:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
     if (_dataBlock) _dataBlock();
 }
 
-- (void)setOnlineContact:(OnlineContactEntityArray*)contacts {
+- (void)setOnlineContact:(OnlineContactEntityMutableArray*)contacts {
     onlineContacts = contacts;
     _data = [self compileGroupToTableData:contactGroups onlineContacts:onlineContacts];
 }
@@ -175,17 +156,7 @@
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
     contactGroups = [NSMutableArray.alloc initWithArray: groups];
     _data = [self compileGroupToTableData:contactGroups onlineContacts:onlineContacts];
-
-}
-
-- (void)updateDataWithSectionDiff:(IGListIndexPathResult *)sectionDiff cellDiff:(NSArray<IGListIndexPathResult *> *)cellDiff {
-    if (_updateBlock) _updateBlock();
-    [diffDelegate onDiff:self.sectionDiff cells:self.contactsDiff reload:self.reloadIndexes];
-}
-
-- (IGListIndexPathResult *)getSectionDiff:(NSArray<ContactGroupEntity *> *)newGroups {
-    IGListIndexPathResult * sectionDiff = [IGListDiffPaths(0, 0, contactGroups, newGroups, IGListDiffEquality) resultForBatchUpdates];
-    return sectionDiff;
+    
 }
 
 // MARK: - make it dynamic please
@@ -214,7 +185,7 @@
 }
 
 - (void)checkPermissionAndFetchData {
-    typeof(self) weakSelf = self;
+
     //    [UserContacts checkAccessContactPermission:^(BOOL complete) {
     //        if (complete) {
     //            [self performSelectorInBackground:@selector(fetchLocalContacts) withObject:nil];
@@ -224,10 +195,6 @@
     //            });
     //        }
     //    }];
-}
-
-- (void)fetchLocalContacts {
-    [ZaloContactService.sharedInstance fetchLocalContact];
 }
 
 - (void)deleteContactWithId:(NSString *)accountId {
@@ -249,9 +216,8 @@
     return arr.copy;
 }
 
-- (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups onlineContacts:(OnlineContactEntityArray*)onlineContacts{
+- (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups onlineContacts:(OnlineContactEntityMutableArray*)onlineContacts{
     NSMutableArray *data = NSMutableArray.alloc.init;
-    __unsafe_unretained typeof(self) weakSelf = self;
     //MARK:  -
     [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
     [data addObject:
