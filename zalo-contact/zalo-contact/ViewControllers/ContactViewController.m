@@ -78,6 +78,18 @@
             [weakSelf.tableView reloadData];
         });
     }];
+    
+    [_viewModel setDataWithAnimationBlock:^{
+        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [UIView transitionWithView:weakSelf.tableView
+                              duration:0.5
+                               options:(UIViewAnimationOptionTransitionCrossDissolve)
+                            animations:^{
+                [weakSelf.tableView reloadData];
+            } completion:nil];
+        });
+    }];
     [_viewModel setPresentBlock:^{
         [weakSelf presentViewController:[UIAlertController contactPermisisonAlert]  animated:YES completion:nil];
     }];
@@ -167,6 +179,5 @@
     });
     
 }
-
 @end
 

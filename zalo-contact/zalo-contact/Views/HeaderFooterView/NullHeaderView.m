@@ -13,5 +13,9 @@
     return 0;
 }
 
+- (void)setNeedsObject:(nonnull HeaderObject *)object {
+    return;
+}
+
 @end
 

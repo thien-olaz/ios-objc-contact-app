@@ -59,7 +59,7 @@
     NSString *firstName = [coder decodeObjectForKey:@"fname"];
     NSString *lastName = [coder decodeObjectForKey:@"lname"];
     NSString *phoneNumber = [coder decodeObjectForKey:@"pnumber"];
-    NSString *imageUrl = [coder decodeObjectForKey:@"imageUrl"];
+//    NSString *imageUrl = [coder decodeObjectForKey:@"imageUrl"];
     NSString *subtitle = [coder decodeObjectForKey:@"subtitle"];
     NSString *email = [coder decodeObjectForKey:@"email"];
     

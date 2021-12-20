@@ -30,7 +30,6 @@ typedef void (^OnContactUpdateWithPhoneNumberBLock) (NSString *, ContactEntity *
 @property OnContactChangeBlock onOnlineContactUpdate;
 @property OnContactUpdateWithPhoneNumberBLock onContactUpdatedWithPhoneNumber;
 
-- (void)getContactList;
 - (void)fetchContacts:(OnData)block;
 - (NSArray<CNContact *>*)getDataFromFile:(NSString *)fileName;
 

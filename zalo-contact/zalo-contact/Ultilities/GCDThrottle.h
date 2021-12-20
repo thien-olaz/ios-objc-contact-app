@@ -10,7 +10,7 @@
 #define THROTTLE_MAIN_QUEUE             (dispatch_get_main_queue())
 #define THROTTLE_GLOBAL_QUEUE           (dispatch_get_global_queue(0, 0))
 
-typedef void (^GCDThrottleBlock) ();
+typedef void (^GCDThrottleBlock) (void);
 
 
 /** Throttle type */

@@ -7,6 +7,7 @@
 
 #import "CellObject.h"
 #import "ZaloContactService.h"
+#import "ZaloContactService+Private.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable ContactMutableDictionary *)loadContactDictionary;
 - (nullable AccountMutableDictionary *)loadAccountDictionary;
-
+- (void)saveLatestChanges;
 
 @end
 

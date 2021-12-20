@@ -14,7 +14,6 @@
 #import "NullHeaderView.h"
 #import "ActionHeaderView.h"
 #import "ContactFooterView.h"
-#import "LabelViewCell.h"
 #import "CellObject.h"
 #import "NullFooterView.h"
 
@@ -42,15 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init;
 - (instancetype)initWithTitle:(NSString *)title andTitleLetter:(NSString *)letter;
 
-@end
-
-#pragma mark - MiddleLabelHeaderObject
-@interface LabelHeaderObject : CellObject
-@property NSTextAlignment alignment;
-@property NSString *title;
-- (instancetype)initWithTitle:(NSString *)title;
-- (instancetype)initWithTitle:(NSString *)title andTextAlignment:(NSTextAlignment)alignment;
-- (instancetype)init;
 @end
 
 #pragma mark - NullHeaderObject

@@ -30,7 +30,6 @@ typedef void (^TapBlock)(void);
 @property id<SwipeActionDelegate> swipeActionDelegate;
 
 - (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped;
-- (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped swipeAction:(NSArray<SwipeActionObject *> *)actionList;
 - (CellObject *)attachToObject:(CellObject *)object swipeAction:(NSArray<SwipeActionObject *> *)actionList;
 @end
 

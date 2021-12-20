@@ -21,4 +21,8 @@
     return 6;
 }
 
+- (void)setNeedsObject:(nonnull FooterObject *)object {
+    return;
+}
+
 @end

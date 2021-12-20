@@ -57,12 +57,12 @@
 }
 
 // find indexpath with contact entity
-- (NSArray<NSIndexPath*>*)indexesFromIdArray:(NSArray<NSString *>*)array exceptInSecion:(NSArray<NSString *>*)exception {
+- (NSArray<NSIndexPath*>*)indexesFromChangesArray:(NSArray<ChangeFootprint *>*)array exceptInSecion:(NSArray<NSString *>*)exception {
     NSMutableArray<NSIndexPath *> *indexes = [NSMutableArray new];
-    for (NSString *accountId in array) {
-        ContactEntity *contact = [self.accountDictionary objectForKey:accountId];
+    for (ChangeFootprint *changeFootprint in array) {
+        ContactEntity *contact = [self.accountDictionary objectForKey:changeFootprint.accountId];
         if (!contact) {
-            NSLog(@"Not found contact with Id %@", accountId);
+            NSLog(@"Not found contact with Id %@", changeFootprint.accountId);
             continue;
         }
         if ([exception containsObject:contact.header]) continue;
@@ -86,28 +86,36 @@
     return indexes.copy;
 }
 
+- (void)onServerChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
+    long count = [self.accountDictionary count];
+    self.accountDictionary = loadAccount;
+    [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
+    if (count) { if (_dataWithAnimationBlock) _dataWithAnimationBlock();}
+    else if (_dataBlock) _dataBlock();
+}
+
 - (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *> *)addSectionList
                        removeSectionList:(NSMutableArray<NSString *> *)removeSectionList
-                              addContact:(AccountIdMutableSet *)addContacts
-                           removeContact:(AccountIdMutableSet *)removeContacts
-                           updateContact:(AccountIdMutableSet *)updateContacts
+                              addContact:(NSOrderedSet<ChangeFootprint *> *)addContacts
+                           removeContact:(NSOrderedSet<ChangeFootprint *> *)removeContacts
+                           updateContact:(NSOrderedSet<ChangeFootprint *> *)updateContacts
                           newContactDict:(ContactMutableDictionary *)contactDict
                           newAccountDict:(AccountMutableDictionary *)accountDict {
     [_updateUILock lock];
 
-    NSArray<NSIndexPath *> *removeIndexes = [self indexesFromIdArray:removeContacts.copy exceptInSecion:removeSectionList];
+    NSArray<NSIndexPath *> *removeIndexes = [self indexesFromChangesArray:removeContacts.copy exceptInSecion:removeSectionList];
     NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
 
     self.accountDictionary = accountDict;
     [self setContactGroups:[ContactGroupEntity groupFromContacts:contactDict]];
     
-    NSArray<NSIndexPath *> *updateIndexes = [self indexesFromIdArray:updateContacts.copy exceptInSecion:@[]];
+    NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
     //update view model data
     if (_updateBlock) _updateBlock();
-    NSArray<NSIndexPath *> *addIndexes = [self indexesFromIdArray:addContacts.copy exceptInSecion:addSectionList];
+    NSArray<NSIndexPath *> *addIndexes = [self indexesFromChangesArray:addContacts.copy exceptInSecion:addSectionList];
+
     NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];
     
-    //tableview - copy data -> tableview
     [diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
     
     NSLog(@"==============================");
@@ -144,6 +152,7 @@
 
 - (void)setup {
     self.accountDictionary = ZaloContactService.sharedInstance.getAccountList;
+    if (![self.accountDictionary count]) return;
     [self setContactGroups:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
     if (_dataBlock) _dataBlock();
 }
@@ -182,19 +191,6 @@
     NSIndexPath *totalContactsIdp0;
     totalContactsIdp0 = [NSIndexPath indexPathForRow:0 inSection:[UIConstants getContactIndex] + newGroups.count];
     return @[totalContactsIdp0];
-}
-
-- (void)checkPermissionAndFetchData {
-
-    //    [UserContacts checkAccessContactPermission:^(BOOL complete) {
-    //        if (complete) {
-    //            [self performSelectorInBackground:@selector(fetchLocalContacts) withObject:nil];
-    //        } else {
-    //            dispatch_async(dispatch_get_main_queue(), ^{
-    //                if (weakSelf.presentBlock) weakSelf.presentBlock();
-    //            });
-    //        }
-    //    }];
 }
 
 - (void)deleteContactWithId:(NSString *)accountId {
@@ -267,7 +263,7 @@
     ActionHeaderObject *contactHeaderObject = [[ActionHeaderObject alloc] initWithTitle:@"Danh bạ" andButtonTitle:@"CẬP NHẬP"];
     
     [contactHeaderObject setBlock:^{
-        [self checkPermissionAndFetchData];
+
     }];
     
     [data addObject:contactHeaderObject];
@@ -301,7 +297,7 @@
     [data addObject:[LabelCellObject.alloc initWithTitle:@"Nhanh chóng thêm bạn vào Zalo từ danh \nbạ điện thoại" andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloLightGrayColor cellType:tallCell]];
     
     [data addObject:[UpdateContactObject.alloc initWithTitle:@"Cập nhập danh bạ" andAction:^{
-        [self checkPermissionAndFetchData];
+
     }]];
     
     [data addObject:BlankFooterObject.new];

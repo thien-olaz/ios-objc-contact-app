@@ -19,10 +19,9 @@
 @required
 
 - (id _Nonnull )objectAtIndexPath:(NSIndexPath *_Nonnull)indexPath;
-- (NSIndexPath * _Nullable)indexPathForObject:(id)object;
 
-- (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *)contact;
-- (NSIndexPath * _Nullable)indexPathForOnlineContactEntity:(OnlineContactEntity *)contact;
+- (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *_Nonnull)contact;
+- (NSIndexPath * _Nullable)indexPathForOnlineContactEntity:(OnlineContactEntity *_Nonnull)contact;
 - (nullable HeaderObject *)headerObjectInSection:(NSInteger)index;
 - (nullable FooterObject *)footerObjectInSection:(NSInteger)index;
 - (CGFloat)tableView:(UITableView *_Nonnull)tableView heightForRowAtIndexPath:(NSIndexPath *_Nonnull)indexPath;

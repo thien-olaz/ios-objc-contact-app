@@ -43,6 +43,9 @@
 		AF63595D2768D56400DFE352 /* online-contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF63595C2768D56400DFE352 /* online-contacts.vcf */; };
 		AF697373276B880B0094FC4D /* short-contacts2.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF697372276B880B0094FC4D /* short-contacts2.vcf */; };
 		AF697375276B893D0094FC4D /* normal-contacts3.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF697374276B893D0094FC4D /* normal-contacts3.vcf */; };
+		AF8C76972771D415007710F5 /* ZaloContactService+API.m in Sources */ = {isa = PBXBuildFile; fileRef = AF8C76962771D415007710F5 /* ZaloContactService+API.m */; };
+		AF8C769A2771DD5A007710F5 /* ZaloContactService+ChangeHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = AF8C76992771DD5A007710F5 /* ZaloContactService+ChangeHandle.m */; };
+		AF8C769D2771DEBA007710F5 /* ZaloContactService+Private.m in Sources */ = {isa = PBXBuildFile; fileRef = AF8C769C2771DEBA007710F5 /* ZaloContactService+Private.m */; };
 		AF9201B52746004500E1581C /* ContactGroupEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B42746004500E1581C /* ContactGroupEntity.m */; };
 		AF9201B827460EB300E1581C /* UIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AF9201B727460EB300E1581C /* UIConstants.m */; };
 		AFA2BDC9275E092200128996 /* MockAPIService.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDC8275E092200128996 /* MockAPIService.m */; };
@@ -53,11 +56,11 @@
 		AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA2BDD7275E54E000128996 /* GCDThrottle.m */; };
 		AFA3B695275F6861003B198B /* normal-contacts.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AFA3B694275F6861003B198B /* normal-contacts.vcf */; };
 		AFA3B6982760A960003B198B /* SwipeActionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6972760A960003B198B /* SwipeActionObject.m */; };
-		AFA3B69B2760EC83003B198B /* LabelViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B69A2760EC83003B198B /* LabelViewCell.m */; };
 		AFA3B69E2760F31C003B198B /* LabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B69D2760F31C003B198B /* LabelCell.m */; };
 		AFA3B6A12760F4F8003B198B /* LabelCellObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6A02760F4F8003B198B /* LabelCellObject.m */; };
 		AFA3B6A427610218003B198B /* UpdateContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6A327610218003B198B /* UpdateContactCell.m */; };
 		AFA3B6A727610361003B198B /* UpdateContactObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6A627610361003B198B /* UpdateContactObject.m */; };
+		AFB23AC7277067FD00387801 /* ChangeFootprint.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB23AC6277067FD00387801 /* ChangeFootprint.m */; };
 		AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4A72756093300FB5406 /* NullHeaderView.m */; };
 		AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */; };
 		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
@@ -111,7 +114,7 @@
 		AF368C5B27420F3A00E17AEB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		AF36B9182767587B00B8AC56 /* short-contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "short-contacts.vcf"; sourceTree = "<group>"; };
 		AF36B91A2767A2AA00B8AC56 /* medium-contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "medium-contacts.vcf"; sourceTree = "<group>"; };
-		AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "medium-contacts2.vcf"; sourceTree = "<group>"; };
+		AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "medium-contacts2.vcf"; sourceTree = "<group>"; };
 		AF3E8BE52757295C00BB8AE4 /* ContactViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactViewModel.h; sourceTree = "<group>"; };
 		AF3E8BE62757295C00BB8AE4 /* ContactViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactViewModel.m; sourceTree = "<group>"; };
 		AF426F5D2754DC4C004C541E /* HeaderObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeaderObject.h; sourceTree = "<group>"; };
@@ -136,6 +139,12 @@
 		AF63595C2768D56400DFE352 /* online-contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "online-contacts.vcf"; sourceTree = "<group>"; };
 		AF697372276B880B0094FC4D /* short-contacts2.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "short-contacts2.vcf"; sourceTree = "<group>"; };
 		AF697374276B893D0094FC4D /* normal-contacts3.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "normal-contacts3.vcf"; sourceTree = "<group>"; };
+		AF8C76952771D415007710F5 /* ZaloContactService+API.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+API.h"; sourceTree = "<group>"; };
+		AF8C76962771D415007710F5 /* ZaloContactService+API.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+API.m"; sourceTree = "<group>"; };
+		AF8C76982771DD5A007710F5 /* ZaloContactService+ChangeHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+ChangeHandle.h"; sourceTree = "<group>"; };
+		AF8C76992771DD5A007710F5 /* ZaloContactService+ChangeHandle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+ChangeHandle.m"; sourceTree = "<group>"; };
+		AF8C769B2771DEBA007710F5 /* ZaloContactService+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+Private.h"; sourceTree = "<group>"; };
+		AF8C769C2771DEBA007710F5 /* ZaloContactService+Private.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+Private.m"; sourceTree = "<group>"; };
 		AF9201B32746004500E1581C /* ContactGroupEntity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactGroupEntity.h; sourceTree = "<group>"; };
 		AF9201B42746004500E1581C /* ContactGroupEntity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactGroupEntity.m; sourceTree = "<group>"; };
 		AF9201B627460EB300E1581C /* UIConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIConstants.h; sourceTree = "<group>"; };
@@ -154,8 +163,6 @@
 		AFA3B694275F6861003B198B /* normal-contacts.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "normal-contacts.vcf"; sourceTree = "<group>"; };
 		AFA3B6962760A960003B198B /* SwipeActionObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwipeActionObject.h; sourceTree = "<group>"; };
 		AFA3B6972760A960003B198B /* SwipeActionObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwipeActionObject.m; sourceTree = "<group>"; };
-		AFA3B6992760EC83003B198B /* LabelViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabelViewCell.h; sourceTree = "<group>"; };
-		AFA3B69A2760EC83003B198B /* LabelViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LabelViewCell.m; sourceTree = "<group>"; };
 		AFA3B69C2760F31C003B198B /* LabelCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabelCell.h; sourceTree = "<group>"; };
 		AFA3B69D2760F31C003B198B /* LabelCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LabelCell.m; sourceTree = "<group>"; };
 		AFA3B69F2760F4F8003B198B /* LabelCellObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LabelCellObject.h; sourceTree = "<group>"; };
@@ -164,6 +171,8 @@
 		AFA3B6A327610218003B198B /* UpdateContactCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UpdateContactCell.m; sourceTree = "<group>"; };
 		AFA3B6A527610361003B198B /* UpdateContactObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UpdateContactObject.h; sourceTree = "<group>"; };
 		AFA3B6A627610361003B198B /* UpdateContactObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UpdateContactObject.m; sourceTree = "<group>"; };
+		AFB23AC5277067FD00387801 /* ChangeFootprint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChangeFootprint.h; sourceTree = "<group>"; };
+		AFB23AC6277067FD00387801 /* ChangeFootprint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChangeFootprint.m; sourceTree = "<group>"; };
 		AFC3D4A62756093300FB5406 /* NullHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullHeaderView.h; sourceTree = "<group>"; };
 		AFC3D4A72756093300FB5406 /* NullHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullHeaderView.m; sourceTree = "<group>"; };
 		AFC3D4AC27560BFB00FB5406 /* CommonHeaderAndFooterViews.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHeaderAndFooterViews.h; sourceTree = "<group>"; };
@@ -330,8 +339,6 @@
 				AF0BFBED2743A071006E072B /* ContactCell.m */,
 				AFA3B69C2760F31C003B198B /* LabelCell.h */,
 				AFA3B69D2760F31C003B198B /* LabelCell.m */,
-				AFA3B6992760EC83003B198B /* LabelViewCell.h */,
-				AFA3B69A2760EC83003B198B /* LabelViewCell.m */,
 				AFA3B6A227610218003B198B /* UpdateContactCell.h */,
 				AFA3B6A327610218003B198B /* UpdateContactCell.m */,
 			);
@@ -343,21 +350,8 @@
 			children = (
 				AFA2BDC7275E092200128996 /* MockAPIService.h */,
 				AFA2BDC8275E092200128996 /* MockAPIService.m */,
-				AFA2BDCB275E094300128996 /* ZaloContactService.h */,
-				AFA2BDCC275E094300128996 /* ZaloContactService.m */,
-				AF5178442762FB2C00FC8BCA /* ZaloContactService+Storage.h */,
-				AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */,
-				AF517847276301BF00FC8BCA /* ZaloContactService+Observer.h */,
-				AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */,
-				AFA2BDCE275E104300128996 /* super-long-contacts.vcf */,
-				AF36B9182767587B00B8AC56 /* short-contacts.vcf */,
-				AF697372276B880B0094FC4D /* short-contacts2.vcf */,
-				AFA3B694275F6861003B198B /* normal-contacts.vcf */,
-				AF63595727685A9300DFE352 /* normal-contacts2.vcf */,
-				AF697374276B893D0094FC4D /* normal-contacts3.vcf */,
-				AF63595C2768D56400DFE352 /* online-contacts.vcf */,
-				AF36B91A2767A2AA00B8AC56 /* medium-contacts.vcf */,
-				AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */,
+				AFE38C902771F3ED00BD0CF1 /* ZaloContactService */,
+				AFE38C912771F40500BD0CF1 /* TestData */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -388,6 +382,8 @@
 				AF0BFBF627456B88006E072B /* ContactEntityAdapter.m */,
 				AF632F842769A097001E88EC /* OnlineContactEntityAdapter.h */,
 				AF632F852769A097001E88EC /* OnlineContactEntityAdapter.m */,
+				AFB23AC5277067FD00387801 /* ChangeFootprint.h */,
+				AFB23AC6277067FD00387801 /* ChangeFootprint.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -435,6 +431,41 @@
 				AF3E8BE62757295C00BB8AE4 /* ContactViewModel.m */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AFE38C902771F3ED00BD0CF1 /* ZaloContactService */ = {
+			isa = PBXGroup;
+			children = (
+				AFA2BDCB275E094300128996 /* ZaloContactService.h */,
+				AFA2BDCC275E094300128996 /* ZaloContactService.m */,
+				AF8C769B2771DEBA007710F5 /* ZaloContactService+Private.h */,
+				AF8C769C2771DEBA007710F5 /* ZaloContactService+Private.m */,
+				AF5178442762FB2C00FC8BCA /* ZaloContactService+Storage.h */,
+				AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */,
+				AF517847276301BF00FC8BCA /* ZaloContactService+Observer.h */,
+				AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */,
+				AF8C76952771D415007710F5 /* ZaloContactService+API.h */,
+				AF8C76962771D415007710F5 /* ZaloContactService+API.m */,
+				AF8C76982771DD5A007710F5 /* ZaloContactService+ChangeHandle.h */,
+				AF8C76992771DD5A007710F5 /* ZaloContactService+ChangeHandle.m */,
+			);
+			path = ZaloContactService;
+			sourceTree = "<group>";
+		};
+		AFE38C912771F40500BD0CF1 /* TestData */ = {
+			isa = PBXGroup;
+			children = (
+				AFA2BDCE275E104300128996 /* super-long-contacts.vcf */,
+				AF36B9182767587B00B8AC56 /* short-contacts.vcf */,
+				AF697372276B880B0094FC4D /* short-contacts2.vcf */,
+				AFA3B694275F6861003B198B /* normal-contacts.vcf */,
+				AF63595727685A9300DFE352 /* normal-contacts2.vcf */,
+				AF697374276B893D0094FC4D /* normal-contacts3.vcf */,
+				AF63595C2768D56400DFE352 /* online-contacts.vcf */,
+				AF36B91A2767A2AA00B8AC56 /* medium-contacts.vcf */,
+				AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */,
+			);
+			path = TestData;
 			sourceTree = "<group>";
 		};
 		F79D14F36C5D8279141E7A57 /* Frameworks */ = {
@@ -574,6 +605,7 @@
 				AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */,
 				AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */,
 				AF24F4C8274C9E5900A71E07 /* ContactTableViewDataSource.m in Sources */,
+				AFB23AC7277067FD00387801 /* ChangeFootprint.m in Sources */,
 				AFA2BDCD275E094300128996 /* ZaloContactService.m in Sources */,
 				AF0BFBF727456B88006E072B /* ContactEntityAdapter.m in Sources */,
 				AF426F622754DE41004C541E /* FooterObject.m in Sources */,
@@ -581,6 +613,7 @@
 				AF24F4D7274F375B00A71E07 /* UIAlertControllerExt.m in Sources */,
 				AF426F672754E915004C541E /* ContactTableViewAction.m in Sources */,
 				AF426F5F2754DC4C004C541E /* HeaderObject.m in Sources */,
+				AF8C76972771D415007710F5 /* ZaloContactService+API.m in Sources */,
 				AF24F4CE274DE4A900A71E07 /* CommonCell.m in Sources */,
 				AFA3B6A12760F4F8003B198B /* LabelCellObject.m in Sources */,
 				AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */,
@@ -589,6 +622,7 @@
 				AFE4CA072755F45600A0190F /* HeaderFooterFactory.m in Sources */,
 				AFA2BDD5275E4A2700128996 /* NSObject+Debounce.m in Sources */,
 				AF0BFBF42743B971006E072B /* FriendRequestEntity.m in Sources */,
+				AF8C769A2771DD5A007710F5 /* ZaloContactService+ChangeHandle.m in Sources */,
 				AF0BFBEE2743A071006E072B /* ContactCell.m in Sources */,
 				AFA3B6982760A960003B198B /* SwipeActionObject.m in Sources */,
 				AFEB1CCA2754B670001636C6 /* CellFactory.m in Sources */,
@@ -603,7 +637,6 @@
 				AF2C5D6F275E833000DF06CF /* NSArrayExt.m in Sources */,
 				AFEB1CD02754BA9F001636C6 /* ContactObject.m in Sources */,
 				AFA3B6A427610218003B198B /* UpdateContactCell.m in Sources */,
-				AFA3B69B2760EC83003B198B /* LabelViewCell.m in Sources */,
 				AF24F4D4274E002700A71E07 /* BlankFooterView.m in Sources */,
 				AFE4CA0A2755FFD900A0190F /* CommonCellObject.m in Sources */,
 				AFE4C9FE2755D73B00A0190F /* SectionObject.m in Sources */,
@@ -612,6 +645,7 @@
 				AFA3B6A727610361003B198B /* UpdateContactObject.m in Sources */,
 				AF24F4CB274DDFBD00A71E07 /* ActionHeaderView.m in Sources */,
 				AFEB1CCD2754B80F001636C6 /* CellObject.m in Sources */,
+				AF8C769D2771DEBA007710F5 /* ZaloContactService+Private.m in Sources */,
 				AF368C4E27420F3800E17AEB /* SceneDelegate.m in Sources */,
 				AF632F862769A097001E88EC /* OnlineContactEntityAdapter.m in Sources */,
 				AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */,

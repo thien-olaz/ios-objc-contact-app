@@ -56,7 +56,7 @@
     }
     
     if (currentSection) [sectionsArray addObject:currentSection];
-
+    
     sections = sectionsArray;
 }
 
@@ -65,67 +65,29 @@
     return [section getObjectForRow:indexPath.row];
 }
 
-- (NSIndexPath *)indexPathForObject:(id)object {
-    if (nil == object) {
+- (NSIndexPath * _Nullable)indexPathForOnlineContactEntity:(OnlineContactEntity *)contact {
+    OnlineContactObject *object = [OnlineContactObject.alloc initWithContactEntity:contact];
+    NSUInteger sectionIndex = [UIConstants getOnlineContactIndex];
+    NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
+    NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(OnlineContactObject *obj1, OnlineContactObject *obj2) {
+        return [obj1 revertCompare:obj2];
+    }];
+    if (foundIndex == NSNotFound) {
         return nil;
     }
-    
-    // Find exact section
+    return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
+}
+
+- (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *)contact {
+    ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
     for (NSUInteger sectionIndex = [UIConstants getContactIndex]; sectionIndex < [sections count]; sectionIndex++) {
-        if (![[object header] isEqual: sections[sectionIndex].header]) continue;
-        return [self binarySearch:object inSection:sectionIndex];
-    }
-    
-    return nil;
-}
-
-- (NSIndexPath * _Nullable)indexPathForOnlineContactEntity:(OnlineContactEntity *)contact {
-    if (contact) {
-        OnlineContactObject *object = [OnlineContactObject.alloc initWithContactEntity:contact];
-        NSUInteger sectionIndex = [UIConstants getOnlineContactIndex];
+        if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
         NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
-        NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(OnlineContactObject *obj1, OnlineContactObject *obj2) {
-            return [obj1 revertCompare:obj2];
+        NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
+            return [obj1 compareToSearch:obj2];
         }];
-        if (foundIndex == NSNotFound) {
-            return nil;
-        }
+        if (foundIndex == NSNotFound) return nil;
         return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
-    }
-    return nil;
-}
-
-- (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *)contact {    
-    if (contact) {
-        ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
-        for (NSUInteger sectionIndex = [UIConstants getContactIndex]; sectionIndex < [sections count]; sectionIndex++) {
-            if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
-            NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
-            NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
-                return [obj1 compareToSearch:obj2];
-            }];
-            if (foundIndex == NSNotFound) return nil;
-            return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
-        }
-    }
-    return nil;
-}
-
-//MARK: - time complexity - Olog(n)
-- (NSIndexPath *)binarySearch:(id)object inSection:(unsigned long)sectionIndex {
-    NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
-    int l = 0, r = rows.count - 1;
-    while (l <= r) {
-        int rowIndex = l + (r - l) / 2;
-        NSComparisonResult res = [object compare:[rows objectAtIndex:rowIndex]];
-        
-        if (res == NSOrderedSame)
-            return [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
-        
-        if (res == NSOrderedDescending)
-            l = rowIndex + 1;
-        else
-            r = rowIndex - 1;
     }
     return nil;
 }
