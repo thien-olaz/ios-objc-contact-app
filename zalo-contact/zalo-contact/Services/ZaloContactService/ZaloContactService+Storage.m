@@ -6,7 +6,7 @@
 //
 
 #import "ZaloContactService+Storage.h"
-
+#import "ZaloContactService+Private.h"
 //coredata
 @interface ZaloContactService (Storage)
 
@@ -14,7 +14,7 @@
 
 @implementation ZaloContactService (Storage)
 
-- (void)saveLatestChanges {    
+- (void)saveLatestChanges {
     NSMutableDictionary* saveContact = [NSMutableDictionary new];
     for (NSString *key in self.contactDictionary.keyEnumerator) {
         [saveContact setObject:self.contactDictionary[key].mutableCopy forKey:key];
@@ -36,14 +36,14 @@
     NSError *err = nil;
     NSData *contactDictData = [NSKeyedArchiver archivedDataWithRootObject: contactDict requiringSecureCoding:NO error:&err];
     if (err) {
-        NSLog(@"Error - SaveData: %@", err.description);
+        LOG2(@"Error - SaveData: %@", err.description);
         return;
     }
     [[NSUserDefaults standardUserDefaults] setObject:contactDictData forKey:@"contactDict"];
     
     NSData *acountData = [NSKeyedArchiver archivedDataWithRootObject: accountDict requiringSecureCoding:NO error:&err];
     if (err) {
-        NSLog(@"SaveData error %@", err.description);
+        LOG2(@"SaveData error %@", err.description);
         return;
     }
     [[NSUserDefaults standardUserDefaults] setObject:acountData forKey:@"accountDict"];
@@ -56,7 +56,7 @@
     
     ContactMutableDictionary *contactDict = (ContactMutableDictionary *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:contactDictDecoded error:&err];
     if (err) {
-        NSLog(@"Error - ContactMutableDictionary: %@", err.description);
+        LOG2(@"Error - ContactMutableDictionary: %@", err.description);
         return nil;
     }
     
@@ -69,7 +69,7 @@
     NSSet *classes = [NSSet setWithObjects:[NSMutableArray class],[ContactEntity class], [NSString class], [NSMutableDictionary class], nil];
     NSMutableDictionary<NSString *, ContactEntity *> *accountDict = (NSMutableDictionary<NSString *, ContactEntity *> *)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:accountDictDecoded error:&err];
     if (err) {
-        NSLog(@"Error - AccountMutableDictionary: %@", err.description);
+        LOG2(@"Error - AccountMutableDictionary: %@", err.description);
     }
     return accountDict;
 }

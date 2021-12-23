@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#define LOG(str) NSLog(@"%s %@", __PRETTY_FUNCTION__ ,str);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface NSString (Common)

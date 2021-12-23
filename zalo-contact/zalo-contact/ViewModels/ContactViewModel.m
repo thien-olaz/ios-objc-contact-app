@@ -49,21 +49,19 @@
 
 - (void)setup {
     dispatch_async(_datasourceQueue, ^{
-        if (_dataBlock) _dataBlock();
+        if (self.dataBlock) self.dataBlock();
     });
     [ZaloContactService.sharedInstance subcribe:self];
 }
 
-// đồng bộ data source - tableview
-// tuần tự
-
 - (void)onChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
     dispatch_async(_datasourceQueue, ^{
-        long count = [self.accountDictionary count];
+//        long count = [self.accountDictionary count];
         self.accountDictionary = loadAccount;
         [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
-        if (count) { if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();}
-        else if (self.dataBlock) self.dataBlock();
+//        if (count) { if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();}
+//        else if (self.dataBlock) self.dataBlock();
+        if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();
     });
 }
 
@@ -113,10 +111,7 @@
         
         NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
         //update view model data
-        
         if (self.updateBlock) self.updateBlock();
-        //        if (_dataBlock) _dataBlock();
-        
         NSArray<NSIndexPath *> *addIndexes = [self indexesFromChangesArray:addContacts.copy exceptInSecion:addSectionList];
         
         NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];

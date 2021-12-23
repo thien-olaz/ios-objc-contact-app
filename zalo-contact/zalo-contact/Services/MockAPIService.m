@@ -22,6 +22,7 @@
     int deleteIndex;
     int updateIndex;
     int onlineIndex;
+    int getTime;
 }
 @synthesize onOnlineContactAdded;
 
@@ -74,7 +75,7 @@
     NSString *filepath = [[NSBundle mainBundle] pathForResource:fileName ofType:@"vcf"];
     NSError *error;
     NSString *fileContents = [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:&error];
-    if (error) LOG(error.description);
+    if (error) NSLog(@"%s %@", __PRETTY_FUNCTION__ ,error.description);
     NSData *data = [fileContents dataUsingEncoding:NSUTF8StringEncoding];
     return [CNContactVCardSerialization contactsWithData:data error:&error];
 }
@@ -85,8 +86,8 @@
         if (!weakSelf) return;
         MockAPIService *strongSelf = weakSelf;
         if (!strongSelf) return;
-        
-        strongSelf->defaultData = [strongSelf getDataFromFile:@"super-short-contact"];
+//        super-short-contact
+        strongSelf->defaultData = [strongSelf getDataFromFile:@"short-contacts"];
         strongSelf->dataToPush = [strongSelf getDataFromFile:@"medium-contacts"];
         strongSelf->dataToDelete = [strongSelf getDataFromFile:@"medium-contacts"];
         strongSelf->dataToUpdate = [strongSelf getDataFromFile:@"medium-contacts2"];
@@ -98,20 +99,23 @@
 }
 
 // MARK: Fake a api request with 1 sec delay
-- (void)fetchContacts:(OnData)block {
-    __weak typeof(self) weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-        if (!weakSelf) return;
-        MockAPIService *strongSelf = weakSelf;
-        
-        NSMutableArray<ContactEntity *> *apiContactsResult = NSMutableArray.new;
-        for (CNContact *cnct in strongSelf->defaultData) {
-            ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:cnct];
-            [apiContactsResult addObject:entity];
-        }
-        block(apiContactsResult);
-    });
-    
+- (void)fetchContacts:(OnData)successBlock onFailed:(ActionBlock)failBlock {
+    getTime += 1;
+    if (getTime <= 5) failBlock();
+    else {
+        __weak typeof(self) weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+            if (!weakSelf) return;
+            MockAPIService *strongSelf = weakSelf;
+            
+            NSMutableArray<ContactEntity *> *apiContactsResult = NSMutableArray.new;
+            for (CNContact *cnct in strongSelf->defaultData) {
+                ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:cnct];
+                [apiContactsResult addObject:entity];
+            }
+            successBlock(apiContactsResult);
+        });
+    }
 }
 
 
@@ -142,7 +146,6 @@
 }
 
 - (void)updateContact {
-
     if (updateIndex < dataToUpdate.count) {
         ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:dataToUpdate[updateIndex]];
         NSLog(@"Server:: ~~ %@", enity.fullName);

@@ -92,7 +92,7 @@
             [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [UIView transitionWithView:weakSelf.tableView
-                                  duration:0.5
+                                  duration:0.2
                                    options:(UIViewAnimationOptionTransitionCrossDissolve)
                                 animations:^{
                     [weakSelf.tableView reloadData];
@@ -102,10 +102,10 @@
     }];
     
     [_viewModel setUpdateBlock:^{
+        // sync because viewmodel need the tableview latest data to get indexpath
         dispatch_sync(weakSelf.tableViewQueue, ^{
             [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
         });
-        
     }];
     
     [_viewModel setPresentBlock:^{

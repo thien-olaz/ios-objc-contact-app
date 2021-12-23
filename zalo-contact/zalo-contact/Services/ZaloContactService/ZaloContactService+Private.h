@@ -9,6 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define LOG(str) NSLog(@"🌍 ZaloContactService : %@", str);
+#define LOG2(str1, str2) NSLog(@"🌍 ZaloContactService : %@", [NSString stringWithFormat:str1, str2])
 @interface ZaloContactService ()
 
 @property AccountIdMutableOrderedSet *addSet;

@@ -11,6 +11,7 @@
 @import Contacts;
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^ActionBlock) (void);
 typedef void (^OnData) (NSArray<ContactEntity *>*);
 typedef void (^OnContactChangeBlock) (ContactEntity *);
 typedef void (^OnContactDeleteBlock) (NSString *);
@@ -30,7 +31,7 @@ typedef void (^OnContactUpdateWithPhoneNumberBLock) (NSString *, ContactEntity *
 @property OnContactChangeBlock onOnlineContactUpdate;
 @property OnContactUpdateWithPhoneNumberBLock onContactUpdatedWithPhoneNumber;
 
-- (void)fetchContacts:(OnData)block;
+- (void)fetchContacts:(OnData)successBlock onFailed:(ActionBlock)failBlock;
 - (NSArray<CNContact *>*)getDataFromFile:(NSString *)fileName;
 
 @end

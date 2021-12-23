@@ -19,7 +19,7 @@ float const throttleTime = 0.75;
 @implementation ZaloContactService (ChangeHandle)
 // response for server event
 - (void)setUp {
-    NSLog(@"#-#-# FAKE SOCKET CONNECTED #-#-#");
+    LOG(@"#-#-# FAKE SOCKET CONNECTED #-#-#");
     __weak typeof(self) weakSelf = self;
     [self.apiService setOnContactAdded:^(ContactEntity * newContact) {
         dispatch_async(weakSelf.apiServiceQueue, ^{
