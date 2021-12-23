@@ -6,7 +6,8 @@
 //
 
 #import "ContactViewController.h"
-
+#import "ZaloContactService.h"
+#import "ZaloContactService+Observer.h"
 #import "UIAlertControllerExt.h"
 #import "ContactTableViewAction.h"
 #import "ContactViewModel.h"
@@ -14,11 +15,12 @@
 
 @interface ContactViewController () <TableViewActionDelegate, TableViewDiffDelegate>
 
+@property NSLock *lock;
 @property UITableView *tableView;
 @property ContactTableViewAction *tableViewAction;
 @property ContactTableViewDataSource *tableViewDataSource;
 @property ContactViewModel *viewModel;
-
+@property dispatch_queue_t tableViewQueue;
 @end
 
 @implementation ContactViewController
@@ -26,11 +28,15 @@
 - (id)initWithViewModel:(ContactTableViewDataSource *)vm {
     self = [super init];
     _tableViewDataSource = vm;
+    self.lock = [NSLock new];
+    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
+    _tableViewQueue = dispatch_queue_create("_tableViewQueue", qos);
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self configTableView];
     [self addView];
     
@@ -62,7 +68,6 @@
 
 - (void)bindViewModel {
     _viewModel = [ContactViewModel.alloc initWithActionDelegate:self andDiffDelegate:self];
-    
     // capture weak self for binding block
     __unsafe_unretained typeof(self) weakSelf = self;
     
@@ -72,31 +77,42 @@
     [_tableViewAction setSwipeActionDelegate:self.viewModel];
     
     [_viewModel setTableViewDataSource:self.tableViewDataSource];
+    
     [_viewModel setDataBlock:^{
-        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf.tableView reloadData];
+        dispatch_async(weakSelf.tableViewQueue, ^{
+            [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [weakSelf.tableView reloadData];
+            });
         });
     }];
     
     [_viewModel setDataWithAnimationBlock:^{
-        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [UIView transitionWithView:weakSelf.tableView
-                              duration:0.5
-                               options:(UIViewAnimationOptionTransitionCrossDissolve)
-                            animations:^{
-                [weakSelf.tableView reloadData];
-            } completion:nil];
+        dispatch_async(weakSelf.tableViewQueue, ^{
+            [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [UIView transitionWithView:weakSelf.tableView
+                                  duration:0.5
+                                   options:(UIViewAnimationOptionTransitionCrossDissolve)
+                                animations:^{
+                    [weakSelf.tableView reloadData];
+                } completion:nil];
+            });
         });
     }];
+    
+    [_viewModel setUpdateBlock:^{
+        dispatch_sync(weakSelf.tableViewQueue, ^{
+            [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
+        });
+        
+    }];
+    
     [_viewModel setPresentBlock:^{
         [weakSelf presentViewController:[UIAlertController contactPermisisonAlert]  animated:YES completion:nil];
     }];
-    [_viewModel setUpdateBlock:^{
-        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data];
-    }];
-    _viewModel.dataBlock();
+    
+    [_viewModel setup];
     
 }
 
@@ -118,64 +134,28 @@
     [_tableView scrollToRowAtIndexPath:indexPath atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
 }
 
-#pragma mark - TableViewDiffDelegate
-- (void)onDiff:(IGListIndexPathResult *)sectionDiff cells:(NSArray<IGListIndexPathResult *> *)cellsDiff reload:(NSArray<NSIndexPath *> *)reloadIndexes{
-    
-    __unsafe_unretained typeof(self) weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        NSMutableIndexSet *sectionInsert = [NSMutableIndexSet indexSet];
-        for (NSIndexPath *indexPath in [sectionDiff inserts]) {
-            [sectionInsert addIndex:indexPath.row + [UIConstants getContactIndex]];
-        }
-        
-        NSMutableIndexSet *sectionDelete = [NSMutableIndexSet indexSet];
-        for (NSIndexPath *indexPath in [sectionDiff deletes]) {
-            [sectionDelete addIndex:indexPath.row + [UIConstants getContactIndex]];
-        }
-        
-        [weakSelf.tableView beginUpdates];
-        
-        [weakSelf.tableView deleteSections:sectionDelete withRowAnimation:(UITableViewRowAnimationLeft)];
-        [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
-        
-        
-        for (IGListIndexPathResult *result in cellsDiff) {
-            [weakSelf.tableView deleteRowsAtIndexPaths:result.deletes withRowAnimation:(UITableViewRowAnimationLeft)];
-            [weakSelf.tableView insertRowsAtIndexPaths:result.inserts withRowAnimation:(UITableViewRowAnimationLeft)];
-        }
-        
-        [weakSelf.tableView reloadRowsAtIndexPaths:reloadIndexes withRowAnimation:UITableViewRowAnimationNone];
-        
-        [weakSelf.tableView endUpdates];
-        
-    });
-    
-}
-
-#pragma mark - trying my own diff
-
+#pragma mark - diffing animation
 - (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
                   sectionRemove:(NSIndexSet *)sectionRemove
                         addCell:(NSArray<NSIndexPath *> *)addIndexes
                      removeCell:(NSArray<NSIndexPath *> *)removeIndexes
                   andUpdateCell:(NSArray<NSIndexPath *> *)updateIndexes {
     __unsafe_unretained typeof(self) weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
+    // nhiều update => reload
+    // UX
+    dispatch_sync(dispatch_get_main_queue(), ^{
         [weakSelf.tableView beginUpdates];
         
         [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
         [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
         
-        [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];                
+        [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
         [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
         
-        [weakSelf.tableView insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];        
-        
+        [weakSelf.tableView insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
         
         [weakSelf.tableView endUpdates];
-        [weakSelf.viewModel.updateUILock unlock];
+        [[weakSelf.viewModel updateUILock] unlock];
     });
     
 }

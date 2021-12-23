@@ -26,6 +26,7 @@
     if (!entity) return NO;
     return [self.accountId isEqual:entity.accountId];
 }
+
 - (NSUInteger)hash {
     return @(self.accountId.hash).unsignedIntValue;
 }

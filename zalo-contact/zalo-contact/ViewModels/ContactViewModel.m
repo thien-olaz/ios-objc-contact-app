@@ -22,38 +22,49 @@
 @interface ContactViewModel () <ZaloContactEventListener>
 
 @property AccountMutableDictionary *accountDictionary;
-//sync datasource and tableview update to avoid crash
-@property NSLock *updateTableViewLock;
-
+@property dispatch_queue_t datasourceQueue;
+@property id<TableViewDiffDelegate> diffDelegate;
+@property id<TableViewActionDelegate> actionDelegate;
 @end
 
 @implementation ContactViewModel {
+    
     NSMutableArray<ContactGroupEntity *> *contactGroups;
     OnlineContactEntityMutableArray *onlineContacts;
-    id<TableViewActionDelegate> actionDelegate;
-    id<TableViewDiffDelegate> diffDelegate;
+    
 }
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff{
     self = super.init;
-    actionDelegate = action;
-    diffDelegate = diff;
-    _updateTableViewLock = [NSLock new];
-        
-    [ZaloContactService.sharedInstance subcribe:self];
+    self.actionDelegate = action;
+    self.diffDelegate = diff;
+    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
+    _datasourceQueue = dispatch_queue_create("_datasourceQueue", qos);
+    [self setContactGroups:@[]];
     
-    [self setup];
+    
     return self;
 }
 
-///double check if load data from device take time
-///if data loaded from server is called before device 
-- (void)onLoadSavedDataCompleteWithContact:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
-    if (contactGroups.count) return;
-    self.accountDictionary = loadAccount;
-    [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
-    if (_dataBlock) _dataBlock();
+- (void)setup {
+    dispatch_async(_datasourceQueue, ^{
+        if (_dataBlock) _dataBlock();
+    });
+    [ZaloContactService.sharedInstance subcribe:self];
+}
+
+// đồng bộ data source - tableview
+// tuần tự
+
+- (void)onChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
+    dispatch_async(_datasourceQueue, ^{
+        long count = [self.accountDictionary count];
+        self.accountDictionary = loadAccount;
+        [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
+        if (count) { if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();}
+        else if (self.dataBlock) self.dataBlock();
+    });
 }
 
 // find indexpath with contact entity
@@ -62,7 +73,7 @@
     for (ChangeFootprint *changeFootprint in array) {
         ContactEntity *contact = [self.accountDictionary objectForKey:changeFootprint.accountId];
         if (!contact) {
-            NSLog(@"Not found contact with Id %@", changeFootprint.accountId);
+            NSLog(@"Not found contact with account id %@", changeFootprint.accountId);
             continue;
         }
         if ([exception containsObject:contact.header]) continue;
@@ -70,7 +81,7 @@
         if (indexPath && ![indexes containsObject:indexPath]) {
             [indexes addObject:indexPath];
         } else {
-            NSLog(@"Not found contact with Id %@", contact);
+            NSLog(@"Not found contact with -- %@", contact.fullName);
         }
     }
     return indexes.copy;
@@ -86,14 +97,6 @@
     return indexes.copy;
 }
 
-- (void)onServerChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
-    long count = [self.accountDictionary count];
-    self.accountDictionary = loadAccount;
-    [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
-    if (count) { if (_dataWithAnimationBlock) _dataWithAnimationBlock();}
-    else if (_dataBlock) _dataBlock();
-}
-
 - (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *> *)addSectionList
                        removeSectionList:(NSMutableArray<NSString *> *)removeSectionList
                               addContact:(NSOrderedSet<ChangeFootprint *> *)addContacts
@@ -101,27 +104,27 @@
                            updateContact:(NSOrderedSet<ChangeFootprint *> *)updateContacts
                           newContactDict:(ContactMutableDictionary *)contactDict
                           newAccountDict:(AccountMutableDictionary *)accountDict {
-    [_updateUILock lock];
-
-    NSArray<NSIndexPath *> *removeIndexes = [self indexesFromChangesArray:removeContacts.copy exceptInSecion:removeSectionList];
-    NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
-
-    self.accountDictionary = accountDict;
-    [self setContactGroups:[ContactGroupEntity groupFromContacts:contactDict]];
-    
-    NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
-    //update view model data
-    if (_updateBlock) _updateBlock();
-    NSArray<NSIndexPath *> *addIndexes = [self indexesFromChangesArray:addContacts.copy exceptInSecion:addSectionList];
-
-    NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];
-    
-    [diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
-    
-    NSLog(@"==============================");
-    NSLog(@"======New update circle=======");
-    NSLog(@"==============================");
-    
+    dispatch_async(_datasourceQueue, ^{
+        NSArray<NSIndexPath *> *removeIndexes = [self indexesFromChangesArray:removeContacts.copy exceptInSecion:removeSectionList];
+        NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
+        
+        self.accountDictionary = accountDict;
+        [self setContactGroups:[ContactGroupEntity groupFromContacts:contactDict]];
+        
+        NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
+        //update view model data
+        
+        if (self.updateBlock) self.updateBlock();
+        //        if (_dataBlock) _dataBlock();
+        
+        NSArray<NSIndexPath *> *addIndexes = [self indexesFromChangesArray:addContacts.copy exceptInSecion:addSectionList];
+        
+        NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];
+        
+        [self.diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
+        
+        NSLog(@"======New update circle=======");
+    });
 }
 
 - (NSArray<NSIndexPath*>*)getIndexesInTableViewFromOnlineContactArray:(OnlineContactEntityMutableArray*)array {
@@ -147,15 +150,10 @@
     if (_updateBlock) _updateBlock();
     NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTableViewFromOnlineContactArray:addContacts];
     
-    [diffDelegate onDiffWithSectionInsert:[NSIndexSet new] sectionRemove:[NSIndexSet new] addCell:addIndexes removeCell:removeIndexes andUpdateCell:@[]];
+    [self.diffDelegate onDiffWithSectionInsert:[NSIndexSet new] sectionRemove:[NSIndexSet new] addCell:addIndexes removeCell:removeIndexes andUpdateCell:@[]];
 }
 
-- (void)setup {
-    self.accountDictionary = ZaloContactService.sharedInstance.getAccountList;
-    if (![self.accountDictionary count]) return;
-    [self setContactGroups:[ContactGroupEntity groupFromContacts:ZaloContactService.sharedInstance.getFullContactDict]];
-    if (_dataBlock) _dataBlock();
-}
+
 
 - (void)setOnlineContact:(OnlineContactEntityMutableArray*)contacts {
     onlineContacts = contacts;
@@ -165,25 +163,6 @@
 - (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
     contactGroups = [NSMutableArray.alloc initWithArray: groups];
     _data = [self compileGroupToTableData:contactGroups onlineContacts:onlineContacts];
-    
-}
-
-// MARK: - make it dynamic please
-- (NSMutableArray<IGListIndexPathResult *> *)getCellDiff:(NSArray<ContactGroupEntity *>*)newGroups {
-    
-    NSMutableArray<IGListIndexPathResult *> *contactsDiff = NSMutableArray.array;
-    
-    for (ContactGroupEntity *oldGroup in contactGroups) {
-        NSUInteger oldIndex = [contactGroups indexOfObject:oldGroup];
-        NSUInteger foundIndex = [newGroups indexOfObject:oldGroup];
-        if (foundIndex != NSNotFound) {
-            IGListIndexPathResult * res = IGListDiffPaths(oldIndex + [UIConstants getContactIndex], foundIndex + [UIConstants getContactIndex], oldGroup.contacts, newGroups[foundIndex].contacts, IGListDiffEquality).resultForBatchUpdates;
-            if (res.inserts.count >0 || res.deletes.count > 0 || res.updates.count > 0)
-                [contactsDiff addObject:res];
-        }
-    }
-    
-    return contactsDiff;
 }
 
 // MARK: - make it dynamic please
@@ -217,22 +196,22 @@
     //MARK:  -
     [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
     [data addObject:
-         [actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Clear saved data"
-                                                                        image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                 action:^{
+         [self.actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Clear saved data"
+                                                                             image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
+                                      action:^{
         [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"contactDict"];
         [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"accountDict"];
     }]
     ];
     
     [data addObject:
-         [actionDelegate attachToObject:
+         [self.actionDelegate attachToObject:
           [CommonCellObject.alloc initWithTitle:@"Xoá bớt"
                                           image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                 action:^{} ]
+                                      action:^{} ]
     ];
     
-    [data addObject:[actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Tìm kiếm (866) 420-3189" image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor] action:^{
+    [data addObject:[self.actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Tìm kiếm (866) 420-3189" image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor] action:^{
         
     }]];
     
@@ -241,7 +220,7 @@
     //MARK:  - bạn thân
     [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn thân"]];
     
-    [data addObject:[actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Chọn bạn thường liên lạc" image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.zaloPrimaryColor] action:^{
+    [data addObject:[self.actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Chọn bạn thường liên lạc" image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.zaloPrimaryColor] action:^{
         NSLog(@"Tapped");
     }]];
     
@@ -263,7 +242,7 @@
     ActionHeaderObject *contactHeaderObject = [[ActionHeaderObject alloc] initWithTitle:@"Danh bạ" andButtonTitle:@"CẬP NHẬP"];
     
     [contactHeaderObject setBlock:^{
-
+        
     }];
     
     [data addObject:contactHeaderObject];
@@ -279,8 +258,8 @@
         // Contact
         for (ContactEntity *contact in group.contacts) {
             [data addObject:
-                 [actionDelegate attachToObject:[ContactObject.alloc initWithContactEntity:contact]
-                                    swipeAction:[self getActionListForContact]]
+                 [self.actionDelegate attachToObject:[ContactObject.alloc initWithContactEntity:contact]
+                                         swipeAction:[self getActionListForContact]]
             ];
         }
         // Footer
@@ -297,7 +276,7 @@
     [data addObject:[LabelCellObject.alloc initWithTitle:@"Nhanh chóng thêm bạn vào Zalo từ danh \nbạ điện thoại" andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloLightGrayColor cellType:tallCell]];
     
     [data addObject:[UpdateContactObject.alloc initWithTitle:@"Cập nhập danh bạ" andAction:^{
-
+        
     }]];
     
     [data addObject:BlankFooterObject.new];

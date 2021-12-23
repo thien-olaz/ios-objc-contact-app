@@ -44,7 +44,7 @@
     addIndex = 0;
     updateIndex = 0;
     onlineIndex = 0;
-    secDevideConstant = 5000.0;
+    secDevideConstant = 100.0;
     return self;
 }
 
@@ -86,7 +86,7 @@
         MockAPIService *strongSelf = weakSelf;
         if (!strongSelf) return;
         
-        strongSelf->defaultData = [strongSelf getDataFromFile:@"short-contacts"];
+        strongSelf->defaultData = [strongSelf getDataFromFile:@"super-short-contact"];
         strongSelf->dataToPush = [strongSelf getDataFromFile:@"medium-contacts"];
         strongSelf->dataToDelete = [strongSelf getDataFromFile:@"medium-contacts"];
         strongSelf->dataToUpdate = [strongSelf getDataFromFile:@"medium-contacts2"];
@@ -118,7 +118,7 @@
 - (void)addNewContact {
     if (addIndex < dataToPush.count) {
         ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:dataToPush[addIndex]];
-        NSLog(@"++ %@", enity.fullName);
+        NSLog(@"Server:: ++ %@", enity.fullName);
         if (onContactAdded) onContactAdded(enity);
         addIndex += 1;
         int random = arc4random_uniform(300);
@@ -131,7 +131,7 @@
 - (void)deleteContact {
     if (deleteIndex < dataToDelete.count) {
         ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:dataToDelete[deleteIndex]];
-        NSLog(@"-- %@", entity.fullName);
+        NSLog(@"Server:: -- %@", entity.fullName);
         if (onContactDeleted) onContactDeleted(entity.accountId);
         deleteIndex += 1;
         int random = arc4random_uniform(300);
@@ -145,7 +145,7 @@
 
     if (updateIndex < dataToUpdate.count) {
         ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:dataToUpdate[updateIndex]];
-        NSLog(@"~~ %@", enity.fullName);
+        NSLog(@"Server:: ~~ %@", enity.fullName);
         if (onContactUpdated) onContactUpdated(enity);
         updateIndex += 1;
         int random = arc4random_uniform(300);
@@ -160,7 +160,7 @@
         OnlineContactEntityAdapter *contact = [[OnlineContactEntityAdapter alloc] initWithCNContact:dataToPushToOnlineGroup[onlineIndex]];
         
         [contact setOnlineTime:[NSDate date]];
-        NSLog(@"@@ %@", contact.fullName);
+        NSLog(@"Server:: @@ %@", contact.fullName);
         
         if (onOnlineContactAdded) onOnlineContactAdded(contact);
         

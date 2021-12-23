@@ -46,23 +46,24 @@ static ZaloContactService *sharedInstance = nil;
     self = super.init;
     
     self.apiService = [MockAPIService new];
+    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
+    _contactServiceQueue = dispatch_queue_create("_contactServiceQueue", qos);
+    _apiServiceQueue = dispatch_queue_create("_apiServicesQueue", qos);
     
     self.addSet = [AccountIdMutableOrderedSet new];
     self.removeSet = [AccountIdMutableOrderedSet new];
     self.updateSet = [AccountIdMutableOrderedSet new];
     
-    self.contactDictionary = [ContactMutableDictionary new];
     self.bounceLastUpdate = NO;
     
     onlineList = [NSMutableArray new];
     addOnlineList = [NSMutableArray new];
     removeOnlineList = [NSMutableArray new];
     
+    self.contactDictionary = [ContactMutableDictionary new];
     self.accountDictionary = [AccountMutableDictionary new];
     
-    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
-    _contactServiceQueue = dispatch_queue_create("_contactServiceQueue", qos);
-    _apiServiceQueue = dispatch_queue_create("_apiServicesQueue", qos);
+    [self cacheChanges];
     
     [self setupInitData];
     
@@ -70,34 +71,17 @@ static ZaloContactService *sharedInstance = nil;
 }
 
 - (void)deleteContactWithId:(NSString *)accountId {
-    ContactEntity *contact = [self.oldAccountDictionary objectForKey:accountId];
-    if (!contact) return;
-    
-    dispatch_async(self.apiServiceQueue, ^{
-        if ([self deleteContact:contact inContactDict:self.oldContactDictionary andAccountDict:self.oldAccountDictionary]) {
-            ContactEntity *curContact = [self.accountDictionary objectForKey:accountId];
-            ChangeFootprint *footprint = [ChangeFootprint initChangeBy:accountId];
-            if (curContact) {
-                [self deleteContact:curContact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
-                [self.addSet removeObject:footprint];
-                [self.removeSet removeObject:footprint];
-                [self.updateSet removeObject:footprint];
-            }
-            
-            NSMutableArray *removeSection = [NSMutableArray new];
-            if (![self.oldContactDictionary objectForKey:contact.header]) {
-                [removeSection addObject:contact.header];
-            }
-            
-            [self notifyListenerWithAddSectionList:@[] removeSectionList:removeSection.copy addContact:[NSSet new]  removeContact:[NSSet setWithArray:@[footprint]] updateContact:[NSSet new] newContactDict:self.oldContactDictionary.copy newAccountDict:self.oldAccountDictionary.copy];
-            self.bounceLastUpdate = YES;
-            
-        }
-    });
+    ContactEntity *contactToDelete = [self.oldAccountDictionary objectForKey:accountId];
+    if (!contactToDelete) return;
+    [self deleteContact:contactToDelete];
 }
 
-- (ContactMutableDictionary *)getFullContactDict {
-    return self.contactDictionary.copy;
+- (ContactMutableDictionary *)getContactDictCopy {
+    NSMutableDictionary *returnDict = [NSMutableDictionary new];
+    for (NSString *key in self.contactDictionary.keyEnumerator) {
+        [returnDict setObject:self.contactDictionary[key].mutableCopy forKey:key];
+    }
+    return returnDict;
 }
 
 - (OnlineContactEntityMutableArray *)getOnlineContactList {
@@ -107,9 +91,6 @@ static ZaloContactService *sharedInstance = nil;
 - (NSArray<ContactEntity *>*)getAccountList {
     return self.accountDictionary.copy;
 }
-
-
-
 
 #pragma mark online friends handler
 - (void)throttleUpdateOnlineFriend {

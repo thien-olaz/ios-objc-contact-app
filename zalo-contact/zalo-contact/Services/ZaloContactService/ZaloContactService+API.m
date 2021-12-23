@@ -24,12 +24,17 @@ typedef void(^ActionBlock) (void);
         NSTimeInterval secondsBetween = [now timeIntervalSinceDate:self.checkDate];
         double numberOfDays = secondsBetween / 86400.0;
         
-        if (numberOfDays > 0.005) {
+        if (numberOfDays > 0.001) {
             NSLog(@"Scheduled fetch server data");
-            [self loadSavedDataWithCompletionHandler:nil andOnFailedHandler:nil];
+            [self loadSavedDataWithCompletionHandler:^{
+
+            } andOnFailedHandler:nil];
             [self fetchServerDataWithCompletionHandler:^{
                 [self setUp];
+                // fail retry
             } andOnFailedHandler:nil];
+
+
         } else {
             NSLog(@"Load saved data");
             [self loadSavedDataWithCompletionHandler:^{
@@ -49,10 +54,13 @@ typedef void(^ActionBlock) (void);
 }
 
 - (void)applyDataFrom:(ContactMutableDictionary *)contactDict andAccountDict:(AccountMutableDictionary *)accountDict {
-    self.oldContactDictionary = contactDict.mutableCopy;
-    self.oldAccountDictionary = accountDict.mutableCopy;
+    //cache first
+    [self cacheChanges];
+    
+    //apply second
     self.contactDictionary = contactDict.mutableCopy;
     self.accountDictionary = accountDict.mutableCopy;
+
     [self saveLatestChanges];
     [self cleanUpIncommingData];
 }
@@ -87,12 +95,13 @@ typedef void(^ActionBlock) (void);
             }
             [tempContact setObject:contactsInSection forKey:currentHeader];
         }
-        // bind fetching data
+        // bind fetched data
         dispatch_async(self.apiServiceQueue, ^{
             [self applyDataFrom:tempContact andAccountDict:tempAccount];
+            [self cacheChanges];
             for (id<ZaloContactEventListener> listener in self.listeners) {
-                if ([listener respondsToSelector:@selector(onServerChangeWithFullNewList:andAccount:)]) {
-                    [listener onServerChangeWithFullNewList:self.contactDictionary.mutableCopy andAccount:self.accountDictionary.mutableCopy];
+                if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
+                    [listener onChangeWithFullNewList:[self getContactDictCopy] andAccount:self.accountDictionary.mutableCopy];
                 }
             }
         });
@@ -108,16 +117,17 @@ typedef void(^ActionBlock) (void);
         AccountMutableDictionary *loadAccount = [self loadAccountDictionary];
         
         // can not load local data -> fetch server data
-        if (!loadContact || !loadAccount || ![loadContact count] || ![loadAccount count]) {
+        if (!loadContact || !loadAccount) {
             if (onFailedBlock) onFailedBlock();
             return;
         }
         
         dispatch_async(self.apiServiceQueue, ^{
             [self applyDataFrom:loadContact andAccountDict:loadAccount];
+            [self cacheChanges];
             for (id<ZaloContactEventListener> listener in self.listeners) {
-                if ([listener respondsToSelector:@selector(onLoadSavedDataCompleteWithContact:andAccount:)]) {
-                    [listener onLoadSavedDataCompleteWithContact:self.contactDictionary.mutableCopy andAccount:self.accountDictionary.mutableCopy];
+                if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
+                    [listener onChangeWithFullNewList:loadContact.mutableCopy andAccount:loadAccount.mutableCopy];
                 }
             }
         });

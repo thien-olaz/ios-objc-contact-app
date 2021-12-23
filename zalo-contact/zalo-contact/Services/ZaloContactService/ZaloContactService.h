@@ -19,8 +19,7 @@ typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> Contac
 
 @protocol ZaloContactEventListener <NSObject>
 
-- (void)onLoadSavedDataCompleteWithContact:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount;
-- (void)onServerChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount;
+- (void)onChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount;
 - (void)onServerChangeWithAddSectionList:(NSMutableArray<NSString *>*)addSectionList
                        removeSectionList:(NSMutableArray<NSString *>*)removeSectionList
                               addContact:(NSOrderedSet<ChangeFootprint *>*)addContacts
@@ -43,12 +42,10 @@ typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> Contac
 + (ZaloContactService *)sharedInstance;
 
 - (OnlineContactEntityMutableArray *)getOnlineContactList;
-
-- (ContactMutableDictionary *)getFullContactDict;
+- (ContactMutableDictionary *)getContactDictCopy;
 - (AccountMutableDictionary *)getAccountList;
 
 - (void)deleteContactWithId:(NSString *)accountId;
-
 @end
 
 NS_ASSUME_NONNULL_END

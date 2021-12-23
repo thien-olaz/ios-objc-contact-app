@@ -7,6 +7,7 @@
 
 #import "ZaloContactService+Storage.h"
 
+//coredata
 @interface ZaloContactService (Storage)
 
 @end

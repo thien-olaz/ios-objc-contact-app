@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp;
 - (void)cleanUpIncommingData;
 
+- (void)deleteContact:(ContactEntity *)contact;
+- (void)cacheChanges;
+
 @end
 
 NS_ASSUME_NONNULL_END
