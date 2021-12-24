@@ -196,7 +196,6 @@ float const throttleTime = 0.75;
     // add to section
     [sortedContactArray replaceObjectAtIndex:replaceIndex withObject:contact];
     [self saveUpdate:contact];
-    
 }
 
 // return YES if exist and deleted, return NO if not exist

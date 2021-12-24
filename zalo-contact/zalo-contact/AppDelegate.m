@@ -6,7 +6,7 @@
 //
 
 #import "AppDelegate.h"
-#import "ContactDataController.h"
+#import "ContactDataManager.h"
 @interface AppDelegate ()
 
 @end
@@ -15,7 +15,7 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [ContactDataController sharedInstance];
+    [ContactDataManager sharedInstance];
     if (@available(iOS 15.0, *)) {
         UINavigationBarAppearance *navBarAppearance = [[UINavigationBarAppearance alloc] init];
         [navBarAppearance configureWithOpaqueBackground];

@@ -19,7 +19,7 @@
 #import "ZaloContactService+Observer.h"
 #import "ContactGroupEntity.h"
 #import "Contact+CoreDataClass.h"
-#import "ContactDataController.h"
+#import "ContactDataManager.h"
 
 @interface ContactViewModel () <ZaloContactEventListener>
 
@@ -202,7 +202,7 @@
         NSFetchRequest *request = [Contact fetchRequest];
         NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
                 
-        [ContactDataController.sharedInstance.managedObjectContext executeRequest:delete error:NULL];
+        [ContactDataManager.sharedInstance.managedObjectContext executeRequest:delete error:NULL];
     }]
     ];
     

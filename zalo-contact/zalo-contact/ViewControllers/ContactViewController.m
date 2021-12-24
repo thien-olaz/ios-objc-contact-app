@@ -69,6 +69,7 @@
 - (void)bindViewModel {
     _viewModel = [ContactViewModel.alloc initWithActionDelegate:self andDiffDelegate:self];
     // capture weak self for binding block
+    // retain circle
     __unsafe_unretained typeof(self) weakSelf = self;
     
     [_tableView setDataSource:_tableViewDataSource];
@@ -143,9 +144,7 @@
     __unsafe_unretained typeof(self) weakSelf = self;
     // nhiều update => reload
     // UX
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        //        [weakSelf.tableView beginUpdates];
-        
+    dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf.tableView performBatchUpdates:^{
             [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
             [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
@@ -154,11 +153,7 @@
             [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
             
             [weakSelf.tableView  insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
-            
         } completion:nil];
-        
-        //        [weakSelf.tableView endUpdates];
-        
     });
     
 }

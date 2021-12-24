@@ -5,23 +5,26 @@
 //  Created by Thiện on 24/12/2021.
 //
 
-#import "ContactDataController.h"
+#import "ContactDataManager.h"
 #import "Contact+CoreDataClass.h"
+#import "GCDThrottle.h"
 
+// ưu nhược
+// migrate data - field mới - sau
 #define LOG(str) NSLog(@"💾 ContactDataController : %@", str);
-@interface ContactDataController ()
+@interface ContactDataManager ()
 
-@property dispatch_queue_t contactCoreDataQueue;
-@property NSMutableDictionary<NSString *, Contact *> *storeContactDict;
+@property (strong, nonatomic) dispatch_queue_t contactCoreDataQueue;
+@property (strong, nonatomic) NSMutableDictionary<NSString *, Contact *> *storeContactDict;
 
 @end
 
-@implementation ContactDataController
+@implementation ContactDataManager
 
-static ContactDataController *sharedInstance = nil;
+static ContactDataManager *sharedInstance = nil;
 
-+ (ContactDataController *)sharedInstance {
-    @synchronized([ContactDataController class]) {
++ (ContactDataManager *)sharedInstance {
+    @synchronized([ContactDataManager class]) {
         if (!sharedInstance)
             sharedInstance = [[self alloc] initWithCompletionBlock:^{}];
         return sharedInstance;
@@ -55,7 +58,7 @@ static ContactDataController *sharedInstance = nil;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         NSPersistentStoreCoordinator *psc = [[self managedObjectContext] persistentStoreCoordinator];
         NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSURL *documentsURL = [[fileManager URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+        NSURL *documentsURL = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
         NSURL *storeURL = [documentsURL URLByAppendingPathComponent:@"DataModel.sqlite"];
         
         NSError *error = nil;
@@ -74,11 +77,21 @@ static ContactDataController *sharedInstance = nil;
     return self;
 }
 
+- (void)throttleSave {
+    __weak typeof(self) weakSelf = self;
+    dispatch_throttle_by_type(1, GCDThrottleTypeInvokeAndIgnore, ^{
+        [weakSelf save];
+    });
+}
+
+- (void)save {
+    [self.managedObjectContext save:NULL];
+}
 
 - (void)deleteWholeTable {
     NSFetchRequest *request = [Contact fetchRequest];
     NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
-    [self.managedObjectContext executeRequest:delete error:NULL];
+    [self.managedObjectContext executeRequest:delete error:NULL];    
     LOG(@"Deleted all contacts");
 }
 
@@ -86,7 +99,13 @@ static ContactDataController *sharedInstance = nil;
     // delete old dadta
     [self deleteWholeTable];
     //add new data
-    for (ContactEntity *contact in contacts) [self addContactToData:contact];
+    for (ContactEntity *contact in contacts) {
+        Contact *ct = (Contact *)[NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
+        [ct applyPropertiesFromContactEntity:contact];
+        [self.storeContactDict setObject:ct forKey:ct.accountId];
+    }
+    
+    [self throttleSave];
     LOG(@"Added new contact array");
 }
 
@@ -94,21 +113,21 @@ static ContactDataController *sharedInstance = nil;
     Contact *ct = (Contact *)[NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
     [ct applyPropertiesFromContactEntity:contact];
     [self.storeContactDict setObject:ct forKey:ct.accountId];
-    [self.managedObjectContext save:NULL];
+    [self throttleSave];
     LOG(@"Added new contact");
 }
 
 - (void)updateContactInData:(ContactEntity *)contact {
     Contact *contactToUpdate = [self.storeContactDict objectForKey:contact.accountId];
     [contactToUpdate applyPropertiesFromContactEntity:contact];
-    [self.managedObjectContext save:NULL];
+    [self throttleSave];
     LOG(@"Updated contact");
 }
 
 - (void)deleteContactFromData:(NSString *)accountId {
     Contact *contactToDelete = [self.storeContactDict objectForKey:accountId];
     if (contactToDelete) [self.managedObjectContext deleteObject:contactToDelete];
-    [self.managedObjectContext save:NULL];
+    [self throttleSave];
     LOG(@"Removed contact");
 }
 

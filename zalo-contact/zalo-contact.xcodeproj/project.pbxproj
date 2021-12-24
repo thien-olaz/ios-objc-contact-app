@@ -35,7 +35,7 @@
 		AF426F672754E915004C541E /* ContactTableViewAction.m in Sources */ = {isa = PBXBuildFile; fileRef = AF426F662754E915004C541E /* ContactTableViewAction.m */; };
 		AF447F6427745AEA0046C4AC /* super-short-contact.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF447F6327745AEA0046C4AC /* super-short-contact.vcf */; };
 		AF447F682774E1B10046C4AC /* contactModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AF447F662774E1B10046C4AC /* contactModel.xcdatamodeld */; };
-		AF447F6B2774E3B80046C4AC /* ContactDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F6A2774E3B80046C4AC /* ContactDataController.m */; };
+		AF447F6B2774E3B80046C4AC /* ContactDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F6A2774E3B80046C4AC /* ContactDataManager.m */; };
 		AF447F872774ECC20046C4AC /* Contact+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F852774ECC20046C4AC /* Contact+CoreDataClass.m */; };
 		AF447F882774ECC20046C4AC /* Contact+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F862774ECC20046C4AC /* Contact+CoreDataProperties.m */; };
 		AF447F8B277597630046C4AC /* CoreDataContactEntityAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F8A277597630046C4AC /* CoreDataContactEntityAdapter.m */; };
@@ -131,8 +131,8 @@
 		AF426F662754E915004C541E /* ContactTableViewAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewAction.m; sourceTree = "<group>"; };
 		AF447F6327745AEA0046C4AC /* super-short-contact.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "super-short-contact.vcf"; sourceTree = "<group>"; };
 		AF447F672774E1B10046C4AC /* contactModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = contactModel.xcdatamodel; sourceTree = "<group>"; };
-		AF447F692774E3B80046C4AC /* ContactDataController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactDataController.h; sourceTree = "<group>"; };
-		AF447F6A2774E3B80046C4AC /* ContactDataController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactDataController.m; sourceTree = "<group>"; };
+		AF447F692774E3B80046C4AC /* ContactDataManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactDataManager.h; sourceTree = "<group>"; };
+		AF447F6A2774E3B80046C4AC /* ContactDataManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactDataManager.m; sourceTree = "<group>"; };
 		AF447F832774ECC20046C4AC /* Contact+CoreDataProperties.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Contact+CoreDataProperties.h"; sourceTree = SOURCE_ROOT; };
 		AF447F842774ECC20046C4AC /* Contact+CoreDataClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Contact+CoreDataClass.h"; sourceTree = SOURCE_ROOT; };
 		AF447F852774ECC20046C4AC /* Contact+CoreDataClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Contact+CoreDataClass.m"; sourceTree = SOURCE_ROOT; };
@@ -355,8 +355,8 @@
 				AF447F842774ECC20046C4AC /* Contact+CoreDataClass.h */,
 				AF447F852774ECC20046C4AC /* Contact+CoreDataClass.m */,
 				AF447F662774E1B10046C4AC /* contactModel.xcdatamodeld */,
-				AF447F692774E3B80046C4AC /* ContactDataController.h */,
-				AF447F6A2774E3B80046C4AC /* ContactDataController.m */,
+				AF447F692774E3B80046C4AC /* ContactDataManager.h */,
+				AF447F6A2774E3B80046C4AC /* ContactDataManager.m */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -677,7 +677,7 @@
 				AF2C5D6F275E833000DF06CF /* NSArrayExt.m in Sources */,
 				AFEB1CD02754BA9F001636C6 /* ContactObject.m in Sources */,
 				AFA3B6A427610218003B198B /* UpdateContactCell.m in Sources */,
-				AF447F6B2774E3B80046C4AC /* ContactDataController.m in Sources */,
+				AF447F6B2774E3B80046C4AC /* ContactDataManager.m in Sources */,
 				AF24F4D4274E002700A71E07 /* BlankFooterView.m in Sources */,
 				AFE4CA0A2755FFD900A0190F /* CommonCellObject.m in Sources */,
 				AFE4C9FE2755D73B00A0190F /* SectionObject.m in Sources */,

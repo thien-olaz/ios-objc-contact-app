@@ -13,11 +13,11 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef void (^CallbackBlock) (void);
 
-@interface ContactDataController : NSObject
+@interface ContactDataManager : NSObject
 
-+ (ContactDataController *)sharedInstance;
++ (ContactDataManager *)sharedInstance;
 
-@property NSManagedObjectContext *managedObjectContext;
+@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
 - (id)initWithCompletionBlock:(CallbackBlock)callback;
 
@@ -27,6 +27,7 @@ typedef void (^CallbackBlock) (void);
 - (void)deleteContactFromData:(NSString *)accountId;
 
 - (NSArray<ContactEntity *>*)getSavedData;
+- (void)save;
 
 @end
 

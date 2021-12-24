@@ -9,7 +9,7 @@
 #import "ZaloContactService+Storage.h"
 #import "ZaloContactService+ChangeHandle.h"
 #import "Contact+CoreDataClass.h"
-#import "ContactDataController.h"
+#import "ContactDataManager.h"
 
 typedef void(^ActionBlock) (void);
 @interface ZaloContactService (API)
@@ -25,9 +25,13 @@ typedef void(^ActionBlock) (void);
         NSTimeInterval secondsBetween = [now timeIntervalSinceDate:self.checkDate];
         double numberOfDays = secondsBetween / 86400.0;
         
-        if (numberOfDays > 0.00001) {
+        if (numberOfDays > 1) {
             LOG(@"SCHEDULED GET CONTACTS FROM SERVER");
-            [self fetchLocalDataWithCompletionHandler:nil andOnFailedHandler:nil];
+            // so sánh - tốn io
+            // 2 task done
+            [self fetchLocalDataWithCompletionHandler:^{
+                LOG(@"GET LOCAL DATA SUCCESS");
+            } andOnFailedHandler:nil];
             [self getServerData];
         } else {
             [self fetchLocalDataWithCompletionHandler:^{
@@ -44,6 +48,7 @@ typedef void(^ActionBlock) (void);
     }
 }
 
+// server trước local - done 2 task
 /// Get server data with 3 instance retry and scheduled retry each 10 minutes
 - (void)getServerData {
     [self getServerDataWithRetryTime:3 eachSecond:3 completionHandler:^{
@@ -52,8 +57,7 @@ typedef void(^ActionBlock) (void);
     } andOnFailedHandler:^{
         // Retry in the next 10 minutes and retry when user restart app
         LOG(@"GET SERVER DATA FAILED");
-        self.checkDate = [[NSDate now] dateByAddingTimeInterval:-86400];
-        [self savedCheckDate:self.checkDate];
+        // không tắt được dispatch after - cancel task
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self getServerData];
         });
@@ -134,7 +138,7 @@ typedef void(^ActionBlock) (void);
 }
 
 - (void)fetchLocalDataWithCompletionHandler:(ActionBlock)onCompleteBlock andOnFailedHandler:(ActionBlock)onFailedBlock {
-    NSArray<ContactEntity *> *contactLoaded = [[ContactDataController sharedInstance] getSavedData];
+    NSArray<ContactEntity *> *contactLoaded = [[ContactDataManager sharedInstance] getSavedData];
     if (!contactLoaded) {
         if (onFailedBlock) onFailedBlock();
         return;

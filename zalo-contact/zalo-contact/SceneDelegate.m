@@ -9,6 +9,8 @@
 #import "ContactViewController.h"
 #import "ContactTableViewDataSource.h"
 #import "UIColorExt.h"
+#import "ContactDataManager.h"
+
 @interface SceneDelegate ()
 
 @end
@@ -104,6 +106,7 @@
     // Called as the scene transitions from the foreground to the background.
     // Use this method to save data, release shared resources, and store enough scene-specific state information
     // to restore the scene back to its current state.
+    [[ContactDataManager sharedInstance] save];
 }
 
 

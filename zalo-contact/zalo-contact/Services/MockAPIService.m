@@ -45,7 +45,7 @@
     addIndex = 0;
     updateIndex = 0;
     onlineIndex = 0;
-    secDevideConstant = 100.0;
+    secDevideConstant = 500.0;
     getTime = 2;
     return self;
 }
@@ -64,11 +64,11 @@
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-        //        [self updateContactWithPhoneNumber];
+        //       [self updateContactWithPhoneNumber];
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-        //                [self pushOnlineContact];
+        //       [self pushOnlineContact];
     });
 }
 
