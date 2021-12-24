@@ -10,7 +10,7 @@
 @import Contacts;
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactEntityAdapter : ContactEntity
+@interface CNContactEntityAdapter : ContactEntity
 
 - (id)initWithCNContact:(CNContact *)contact;
 

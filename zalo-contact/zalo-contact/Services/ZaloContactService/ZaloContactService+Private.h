@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property AccountIdMutableOrderedSet *updateSet;
 
 @property id<APIServiceProtocol> apiService;
-@property dispatch_queue_t contactServiceQueue;
+@property dispatch_queue_t contactServiceStorageQueue;
 @property dispatch_queue_t apiServiceQueue;
 
 @property BOOL bounceLastUpdate;

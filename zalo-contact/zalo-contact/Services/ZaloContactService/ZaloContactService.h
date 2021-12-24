@@ -43,7 +43,7 @@ typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> Contac
 
 - (OnlineContactEntityMutableArray *)getOnlineContactList;
 - (ContactMutableDictionary *)getContactDictCopy;
-- (AccountMutableDictionary *)getAccountList;
+- (AccountMutableDictionary*)getAccountDictCopy;
 
 - (void)deleteContactWithId:(NSString *)accountId;
 @end

@@ -7,7 +7,7 @@
 
 #import "MockAPIService.h"
 #import "NSStringExt.h"
-#import "ContactEntityAdapter.h"
+#import "CNContactEntityAdapter.h"
 #import "OnlineContactEntityAdapter.h"
 #include <stdlib.h>
 
@@ -46,6 +46,7 @@
     updateIndex = 0;
     onlineIndex = 0;
     secDevideConstant = 100.0;
+    getTime = 2;
     return self;
 }
 
@@ -100,8 +101,8 @@
 
 // MARK: Fake a api request with 1 sec delay
 - (void)fetchContacts:(OnData)successBlock onFailed:(ActionBlock)failBlock {
-    getTime += 1;
-    if (getTime <= 5) failBlock();
+    getTime -= 1;
+    if (getTime > 0) failBlock();
     else {
         __weak typeof(self) weakSelf = self;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
@@ -110,7 +111,7 @@
             
             NSMutableArray<ContactEntity *> *apiContactsResult = NSMutableArray.new;
             for (CNContact *cnct in strongSelf->defaultData) {
-                ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:cnct];
+                CNContactEntityAdapter *entity = [CNContactEntityAdapter.alloc initWithCNContact:cnct];
                 [apiContactsResult addObject:entity];
             }
             successBlock(apiContactsResult);
@@ -121,8 +122,8 @@
 
 - (void)addNewContact {
     if (addIndex < dataToPush.count) {
-        ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:dataToPush[addIndex]];
-        NSLog(@"Server:: ++ %@", enity.fullName);
+        CNContactEntityAdapter *enity = [CNContactEntityAdapter.alloc initWithCNContact:dataToPush[addIndex]];
+        NSLog(@"☁️ Server:: ++ %@", enity.fullName);
         if (onContactAdded) onContactAdded(enity);
         addIndex += 1;
         int random = arc4random_uniform(300);
@@ -134,8 +135,8 @@
 
 - (void)deleteContact {
     if (deleteIndex < dataToDelete.count) {
-        ContactEntityAdapter *entity = [ContactEntityAdapter.alloc initWithCNContact:dataToDelete[deleteIndex]];
-        NSLog(@"Server:: -- %@", entity.fullName);
+        CNContactEntityAdapter *entity = [CNContactEntityAdapter.alloc initWithCNContact:dataToDelete[deleteIndex]];
+        NSLog(@"☁️ Server:: -- %@", entity.fullName);
         if (onContactDeleted) onContactDeleted(entity.accountId);
         deleteIndex += 1;
         int random = arc4random_uniform(300);
@@ -147,8 +148,8 @@
 
 - (void)updateContact {
     if (updateIndex < dataToUpdate.count) {
-        ContactEntityAdapter *enity = [ContactEntityAdapter.alloc initWithCNContact:dataToUpdate[updateIndex]];
-        NSLog(@"Server:: ~~ %@", enity.fullName);
+        CNContactEntityAdapter *enity = [CNContactEntityAdapter.alloc initWithCNContact:dataToUpdate[updateIndex]];
+        NSLog(@"☁️ Server:: ~~ %@", enity.fullName);
         if (onContactUpdated) onContactUpdated(enity);
         updateIndex += 1;
         int random = arc4random_uniform(300);
@@ -163,7 +164,7 @@
         OnlineContactEntityAdapter *contact = [[OnlineContactEntityAdapter alloc] initWithCNContact:dataToPushToOnlineGroup[onlineIndex]];
         
         [contact setOnlineTime:[NSDate date]];
-        NSLog(@"Server:: @@ %@", contact.fullName);
+        NSLog(@"☁️ Server:: @@ %@", contact.fullName);
         
         if (onOnlineContactAdded) onOnlineContactAdded(contact);
         

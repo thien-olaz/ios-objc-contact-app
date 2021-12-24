@@ -5,13 +5,13 @@
 //  Created by Thiện on 17/11/2021.
 //
 
-#import "ContactEntityAdapter.h"
+#import "CNContactEntityAdapter.h"
 
-@interface ContactEntityAdapter ()
+@interface CNContactEntityAdapter ()
 @property CNContact *contact;
 @end
 
-@implementation ContactEntityAdapter
+@implementation CNContactEntityAdapter
 
 - (id)initWithCNContact:(CNContact *)contact {
     
@@ -27,7 +27,7 @@
     
     self = [super initWithAccountId:pn firstName:contact.givenName lastName:contact.familyName phoneNumber:pn subtitle:nil email:email];
     
-    _contact = contact;
+    self.contact = contact;
     
     return self;
 }

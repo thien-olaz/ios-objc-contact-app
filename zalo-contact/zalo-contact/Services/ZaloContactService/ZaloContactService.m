@@ -47,7 +47,7 @@ static ZaloContactService *sharedInstance = nil;
     
     self.apiService = [MockAPIService new];
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
-    _contactServiceQueue = dispatch_queue_create("_contactServiceQueue", qos);
+    _contactServiceStorageQueue = dispatch_queue_create("_contactServiceStorageQueue", qos);
     _apiServiceQueue = dispatch_queue_create("_apiServicesQueue", qos);
     
     self.addSet = [AccountIdMutableOrderedSet new];
@@ -88,8 +88,8 @@ static ZaloContactService *sharedInstance = nil;
     return onlineList.copy;
 }
 
-- (NSArray<ContactEntity *>*)getAccountList {
-    return self.accountDictionary.copy;
+- (AccountMutableDictionary*)getAccountDictCopy {
+    return self.accountDictionary.mutableCopy;
 }
 
 #pragma mark online friends handler

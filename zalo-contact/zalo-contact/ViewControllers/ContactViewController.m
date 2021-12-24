@@ -144,18 +144,21 @@
     // nhiều update => reload
     // UX
     dispatch_sync(dispatch_get_main_queue(), ^{
-        [weakSelf.tableView beginUpdates];
+        //        [weakSelf.tableView beginUpdates];
         
-        [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
-        [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
+        [weakSelf.tableView performBatchUpdates:^{
+            [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
+            [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
+            
+            [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
+            [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
+            
+            [weakSelf.tableView  insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
+            
+        } completion:nil];
         
-        [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
-        [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
+        //        [weakSelf.tableView endUpdates];
         
-        [weakSelf.tableView insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
-        
-        [weakSelf.tableView endUpdates];
-        [[weakSelf.viewModel updateUILock] unlock];
     });
     
 }

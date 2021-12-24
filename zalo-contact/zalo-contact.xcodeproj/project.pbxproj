@@ -11,7 +11,7 @@
 		AF0BFBEE2743A071006E072B /* ContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBED2743A071006E072B /* ContactCell.m */; };
 		AF0BFBF12743A0A6006E072B /* HeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBF02743A0A6006E072B /* HeaderView.m */; };
 		AF0BFBF42743B971006E072B /* FriendRequestEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBF32743B971006E072B /* FriendRequestEntity.m */; };
-		AF0BFBF727456B88006E072B /* ContactEntityAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBF627456B88006E072B /* ContactEntityAdapter.m */; };
+		AF0BFBF727456B88006E072B /* CNContactEntityAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBF627456B88006E072B /* CNContactEntityAdapter.m */; };
 		AF0BFBFB27456EC4006E072B /* UserContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = AF0BFBFA27456EC4006E072B /* UserContacts.m */; };
 		AF24F4B92749FD7A00A71E07 /* UIColorExt.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4B82749FD7A00A71E07 /* UIColorExt.m */; };
 		AF24F4C8274C9E5900A71E07 /* ContactTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = AF24F4C7274C9E5900A71E07 /* ContactTableViewDataSource.m */; };
@@ -34,6 +34,11 @@
 		AF426F622754DE41004C541E /* FooterObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AF426F612754DE41004C541E /* FooterObject.m */; };
 		AF426F672754E915004C541E /* ContactTableViewAction.m in Sources */ = {isa = PBXBuildFile; fileRef = AF426F662754E915004C541E /* ContactTableViewAction.m */; };
 		AF447F6427745AEA0046C4AC /* super-short-contact.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF447F6327745AEA0046C4AC /* super-short-contact.vcf */; };
+		AF447F682774E1B10046C4AC /* contactModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AF447F662774E1B10046C4AC /* contactModel.xcdatamodeld */; };
+		AF447F6B2774E3B80046C4AC /* ContactDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F6A2774E3B80046C4AC /* ContactDataController.m */; };
+		AF447F872774ECC20046C4AC /* Contact+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F852774ECC20046C4AC /* Contact+CoreDataClass.m */; };
+		AF447F882774ECC20046C4AC /* Contact+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F862774ECC20046C4AC /* Contact+CoreDataProperties.m */; };
+		AF447F8B277597630046C4AC /* CoreDataContactEntityAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F8A277597630046C4AC /* CoreDataContactEntityAdapter.m */; };
 		AF471B6F2761D732004C035A /* NullFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF471B6E2761D732004C035A /* NullFooterView.m */; };
 		AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */; };
 		AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */ = {isa = PBXBuildFile; fileRef = AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */; };
@@ -84,8 +89,8 @@
 		AF0BFBF02743A0A6006E072B /* HeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HeaderView.m; sourceTree = "<group>"; };
 		AF0BFBF22743B971006E072B /* FriendRequestEntity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FriendRequestEntity.h; sourceTree = "<group>"; };
 		AF0BFBF32743B971006E072B /* FriendRequestEntity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FriendRequestEntity.m; sourceTree = "<group>"; };
-		AF0BFBF527456B88006E072B /* ContactEntityAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactEntityAdapter.h; sourceTree = "<group>"; };
-		AF0BFBF627456B88006E072B /* ContactEntityAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactEntityAdapter.m; sourceTree = "<group>"; };
+		AF0BFBF527456B88006E072B /* CNContactEntityAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CNContactEntityAdapter.h; sourceTree = "<group>"; };
+		AF0BFBF627456B88006E072B /* CNContactEntityAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CNContactEntityAdapter.m; sourceTree = "<group>"; };
 		AF0BFBF927456EC4006E072B /* UserContacts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserContacts.h; sourceTree = "<group>"; };
 		AF0BFBFA27456EC4006E072B /* UserContacts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserContacts.m; sourceTree = "<group>"; };
 		AF24F4B72749FD7A00A71E07 /* UIColorExt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIColorExt.h; sourceTree = "<group>"; };
@@ -125,6 +130,15 @@
 		AF426F652754E915004C541E /* ContactTableViewAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactTableViewAction.h; sourceTree = "<group>"; };
 		AF426F662754E915004C541E /* ContactTableViewAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactTableViewAction.m; sourceTree = "<group>"; };
 		AF447F6327745AEA0046C4AC /* super-short-contact.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "super-short-contact.vcf"; sourceTree = "<group>"; };
+		AF447F672774E1B10046C4AC /* contactModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = contactModel.xcdatamodel; sourceTree = "<group>"; };
+		AF447F692774E3B80046C4AC /* ContactDataController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactDataController.h; sourceTree = "<group>"; };
+		AF447F6A2774E3B80046C4AC /* ContactDataController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactDataController.m; sourceTree = "<group>"; };
+		AF447F832774ECC20046C4AC /* Contact+CoreDataProperties.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Contact+CoreDataProperties.h"; sourceTree = SOURCE_ROOT; };
+		AF447F842774ECC20046C4AC /* Contact+CoreDataClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Contact+CoreDataClass.h"; sourceTree = SOURCE_ROOT; };
+		AF447F852774ECC20046C4AC /* Contact+CoreDataClass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Contact+CoreDataClass.m"; sourceTree = SOURCE_ROOT; };
+		AF447F862774ECC20046C4AC /* Contact+CoreDataProperties.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Contact+CoreDataProperties.m"; sourceTree = SOURCE_ROOT; };
+		AF447F89277597630046C4AC /* CoreDataContactEntityAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreDataContactEntityAdapter.h; sourceTree = "<group>"; };
+		AF447F8A277597630046C4AC /* CoreDataContactEntityAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreDataContactEntityAdapter.m; sourceTree = "<group>"; };
 		AF471B6D2761D732004C035A /* NullFooterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullFooterView.h; sourceTree = "<group>"; };
 		AF471B6E2761D732004C035A /* NullFooterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullFooterView.m; sourceTree = "<group>"; };
 		AF5178442762FB2C00FC8BCA /* ZaloContactService+Storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+Storage.h"; sourceTree = "<group>"; };
@@ -286,6 +300,7 @@
 				AF368C4A27420F3800E17AEB /* AppDelegate.m */,
 				AF368C4C27420F3800E17AEB /* SceneDelegate.h */,
 				AF368C4D27420F3800E17AEB /* SceneDelegate.m */,
+				AF447F652774E1950046C4AC /* CoreData */,
 				AFA2BDC6275E08FA00128996 /* Services */,
 				AF0BFBF827456E63006E072B /* Ultilities */,
 				AFCDDE50274279C600500137 /* Models */,
@@ -330,6 +345,20 @@
 				AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */,
 			);
 			path = CellObject;
+			sourceTree = "<group>";
+		};
+		AF447F652774E1950046C4AC /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				AF447F832774ECC20046C4AC /* Contact+CoreDataProperties.h */,
+				AF447F862774ECC20046C4AC /* Contact+CoreDataProperties.m */,
+				AF447F842774ECC20046C4AC /* Contact+CoreDataClass.h */,
+				AF447F852774ECC20046C4AC /* Contact+CoreDataClass.m */,
+				AF447F662774E1B10046C4AC /* contactModel.xcdatamodeld */,
+				AF447F692774E3B80046C4AC /* ContactDataController.h */,
+				AF447F6A2774E3B80046C4AC /* ContactDataController.m */,
+			);
+			path = CoreData;
 			sourceTree = "<group>";
 		};
 		AF9201BC2746344A00E1581C /* CellView */ = {
@@ -380,8 +409,10 @@
 				AF632F892769A22B001E88EC /* OnlineContactEntity.m */,
 				AF0BFBF22743B971006E072B /* FriendRequestEntity.h */,
 				AF0BFBF32743B971006E072B /* FriendRequestEntity.m */,
-				AF0BFBF527456B88006E072B /* ContactEntityAdapter.h */,
-				AF0BFBF627456B88006E072B /* ContactEntityAdapter.m */,
+				AF0BFBF527456B88006E072B /* CNContactEntityAdapter.h */,
+				AF0BFBF627456B88006E072B /* CNContactEntityAdapter.m */,
+				AF447F89277597630046C4AC /* CoreDataContactEntityAdapter.h */,
+				AF447F8A277597630046C4AC /* CoreDataContactEntityAdapter.m */,
 				AF632F842769A097001E88EC /* OnlineContactEntityAdapter.h */,
 				AF632F852769A097001E88EC /* OnlineContactEntityAdapter.m */,
 				AFB23AC5277067FD00387801 /* ChangeFootprint.h */,
@@ -512,6 +543,7 @@
 				TargetAttributes = {
 					AF368C4527420F3800E17AEB = {
 						CreatedOnToolsVersion = 13.1;
+						LastSwiftMigration = 1310;
 					};
 				};
 			};
@@ -606,13 +638,15 @@
 				AF3E8BE72757295C00BB8AE4 /* ContactViewModel.m in Sources */,
 				AF471B6F2761D732004C035A /* NullFooterView.m in Sources */,
 				AF2C5D72275F265000DF06CF /* ContactFooterView.m in Sources */,
+				AF447F872774ECC20046C4AC /* Contact+CoreDataClass.m in Sources */,
 				AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */,
 				AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */,
 				AF24F4C8274C9E5900A71E07 /* ContactTableViewDataSource.m in Sources */,
 				AFB23AC7277067FD00387801 /* ChangeFootprint.m in Sources */,
 				AFA2BDCD275E094300128996 /* ZaloContactService.m in Sources */,
-				AF0BFBF727456B88006E072B /* ContactEntityAdapter.m in Sources */,
+				AF0BFBF727456B88006E072B /* CNContactEntityAdapter.m in Sources */,
 				AF426F622754DE41004C541E /* FooterObject.m in Sources */,
+				AF447F8B277597630046C4AC /* CoreDataContactEntityAdapter.m in Sources */,
 				AF9201B827460EB300E1581C /* UIConstants.m in Sources */,
 				AF24F4D7274F375B00A71E07 /* UIAlertControllerExt.m in Sources */,
 				AF426F672754E915004C541E /* ContactTableViewAction.m in Sources */,
@@ -623,6 +657,8 @@
 				AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */,
 				AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */,
 				AFA2BDD2275E14A000128996 /* NSStringExt.m in Sources */,
+				AF447F882774ECC20046C4AC /* Contact+CoreDataProperties.m in Sources */,
+				AF447F682774E1B10046C4AC /* contactModel.xcdatamodeld in Sources */,
 				AFE4CA072755F45600A0190F /* HeaderFooterFactory.m in Sources */,
 				AFA2BDD5275E4A2700128996 /* NSObject+Debounce.m in Sources */,
 				AF0BFBF42743B971006E072B /* FriendRequestEntity.m in Sources */,
@@ -641,6 +677,7 @@
 				AF2C5D6F275E833000DF06CF /* NSArrayExt.m in Sources */,
 				AFEB1CD02754BA9F001636C6 /* ContactObject.m in Sources */,
 				AFA3B6A427610218003B198B /* UpdateContactCell.m in Sources */,
+				AF447F6B2774E3B80046C4AC /* ContactDataController.m in Sources */,
 				AF24F4D4274E002700A71E07 /* BlankFooterView.m in Sources */,
 				AFE4CA0A2755FFD900A0190F /* CommonCellObject.m in Sources */,
 				AFE4C9FE2755D73B00A0190F /* SectionObject.m in Sources */,
@@ -789,6 +826,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 89X4CM9ZK4;
@@ -807,6 +845,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vng.example.zalo-contact";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -817,6 +857,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 89X4CM9ZK4;
@@ -835,6 +876,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.vng.example.zalo-contact";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -861,6 +903,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		AF447F662774E1B10046C4AC /* contactModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				AF447F672774E1B10046C4AC /* contactModel.xcdatamodel */,
+			);
+			currentVersion = AF447F672774E1B10046C4AC /* contactModel.xcdatamodel */;
+			path = contactModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = AF368C3E27420F3800E17AEB /* Project object */;
 }

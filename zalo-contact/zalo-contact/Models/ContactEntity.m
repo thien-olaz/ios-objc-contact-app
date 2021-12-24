@@ -80,32 +80,6 @@
 + (BOOL)supportsSecureCoding {
     return YES;
 }
-
-#pragma mark - IGListDiffable
-
-- (id<NSObject>)diffIdentifier {
-    return @(self.phoneNumber.hash);
-}
-
-- (BOOL)isEqualToDiffableObject:(id<IGListDiffable>)object {
-    ContactEntity *entity = (ContactEntity *)object;
-    if (!entity) return NO;
-    if (![self.firstName isEqualToString:entity.firstName]) return NO;
-    if (![self.lastName isEqualToString:entity.lastName]) return NO;
-    if (![self.phoneNumber isEqualToString:entity.phoneNumber]) return NO;
-    
-    // Both null or 1 of 2 is null -> NO
-    if (self.subtitle && entity.subtitle && [self.subtitle isEqualToString:entity.subtitle]) {
-            return YES;
-    } else if (!self.subtitle && !entity.subtitle) {
-        return YES;;
-    }
-    
-    // Both null or 1 of 2 is null -> NO
-    
-    return NO;
-}
-
 #pragma mark - Equal
 
 //compare to get order

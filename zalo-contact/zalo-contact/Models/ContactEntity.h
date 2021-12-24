@@ -9,7 +9,7 @@
 @import IGListKit;
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactEntity : NSObject<NSSecureCoding, IGListDiffable>
+@interface ContactEntity : NSObject<NSSecureCoding>
 
 @property (readonly) NSString *accountId;
 
@@ -30,8 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
                   email:(NSString *)email;
 
 - (NSString * __nullable)imageUrl;
-- (id<NSObject>)diffIdentifier;
-- (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object;
 
 - (NSComparisonResult)compare:(ContactEntity *)entity;
 - (BOOL)isEqual:(id)object;

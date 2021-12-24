@@ -8,16 +8,15 @@
 #import "CellObject.h"
 #import "ZaloContactService.h"
 #import "ZaloContactService+Private.h"
-
+#import "Contact+CoreDataClass.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ZaloContactService (Storage)
 
-- (void)didChangeWithContactDict:(ContactMutableDictionary *)contactDict andAccountDict:(AccountMutableDictionary *)accountDict;
-
-- (nullable ContactMutableDictionary *)loadContactDictionary;
-- (nullable AccountMutableDictionary *)loadAccountDictionary;
-- (void)saveLatestChanges;
+- (void)saveFull;
+- (void)saveAdd:(ContactEntity *)contact;
+- (void)saveUpdate:(ContactEntity *)contact;
+- (void)saveDelete:(NSString *)accountId;
 
 @end
 

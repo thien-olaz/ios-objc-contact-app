@@ -8,7 +8,8 @@
 #import "ZaloContactService+API.h"
 #import "ZaloContactService+Storage.h"
 #import "ZaloContactService+ChangeHandle.h"
-
+#import "Contact+CoreDataClass.h"
+#import "ContactDataController.h"
 
 typedef void(^ActionBlock) (void);
 @interface ZaloContactService (API)
@@ -25,19 +26,20 @@ typedef void(^ActionBlock) (void);
         double numberOfDays = secondsBetween / 86400.0;
         
         if (numberOfDays > 0.00001) {
-            LOG(@"Scheduled fetch server data");
-            [self loadSavedDataWithCompletionHandler:nil andOnFailedHandler:nil];
+            LOG(@"SCHEDULED GET CONTACTS FROM SERVER");
+            [self fetchLocalDataWithCompletionHandler:nil andOnFailedHandler:nil];
             [self getServerData];
         } else {
-            LOG(@"Load saved data");
-            [self loadSavedDataWithCompletionHandler:^{
+            [self fetchLocalDataWithCompletionHandler:^{
+                LOG(@"LOAD LOCAL CONTACTS DATA");
                 [self setUp];
             } andOnFailedHandler:^{
+                LOG(@"LOAD LOCAL CONTACTS FAILED");
                 [self getServerData];
             }];
         }
     } else {
-        LOG(@"No scheduled time found, begin fetching server data");
+        LOG(@"FIRST TIME RUN - GET CONTACTS FROM SERVER!");
         [self getServerData];
     }
 }
@@ -45,11 +47,11 @@ typedef void(^ActionBlock) (void);
 /// Get server data with 3 instance retry and scheduled retry each 10 minutes
 - (void)getServerData {
     [self getServerDataWithRetryTime:3 eachSecond:3 completionHandler:^{
-        LOG(@"GET DATA SUCCESS");
+        LOG(@"GET SERVER DATA SUCCESS");
         [self setUp];
     } andOnFailedHandler:^{
         // Retry in the next 10 minutes and retry when user restart app
-        LOG(@"GET DATA FAILED");
+        LOG(@"GET SERVER DATA FAILED");
         self.checkDate = [[NSDate now] dateByAddingTimeInterval:-86400];
         [self savedCheckDate:self.checkDate];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
@@ -62,7 +64,7 @@ typedef void(^ActionBlock) (void);
 - (void)getServerDataWithRetryTime:(int)retryTime eachSecond:(int)sec completionHandler:(ActionBlock)onCompleteBlock andOnFailedHandler:(ActionBlock)onFailedBlock{
     [self fetchServerDataWithCompletionHandler:onCompleteBlock andOnFailedHandler:^{
         if (retryTime > 0) {
-            LOG(@"Get data failed, retrying!");
+            LOG(@"GET SERVER DATA FAILED - RETRYING!");
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, sec * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
                 [self getServerDataWithRetryTime:(retryTime - 1) eachSecond:sec completionHandler:onCompleteBlock andOnFailedHandler:onFailedBlock];
             });
@@ -81,7 +83,6 @@ typedef void(^ActionBlock) (void);
     self.contactDictionary = contactDict.mutableCopy;
     self.accountDictionary = accountDict.mutableCopy;
     
-    [self saveLatestChanges];
     [self cleanUpIncommingData];
 }
 
@@ -117,6 +118,7 @@ typedef void(^ActionBlock) (void);
         // bind fetched data
         dispatch_async(self.apiServiceQueue, ^{
             [self applyDataFrom:tempContact andAccountDict:tempAccount];
+            [self saveFull];
             [self cacheChanges];
             for (id<ZaloContactEventListener> listener in self.listeners) {
                 if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
@@ -131,30 +133,47 @@ typedef void(^ActionBlock) (void);
     
 }
 
-//YES is success
-- (void)loadSavedDataWithCompletionHandler:(ActionBlock)onCompleteBlock andOnFailedHandler:(ActionBlock)onFailedBlock {
-    dispatch_async(self.contactServiceQueue, ^{
-        ContactMutableDictionary *loadContact = [self loadContactDictionary];
-        AccountMutableDictionary *loadAccount = [self loadAccountDictionary];
-        
-        // can not load local data -> fetch server data
-        if (!loadContact || !loadAccount) {
-            if (onFailedBlock) onFailedBlock();
-            return;
-        }
-        
-        dispatch_async(self.apiServiceQueue, ^{
-            [self applyDataFrom:loadContact andAccountDict:loadAccount];
-            [self cacheChanges];
-            for (id<ZaloContactEventListener> listener in self.listeners) {
-                if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
-                    [listener onChangeWithFullNewList:loadContact.mutableCopy andAccount:loadAccount.mutableCopy];
-                }
+- (void)fetchLocalDataWithCompletionHandler:(ActionBlock)onCompleteBlock andOnFailedHandler:(ActionBlock)onFailedBlock {
+    NSArray<ContactEntity *> *contactLoaded = [[ContactDataController sharedInstance] getSavedData];
+    if (!contactLoaded) {
+        if (onFailedBlock) onFailedBlock();
+        return;
+    }
+    NSArray<ContactEntity *> *sortedArray = [ContactEntity insertionSort:contactLoaded];
+    
+    ContactMutableDictionary *tempContact = [ContactMutableDictionary new];
+    AccountMutableDictionary *tempAccount = [AccountMutableDictionary new];
+    
+    if (sortedArray && [sortedArray count]) {
+        NSString *currentHeader;
+        ContactEntityMutableArray *contactsInSection = [ContactEntityMutableArray new];
+        for (ContactEntity *contact in sortedArray) {
+            if (!currentHeader) {
+                currentHeader = contact.header;
+            } else if (![contact.header isEqualToString:currentHeader]) {
+                [tempContact setObject:contactsInSection.mutableCopy forKey:currentHeader];
+                currentHeader = contact.header;
+                contactsInSection = NSMutableArray.new;
             }
-        });
-        
-        if (onCompleteBlock) onCompleteBlock();
+            [contactsInSection addObject:contact];
+            [tempAccount setObject:contact forKey:contact.accountId];
+        }
+        [tempContact setObject:contactsInSection forKey:currentHeader];
+    }
+    
+    // bind fetched data
+    dispatch_async(self.apiServiceQueue, ^{
+        [self applyDataFrom:tempContact andAccountDict:tempAccount];
+        [self cacheChanges];
+        for (id<ZaloContactEventListener> listener in self.listeners) {
+            if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
+                [listener onChangeWithFullNewList:[self getContactDictCopy] andAccount:self.accountDictionary.mutableCopy];
+            }
+        }
     });
+    
+    if (onCompleteBlock) onCompleteBlock();
+    
 }
 
 - (NSDate *)getSavedCheckDate {

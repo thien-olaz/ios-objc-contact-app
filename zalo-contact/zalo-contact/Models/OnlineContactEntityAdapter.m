@@ -27,7 +27,7 @@
     
     self = [super initWithAccountId:pn firstName:contact.givenName lastName:contact.familyName phoneNumber:pn subtitle:nil email:email];
     
-    _contact = contact;
+    self.contact = contact;
     
     return self;
 }

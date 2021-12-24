@@ -6,7 +6,7 @@
 //
 
 #import "UserContacts.h"
-#import "ContactEntityAdapter.h"
+#import "CNContactEntityAdapter.h"
 
 
 @interface UserContacts ()
@@ -68,7 +68,7 @@ static UserContacts *sharedInstance = nil;
                 if (error) {
                     NSLog(@"error fetching contacts %@", error);
                 } else {
-                    ContactEntityAdapter *contactEntity = [ContactEntityAdapter.alloc initWithCNContact:contact];
+                    CNContactEntityAdapter *contactEntity = [CNContactEntityAdapter.alloc initWithCNContact:contact];
                     NSString *header = contactEntity.header;
                     NSMutableArray<ContactEntity *> *contacts = [NSMutableArray arrayWithArray:[contactDictionary objectForKey:header]];
                     if (!contacts) {

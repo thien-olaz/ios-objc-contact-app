@@ -18,6 +18,8 @@
 #import "UpdateContactObject.h"
 #import "ZaloContactService+Observer.h"
 #import "ContactGroupEntity.h"
+#import "Contact+CoreDataClass.h"
+#import "ContactDataController.h"
 
 @interface ContactViewModel () <ZaloContactEventListener>
 
@@ -41,14 +43,16 @@
     self.diffDelegate = diff;
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _datasourceQueue = dispatch_queue_create("_datasourceQueue", qos);
-    [self setContactGroups:@[]];
     
+    [self setContactGroups:@[]];
     
     return self;
 }
 
 - (void)setup {
     dispatch_async(_datasourceQueue, ^{
+        [self setContactGroups:[ContactGroupEntity groupFromContacts:[[ZaloContactService sharedInstance] getContactDictCopy]]];
+        self.accountDictionary = [[ZaloContactService sharedInstance] getAccountDictCopy];
         if (self.dataBlock) self.dataBlock();
     });
     [ZaloContactService.sharedInstance subcribe:self];
@@ -56,11 +60,10 @@
 
 - (void)onChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
     dispatch_async(_datasourceQueue, ^{
-//        long count = [self.accountDictionary count];
         self.accountDictionary = loadAccount;
         [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
-//        if (count) { if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();}
-//        else if (self.dataBlock) self.dataBlock();
+        //        if (count) { if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();}
+        //        else if (self.dataBlock) self.dataBlock();
         if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();
     });
 }
@@ -118,7 +121,7 @@
         
         [self.diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
         
-        NSLog(@"======New update circle=======");
+        NSLog(@"🔁🔁🔁🔁 New update cycle 🔁🔁🔁🔁");
     });
 }
 
@@ -196,6 +199,10 @@
                                       action:^{
         [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"contactDict"];
         [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"accountDict"];
+        NSFetchRequest *request = [Contact fetchRequest];
+        NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
+                
+        [ContactDataController.sharedInstance.managedObjectContext executeRequest:delete error:NULL];
     }]
     ];
     

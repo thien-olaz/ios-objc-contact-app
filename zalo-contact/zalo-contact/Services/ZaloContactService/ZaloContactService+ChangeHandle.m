@@ -54,7 +54,7 @@ float const throttleTime = 0.75;
     }
     // add to data source
     [self addContact:contact toContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
-
+    
     [self incommingAddMediator:contact];
     [self throttleUpdateDataSource];
 }
@@ -73,7 +73,7 @@ float const throttleTime = 0.75;
     // exist -> continue
     ContactEntity *oldContact = [self.accountDictionary objectForKey:contact.accountId];
     if (!oldContact) return;
-
+    
     // changes does not affect order
     if ([oldContact compare:contact] == NSOrderedSame) {
         // replace in data source
@@ -108,7 +108,7 @@ float const throttleTime = 0.75;
     ChangeFootprint *addFootprint = [ChangeFootprint initChangeBy:contact.accountId];
     [self.removeSet removeObject:addFootprint];
     [self.updateSet removeObject:addFootprint];
-//    NSLog(@"add anim");
+    //    NSLog(@"add anim");
     [self.addSet addObject:addFootprint];
 }
 
@@ -116,7 +116,7 @@ float const throttleTime = 0.75;
     ChangeFootprint *removeFootprint = [ChangeFootprint initChangeBy:contact.accountId];
     [self.addSet removeObject:removeFootprint];
     [self.updateSet removeObject:removeFootprint];
-//    NSLog(@"remove anim");
+    //    NSLog(@"remove anim");
     [self.removeSet addObject:removeFootprint];
 }
 
@@ -138,14 +138,14 @@ float const throttleTime = 0.75;
     ChangeFootprint *updateFootprint = [ChangeFootprint initChangeBy:contact.accountId];
     [self.removeSet removeObject:updateFootprint];
     [self.addSet removeObject:updateFootprint];
-//    NSLog(@"update anim");
+    //    NSLog(@"update anim");
     [self.updateSet addObject:updateFootprint];
 }
 
 - (void)incommingReorderWithContact:(ContactEntity*)contact {
     ChangeFootprint *reorderFootprint = [ChangeFootprint initChangeBy:contact.accountId];
     [self.updateSet removeObject:reorderFootprint];
-//    NSLog(@"reorder anim");
+    //    NSLog(@"reorder anim");
     [self.removeSet addObject:reorderFootprint];
     [self.addSet addObject:reorderFootprint];
 }
@@ -172,7 +172,7 @@ float const throttleTime = 0.75;
         [sortedContactArray insertObject:contact atIndex:insertIndex];
     }
     
-    [self saveLatestChanges];
+    [self saveAdd:contact];
 }
 
 // if not exist -> do nothing. if exist -> replace
@@ -195,7 +195,7 @@ float const throttleTime = 0.75;
     
     // add to section
     [sortedContactArray replaceObjectAtIndex:replaceIndex withObject:contact];
-    [self saveLatestChanges];
+    [self saveUpdate:contact];
     
 }
 
@@ -215,16 +215,10 @@ float const throttleTime = 0.75;
     if (deleteIndex == NSNotFound) return NO;
     
     [[contactDict objectForKey:contact.header] removeObjectAtIndex:deleteIndex];
-    
+    [self saveDelete:contact.accountId];
     // section become e mpty after delete -> remove section then YES
-    if ([contactDict objectForKey:contact.header].count) {
-        [self saveLatestChanges];
-        return YES;
-    }
-    
+    if ([contactDict objectForKey:contact.header].count) return YES;
     [contactDict removeObjectForKey:contact.header];
-    
-    [self saveLatestChanges];
     // delete success
     return YES;
 }
@@ -246,11 +240,12 @@ float const throttleTime = 0.75;
             if (![self.oldContactDictionary objectForKey:contact.header]) {
                 [removeSection addObject:contact.header];
             }
-
+            
             NSMutableDictionary *oldDictCopy = [NSMutableDictionary new];
             for (NSString *key in self.oldContactDictionary.keyEnumerator) {
                 [oldDictCopy setObject:self.oldContactDictionary[key].mutableCopy forKey:key];
             }
+            
             [self notifyListenerWithAddSectionList:@[] removeSectionList:removeSection.copy addContact:[NSSet new]  removeContact:[NSSet setWithArray:@[footprint]] updateContact:[NSSet new] newContactDict:oldDictCopy newAccountDict:self.oldAccountDictionary.copy];
             self.bounceLastUpdate = YES;
             
