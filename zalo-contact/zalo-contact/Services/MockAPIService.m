@@ -45,7 +45,7 @@
     addIndex = 0;
     updateIndex = 0;
     onlineIndex = 0;
-    secDevideConstant = 500.0;
+    secDevideConstant = 100.0;
     getTime = 2;
     return self;
 }
@@ -123,7 +123,7 @@
 - (void)addNewContact {
     if (addIndex < dataToPush.count) {
         CNContactEntityAdapter *enity = [CNContactEntityAdapter.alloc initWithCNContact:dataToPush[addIndex]];
-        NSLog(@"☁️ Server:: ++ %@", enity.fullName);
+        //NSLog(@"☁️ Server:: ++ %@", enity.fullName);
         if (onContactAdded) onContactAdded(enity);
         addIndex += 1;
         int random = arc4random_uniform(300);
@@ -136,7 +136,7 @@
 - (void)deleteContact {
     if (deleteIndex < dataToDelete.count) {
         CNContactEntityAdapter *entity = [CNContactEntityAdapter.alloc initWithCNContact:dataToDelete[deleteIndex]];
-        NSLog(@"☁️ Server:: -- %@", entity.fullName);
+        //NSLog(@"☁️ Server:: -- %@", entity.fullName);
         if (onContactDeleted) onContactDeleted(entity.accountId);
         deleteIndex += 1;
         int random = arc4random_uniform(300);
@@ -149,7 +149,7 @@
 - (void)updateContact {
     if (updateIndex < dataToUpdate.count) {
         CNContactEntityAdapter *enity = [CNContactEntityAdapter.alloc initWithCNContact:dataToUpdate[updateIndex]];
-        NSLog(@"☁️ Server:: ~~ %@", enity.fullName);
+        //NSLog(@"☁️ Server:: ~~ %@", enity.fullName);
         if (onContactUpdated) onContactUpdated(enity);
         updateIndex += 1;
         int random = arc4random_uniform(300);
@@ -164,7 +164,7 @@
         OnlineContactEntityAdapter *contact = [[OnlineContactEntityAdapter alloc] initWithCNContact:dataToPushToOnlineGroup[onlineIndex]];
         
         [contact setOnlineTime:[NSDate date]];
-        NSLog(@"☁️ Server:: @@ %@", contact.fullName);
+        //NSLog(@"☁️ Server:: @@ %@", contact.fullName);
         
         if (onOnlineContactAdded) onOnlineContactAdded(contact);
         

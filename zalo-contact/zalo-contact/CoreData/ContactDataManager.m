@@ -11,7 +11,8 @@
 
 // ưu nhược
 // migrate data - field mới - sau
-#define LOG(str) NSLog(@"💾 ContactDataController : %@", str);
+#define LOG(str) //NSLog(@"💾 ContactDataController : %@", str);
+#define LOG2(str1, str2) NSLog(@"🌍 ZaloContactService : %@", [NSString stringWithFormat:str1, str2])
 @interface ContactDataManager ()
 
 @property (strong, nonatomic) dispatch_queue_t contactCoreDataQueue;
@@ -91,7 +92,7 @@ static ContactDataManager *sharedInstance = nil;
 - (void)deleteWholeTable {
     NSFetchRequest *request = [Contact fetchRequest];
     NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
-    [self.managedObjectContext executeRequest:delete error:NULL];    
+    [self.managedObjectContext executeRequest:delete error:NULL];
     LOG(@"Deleted all contacts");
 }
 
@@ -114,21 +115,21 @@ static ContactDataManager *sharedInstance = nil;
     [ct applyPropertiesFromContactEntity:contact];
     [self.storeContactDict setObject:ct forKey:ct.accountId];
     [self throttleSave];
-    LOG(@"Added new contact");
+    LOG2(@"Add contact %@", contact.accountId);
 }
 
 - (void)updateContactInData:(ContactEntity *)contact {
     Contact *contactToUpdate = [self.storeContactDict objectForKey:contact.accountId];
     [contactToUpdate applyPropertiesFromContactEntity:contact];
     [self throttleSave];
-    LOG(@"Updated contact");
+    LOG2(@"Updated contact %@", contact.accountId);
 }
 
 - (void)deleteContactFromData:(NSString *)accountId {
     Contact *contactToDelete = [self.storeContactDict objectForKey:accountId];
     if (contactToDelete) [self.managedObjectContext deleteObject:contactToDelete];
     [self throttleSave];
-    LOG(@"Removed contact");
+    LOG2(@"Removed contact %@", accountId);
 }
 
 - (NSArray<ContactEntity *>*)getSavedData {

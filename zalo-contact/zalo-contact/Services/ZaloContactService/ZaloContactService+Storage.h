@@ -13,9 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZaloContactService (Storage)
 
-// diff với server
 - (void)saveFull;
-
 - (void)saveAdd:(ContactEntity *)contact;
 - (void)saveUpdate:(ContactEntity *)contact;
 - (void)saveDelete:(NSString *)accountId;

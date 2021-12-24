@@ -25,7 +25,7 @@ typedef void(^ActionBlock) (void);
         NSTimeInterval secondsBetween = [now timeIntervalSinceDate:self.checkDate];
         double numberOfDays = secondsBetween / 86400.0;
         
-        if (numberOfDays > 1) {
+        if (numberOfDays > 0.000001) {
             LOG(@"SCHEDULED GET CONTACTS FROM SERVER");
             // so sánh - tốn io
             // 2 task done
@@ -55,28 +55,30 @@ typedef void(^ActionBlock) (void);
         LOG(@"GET SERVER DATA SUCCESS");
         [self setUp];
     } andOnFailedHandler:^{
-        // Retry in the next 10 minutes and retry when user restart app
         LOG(@"GET SERVER DATA FAILED");
-        // không tắt được dispatch after - cancel task
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        [NSTimer scheduledTimerWithTimeInterval:(10 * 60 * NSEC_PER_SEC) repeats:NO block:^(NSTimer * _Nonnull timer){
             [self getServerData];
-        });
+        }];
     }];
 }
 
 /// Retry in the next {sec} seconds till retry time is 0
-- (void)getServerDataWithRetryTime:(int)retryTime eachSecond:(int)sec completionHandler:(ActionBlock)onCompleteBlock andOnFailedHandler:(ActionBlock)onFailedBlock{
-    [self fetchServerDataWithCompletionHandler:onCompleteBlock andOnFailedHandler:^{
-        if (retryTime > 0) {
-            LOG(@"GET SERVER DATA FAILED - RETRYING!");
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, sec * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-                [self getServerDataWithRetryTime:(retryTime - 1) eachSecond:sec completionHandler:onCompleteBlock andOnFailedHandler:onFailedBlock];
-            });
-        } else {
-            if (onFailedBlock) onFailedBlock();
-            return;
-        }
-    }];
+- (void)getServerDataWithRetryTime:(int)retryTime eachSecond:(int)sec completionHandler:(ActionBlock)onCompleteBlock andOnFailedHandler:(ActionBlock)onFailedBlock {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        [self fetchServerDataWithCompletionHandler:onCompleteBlock andOnFailedHandler:^{
+            if (retryTime > 0) {
+                LOG(@"GET SERVER DATA FAILED - RETRYING!");
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [NSTimer scheduledTimerWithTimeInterval:(3) repeats:NO block:^(NSTimer * _Nonnull timer){
+                        [self getServerDataWithRetryTime:(retryTime - 1) eachSecond:sec * 2 completionHandler:onCompleteBlock andOnFailedHandler:onFailedBlock];
+                    }];
+                });
+            } else {
+                if (onFailedBlock) onFailedBlock();
+                return;
+            }
+        }];
+    });
 }
 
 - (void)applyDataFrom:(ContactMutableDictionary *)contactDict andAccountDict:(AccountMutableDictionary *)accountDict {

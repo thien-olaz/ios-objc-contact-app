@@ -44,15 +44,13 @@
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _datasourceQueue = dispatch_queue_create("_datasourceQueue", qos);
     
-    [self setContactGroups:@[]];
-    
+    [self setContactGroups:[ContactGroupEntity groupFromContacts:[[ZaloContactService sharedInstance] getContactDictCopy]]];
+    self.accountDictionary = [[ZaloContactService sharedInstance] getAccountDictCopy];
     return self;
 }
 
 - (void)setup {
     dispatch_async(_datasourceQueue, ^{
-        [self setContactGroups:[ContactGroupEntity groupFromContacts:[[ZaloContactService sharedInstance] getContactDictCopy]]];
-        self.accountDictionary = [[ZaloContactService sharedInstance] getAccountDictCopy];
         if (self.dataBlock) self.dataBlock();
     });
     [ZaloContactService.sharedInstance subcribe:self];

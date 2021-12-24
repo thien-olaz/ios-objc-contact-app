@@ -20,6 +20,7 @@
 @synthesize fullName;
 @synthesize firstName;
 @synthesize lastName;
+@synthesize diffHash;
 
 - (id)initWithAccountId:(NSString *)Id
               firstName:(NSString *)fname
@@ -34,8 +35,14 @@
     _phoneNumber = phoneNumber;
     _subtitle = subtitle;
     _email = email;
+    diffHash = [self getDiffHash];
     [self update];
     return self;
+}
+
+//
+- (NSUInteger)getDiffHash {
+    return @([NSString stringWithFormat:@"%@%@%@%@%@%@",self.accountId, self.firstName, self.lastName, self.phoneNumber, self.subtitle, self.email].hash).unsignedIntValue;
 }
 
 - (void)setFirstName:(NSString *)name {
@@ -51,35 +58,9 @@
 - (void)update {
     self.header = [ContactEntity headerFromFirstName:firstName andLastName:lastName];
     fullName = [NSString stringWithFormat:@"%@ %@", lastName, firstName];
-}
-#pragma mark - NSSecureEncoding
-
-- (instancetype)initWithCoder:(NSCoder *)coder {
-    NSString *accountId = [coder decodeObjectForKey:@"accountId"];
-    NSString *firstName = [coder decodeObjectForKey:@"fname"];
-    NSString *lastName = [coder decodeObjectForKey:@"lname"];
-    NSString *phoneNumber = [coder decodeObjectForKey:@"pnumber"];
-//    NSString *imageUrl = [coder decodeObjectForKey:@"imageUrl"];
-    NSString *subtitle = [coder decodeObjectForKey:@"subtitle"];
-    NSString *email = [coder decodeObjectForKey:@"email"];
-    
-    self = [self initWithAccountId:accountId firstName:firstName lastName:lastName phoneNumber:phoneNumber subtitle:subtitle email:email];
-    return self;
+    diffHash = [self getDiffHash];
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder {
-    [coder encodeObject:accountId forKey:@"accountId"];
-    [coder encodeObject:firstName forKey:@"fname"];
-    [coder encodeObject:lastName forKey:@"lname"];
-    [coder encodeObject:_phoneNumber forKey:@"pnumber"];
-    [coder encodeObject:_imageUrl forKey:@"imageUrl"];
-    [coder encodeObject:self.subtitle forKey:@"subtitle"];
-    [coder encodeObject:self.email forKey:@"email"];
-}
-
-+ (BOOL)supportsSecureCoding {
-    return YES;
-}
 #pragma mark - Equal
 
 //compare to get order

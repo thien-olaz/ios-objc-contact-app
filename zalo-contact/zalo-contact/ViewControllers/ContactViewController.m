@@ -80,33 +80,26 @@
     [_viewModel setTableViewDataSource:self.tableViewDataSource];
     
     [_viewModel setDataBlock:^{
-        dispatch_async(weakSelf.tableViewQueue, ^{
-            [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [weakSelf.tableView reloadData];
-            });
+        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [weakSelf.tableView reloadData];
         });
     }];
     
     [_viewModel setDataWithAnimationBlock:^{
-        dispatch_async(weakSelf.tableViewQueue, ^{
-            [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                [UIView transitionWithView:weakSelf.tableView
-                                  duration:0.2
-                                   options:(UIViewAnimationOptionTransitionCrossDissolve)
-                                animations:^{
-                    [weakSelf.tableView reloadData];
-                } completion:nil];
-            });
+        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [UIView transitionWithView:weakSelf.tableView
+                              duration:0.2
+                               options:(UIViewAnimationOptionTransitionCrossDissolve)
+                            animations:^{
+                [weakSelf.tableView reloadData];
+            } completion:nil];
         });
     }];
     
     [_viewModel setUpdateBlock:^{
-        // sync because viewmodel need the tableview latest data to get indexpath
-        dispatch_sync(weakSelf.tableViewQueue, ^{
-            [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
-        });
+        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
     }];
     
     [_viewModel setPresentBlock:^{
@@ -114,7 +107,6 @@
     }];
     
     [_viewModel setup];
-    
 }
 
 - (void)viewWillLayoutSubviews {

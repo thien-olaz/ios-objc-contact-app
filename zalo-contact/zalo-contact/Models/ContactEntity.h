@@ -9,7 +9,7 @@
 @import IGListKit;
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactEntity : NSObject<NSSecureCoding>
+@interface ContactEntity : NSObject
 
 @property (readonly) NSString *accountId;
 
@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) NSString *firstName;
 @property (readonly) NSString *lastName;
 @property (readonly) NSString *fullName;
+@property (readonly) NSUInteger diffHash;
 @property (nonatomic) NSString *phoneNumber;
 @property (nullable) NSString *imageUrl;
 
