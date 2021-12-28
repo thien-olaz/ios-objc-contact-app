@@ -39,6 +39,8 @@
 		AF447F872774ECC20046C4AC /* Contact+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F852774ECC20046C4AC /* Contact+CoreDataClass.m */; };
 		AF447F882774ECC20046C4AC /* Contact+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F862774ECC20046C4AC /* Contact+CoreDataProperties.m */; };
 		AF447F8B277597630046C4AC /* CoreDataContactEntityAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = AF447F8A277597630046C4AC /* CoreDataContactEntityAdapter.m */; };
+		AF447F8D27762C6C0046C4AC /* default-contacts1.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF447F8C27762C6C0046C4AC /* default-contacts1.vcf */; };
+		AF447F8F27762C860046C4AC /* default-contacts2.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF447F8E27762C860046C4AC /* default-contacts2.vcf */; };
 		AF471B6F2761D732004C035A /* NullFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF471B6E2761D732004C035A /* NullFooterView.m */; };
 		AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */; };
 		AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */ = {isa = PBXBuildFile; fileRef = AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */; };
@@ -139,6 +141,8 @@
 		AF447F862774ECC20046C4AC /* Contact+CoreDataProperties.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Contact+CoreDataProperties.m"; sourceTree = SOURCE_ROOT; };
 		AF447F89277597630046C4AC /* CoreDataContactEntityAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreDataContactEntityAdapter.h; sourceTree = "<group>"; };
 		AF447F8A277597630046C4AC /* CoreDataContactEntityAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreDataContactEntityAdapter.m; sourceTree = "<group>"; };
+		AF447F8C27762C6C0046C4AC /* default-contacts1.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "default-contacts1.vcf"; sourceTree = "<group>"; };
+		AF447F8E27762C860046C4AC /* default-contacts2.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "default-contacts2.vcf"; sourceTree = "<group>"; };
 		AF471B6D2761D732004C035A /* NullFooterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullFooterView.h; sourceTree = "<group>"; };
 		AF471B6E2761D732004C035A /* NullFooterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullFooterView.m; sourceTree = "<group>"; };
 		AF5178442762FB2C00FC8BCA /* ZaloContactService+Storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+Storage.h"; sourceTree = "<group>"; };
@@ -189,6 +193,8 @@
 		AFA3B6A627610361003B198B /* UpdateContactObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UpdateContactObject.m; sourceTree = "<group>"; };
 		AFB23AC5277067FD00387801 /* ChangeFootprint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChangeFootprint.h; sourceTree = "<group>"; };
 		AFB23AC6277067FD00387801 /* ChangeFootprint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChangeFootprint.m; sourceTree = "<group>"; };
+		AFBD8564277A40880031B3FF /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		AFBD8565277A40BE0031B3FF /* CommonMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonMacro.h; sourceTree = "<group>"; };
 		AFC3D4A62756093300FB5406 /* NullHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullHeaderView.h; sourceTree = "<group>"; };
 		AFC3D4A72756093300FB5406 /* NullHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullHeaderView.m; sourceTree = "<group>"; };
 		AFC3D4AC27560BFB00FB5406 /* CommonHeaderAndFooterViews.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHeaderAndFooterViews.h; sourceTree = "<group>"; };
@@ -235,6 +241,7 @@
 		AF0BFBF827456E63006E072B /* Ultilities */ = {
 			isa = PBXGroup;
 			children = (
+				AFBD8565277A40BE0031B3FF /* CommonMacro.h */,
 				AF0BFBF927456EC4006E072B /* UserContacts.h */,
 				AF0BFBFA27456EC4006E072B /* UserContacts.m */,
 				AF9201B627460EB300E1581C /* UIConstants.h */,
@@ -300,6 +307,7 @@
 				AF368C4A27420F3800E17AEB /* AppDelegate.m */,
 				AF368C4C27420F3800E17AEB /* SceneDelegate.h */,
 				AF368C4D27420F3800E17AEB /* SceneDelegate.m */,
+				AFBD8564277A40880031B3FF /* PrefixHeader.pch */,
 				AF447F652774E1950046C4AC /* CoreData */,
 				AFA2BDC6275E08FA00128996 /* Services */,
 				AF0BFBF827456E63006E072B /* Ultilities */,
@@ -498,6 +506,8 @@
 				AF36B91A2767A2AA00B8AC56 /* medium-contacts.vcf */,
 				AF36B91C2767A4FB00B8AC56 /* medium-contacts2.vcf */,
 				AF447F6327745AEA0046C4AC /* super-short-contact.vcf */,
+				AF447F8C27762C6C0046C4AC /* default-contacts1.vcf */,
+				AF447F8E27762C860046C4AC /* default-contacts2.vcf */,
 			);
 			path = TestData;
 			sourceTree = "<group>";
@@ -575,6 +585,7 @@
 				AF36B91B2767A2AA00B8AC56 /* medium-contacts.vcf in Resources */,
 				AF36B9192767587B00B8AC56 /* short-contacts.vcf in Resources */,
 				AF368C5927420F3A00E17AEB /* LaunchScreen.storyboard in Resources */,
+				AF447F8F27762C860046C4AC /* default-contacts2.vcf in Resources */,
 				AF447F6427745AEA0046C4AC /* super-short-contact.vcf in Resources */,
 				AFA3B695275F6861003B198B /* normal-contacts.vcf in Resources */,
 				AF368C5627420F3A00E17AEB /* Assets.xcassets in Resources */,
@@ -582,6 +593,7 @@
 				AFA2BDCF275E104300128996 /* super-long-contacts.vcf in Resources */,
 				AF63595827685A9300DFE352 /* normal-contacts2.vcf in Resources */,
 				AF63595D2768D56400DFE352 /* online-contacts.vcf in Resources */,
+				AF447F8D27762C6C0046C4AC /* default-contacts1.vcf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -749,6 +761,8 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "zalo-contact/PrefixHeader.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -806,6 +820,8 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "zalo-contact/PrefixHeader.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -830,6 +846,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 89X4CM9ZK4;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "zalo-contact/Resources/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -861,6 +878,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 89X4CM9ZK4;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "zalo-contact/Resources/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

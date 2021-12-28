@@ -46,7 +46,7 @@
     updateIndex = 0;
     onlineIndex = 0;
     secDevideConstant = 100.0;
-    getTime = 2;
+    getTime = 4;
     return self;
 }
 
@@ -83,7 +83,7 @@
 
 - (void)getContactsFromFile {
     __weak typeof(self) weakSelf = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(GLOBAL_QUEUE, ^{
         if (!weakSelf) return;
         MockAPIService *strongSelf = weakSelf;
         if (!strongSelf) return;

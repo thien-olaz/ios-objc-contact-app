@@ -13,10 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 #define LOG2(str1, str2) NSLog(@"🌍 ZaloContactService : %@", [NSString stringWithFormat:str1, str2])
 @interface ZaloContactService ()
 
-@property AccountIdMutableOrderedSet *addSet;
-@property AccountIdMutableOrderedSet *removeSet;
-@property AccountIdMutableOrderedSet *updateSet;
-
 @property id<APIServiceProtocol> apiService;
 @property dispatch_queue_t contactServiceStorageQueue;
 @property dispatch_queue_t apiServiceQueue;
@@ -27,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property AccountMutableDictionary *oldAccountDictionary;
 @property ContactMutableDictionary *contactDictionary;
 @property AccountMutableDictionary *accountDictionary;
-
+@property FootprintMutableDictionary *footprintDict;
 @property NSMutableArray<id<ZaloContactEventListener>> *listeners;
 
 @end

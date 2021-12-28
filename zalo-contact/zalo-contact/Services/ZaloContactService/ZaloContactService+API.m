@@ -21,54 +21,76 @@ typedef void(^ActionBlock) (void);
 - (void)setupInitData {
     self.checkDate = [self getSavedCheckDate];
     NSDate *now = [NSDate now];
+    
+    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_CONCURRENT, QOS_CLASS_USER_INITIATED, -1);
+    dispatch_queue_t _fetchDataqueue = dispatch_queue_create("_fetchDataqueue", qos);
+    
     if (self.checkDate) {
         NSTimeInterval secondsBetween = [now timeIntervalSinceDate:self.checkDate];
         double numberOfDays = secondsBetween / 86400.0;
         
-        if (numberOfDays > 0.000001) {
+        if (numberOfDays > 0.0000001) {
             LOG(@"SCHEDULED GET CONTACTS FROM SERVER");
-            // so sánh - tốn io
-            // 2 task done
-            [self fetchLocalDataWithCompletionHandler:^{
-                LOG(@"GET LOCAL DATA SUCCESS");
-            } andOnFailedHandler:nil];
-            [self getServerData];
-        } else {
-            [self fetchLocalDataWithCompletionHandler:^{
-                LOG(@"LOAD LOCAL CONTACTS DATA");
+            //dispatch work item
+            dispatch_group_t group = dispatch_group_create();
+            dispatch_block_t leaveBlock = ^{dispatch_group_leave(group);};
+            
+            dispatch_group_enter(group);
+            DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_fetchDataqueue, ^{
+                [self fetchLocalDataWithCompletionHandler:leaveBlock andOnFailedHandler:leaveBlock];
+            });
+            
+            dispatch_group_enter(group);
+            DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_fetchDataqueue, ^{
+                [self autoRetryGetServerData:leaveBlock];
+            });
+            
+            DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_fetchDataqueue, ^{
+                dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
                 [self setUp];
-            } andOnFailedHandler:^{
-                LOG(@"LOAD LOCAL CONTACTS FAILED");
-                [self getServerData];
-            }];
+            });
+            
+        } else {
+            DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_fetchDataqueue, ^{
+                [self fetchLocalDataWithCompletionHandler:^{
+                    LOG(@"LOAD LOCAL CONTACTS DATA");
+                    [self setUp];
+                } andOnFailedHandler:^{
+                    LOG(@"LOAD LOCAL CONTACTS FAILED");
+                    [self autoRetryGetServerData:nil];
+                }];
+            });
         }
     } else {
         LOG(@"FIRST TIME RUN - GET CONTACTS FROM SERVER!");
-        [self getServerData];
+        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_fetchDataqueue, ^{
+            [self autoRetryGetServerData:nil];
+        });
     }
 }
 
 // server trước local - done 2 task
 /// Get server data with 3 instance retry and scheduled retry each 10 minutes
-- (void)getServerData {
+- (void)autoRetryGetServerData:(ActionBlock)onCompleteBlock {
     [self getServerDataWithRetryTime:3 eachSecond:3 completionHandler:^{
         LOG(@"GET SERVER DATA SUCCESS");
-        [self setUp];
+        if (onCompleteBlock) onCompleteBlock();
+        else [self setUp];
     } andOnFailedHandler:^{
         LOG(@"GET SERVER DATA FAILED");
         [NSTimer scheduledTimerWithTimeInterval:(10 * 60 * NSEC_PER_SEC) repeats:NO block:^(NSTimer * _Nonnull timer){
-            [self getServerData];
+            [self autoRetryGetServerData:nil];
         }];
     }];
 }
 
 /// Retry in the next {sec} seconds till retry time is 0
 - (void)getServerDataWithRetryTime:(int)retryTime eachSecond:(int)sec completionHandler:(ActionBlock)onCompleteBlock andOnFailedHandler:(ActionBlock)onFailedBlock {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(GLOBAL_QUEUE, ^{
         [self fetchServerDataWithCompletionHandler:onCompleteBlock andOnFailedHandler:^{
             if (retryTime > 0) {
-                LOG(@"GET SERVER DATA FAILED - RETRYING!");
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    LOG(@"GET SERVER DATA FAILED - RETRYING!");
                     [NSTimer scheduledTimerWithTimeInterval:(3) repeats:NO block:^(NSTimer * _Nonnull timer){
                         [self getServerDataWithRetryTime:(retryTime - 1) eachSecond:sec * 2 completionHandler:onCompleteBlock andOnFailedHandler:onFailedBlock];
                     }];
@@ -168,15 +190,17 @@ typedef void(^ActionBlock) (void);
     }
     
     // bind fetched data
-    dispatch_async(self.apiServiceQueue, ^{
-        [self applyDataFrom:tempContact andAccountDict:tempAccount];
-        [self cacheChanges];
-        for (id<ZaloContactEventListener> listener in self.listeners) {
-            if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
-                [listener onChangeWithFullNewList:[self getContactDictCopy] andAccount:self.accountDictionary.mutableCopy];
+    if (![self.accountDictionary count]) {
+        dispatch_async(self.apiServiceQueue, ^{
+            [self applyDataFrom:tempContact andAccountDict:tempAccount];
+            [self cacheChanges];
+            for (id<ZaloContactEventListener> listener in self.listeners) {
+                if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
+                    [listener onChangeWithFullNewList:[self getContactDictCopy] andAccount:self.accountDictionary.mutableCopy];
+                }
             }
-        }
-    });
+        });
+    }
     
     if (onCompleteBlock) onCompleteBlock();
     

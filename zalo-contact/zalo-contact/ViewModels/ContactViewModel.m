@@ -50,14 +50,14 @@
 }
 
 - (void)setup {
-    dispatch_async(_datasourceQueue, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
         if (self.dataBlock) self.dataBlock();
     });
     [ZaloContactService.sharedInstance subcribe:self];
 }
 
 - (void)onChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
-    dispatch_async(_datasourceQueue, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
         self.accountDictionary = loadAccount;
         [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
         //        if (count) { if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();}
@@ -103,7 +103,7 @@
                            updateContact:(NSOrderedSet<ChangeFootprint *> *)updateContacts
                           newContactDict:(ContactMutableDictionary *)contactDict
                           newAccountDict:(AccountMutableDictionary *)accountDict {
-    dispatch_async(_datasourceQueue, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
         NSArray<NSIndexPath *> *removeIndexes = [self indexesFromChangesArray:removeContacts.copy exceptInSecion:removeSectionList];
         NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
         

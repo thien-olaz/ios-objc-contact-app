@@ -12,7 +12,7 @@
 // ưu nhược
 // migrate data - field mới - sau
 #define LOG(str) //NSLog(@"💾 ContactDataController : %@", str);
-#define LOG2(str1, str2) NSLog(@"🌍 ZaloContactService : %@", [NSString stringWithFormat:str1, str2])
+#define LOG2(str1, str2) //NSLog(@"🌍 ContactDataManager : %@", [NSString stringWithFormat:str1, str2])
 @interface ContactDataManager ()
 
 @property (strong, nonatomic) dispatch_queue_t contactCoreDataQueue;
@@ -53,10 +53,11 @@ static ContactDataManager *sharedInstance = nil;
     
     NSPersistentStoreCoordinator *coordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:mom];
     
-    NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    NSManagedObjectContext *moc = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     [moc setPersistentStoreCoordinator:coordinator];
     [self setManagedObjectContext:moc];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(GLOBAL_QUEUE, ^{
         NSPersistentStoreCoordinator *psc = [[self managedObjectContext] persistentStoreCoordinator];
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSURL *documentsURL = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
@@ -149,9 +150,9 @@ static ContactDataManager *sharedInstance = nil;
 
 - (void)logsAllSavedContact {
     LOG(@"All data");
-    for (Contact *ct in self.storeContactDict.allValues) {
-        LOG(ct.fullName);
-    }
+//    for (Contact *ct in self.storeContactDict.allValues) {
+//        LOG(ct.fullName);
+//    }
 }
 
 @end

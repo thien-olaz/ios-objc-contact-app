@@ -16,6 +16,7 @@ typedef NSMutableDictionary<NSString *, ContactEntity *> AccountMutableDictionar
 typedef NSMutableOrderedSet<ChangeFootprint *> AccountIdMutableOrderedSet;
 typedef NSMutableArray<OnlineContactEntity *> OnlineContactEntityMutableArray;
 typedef NSMutableDictionary<NSString *, NSMutableArray<ContactEntity *>*> ContactMutableDictionary;
+typedef NSMutableDictionary<NSString *, ChangeFootprint*> FootprintMutableDictionary;
 
 @protocol ZaloContactEventListener <NSObject>
 

@@ -28,7 +28,7 @@
     NSMutableSet *updateSet = [NSMutableSet setWithArray:newDict.allKeys];
     [updateSet minusSet:addSet];
     
-    dispatch_async(self.contactServiceStorageQueue, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         for (NSString *accountId in removeSet) [[ContactDataManager sharedInstance] deleteContactFromData:accountId];
         for (NSString *accountId in addSet) [[ContactDataManager sharedInstance] addContactToData:newDict[accountId]];
         for (NSString *accountId in updateSet.copy) {
@@ -40,19 +40,19 @@
 }
 
 - (void)saveAdd:(ContactEntity *)contact {
-    dispatch_async(self.contactServiceStorageQueue, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         [[ContactDataManager sharedInstance] addContactToData:contact];
     });
 }
 
 - (void)saveUpdate:(ContactEntity *)contact {
-    dispatch_async(self.contactServiceStorageQueue, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         [[ContactDataManager sharedInstance] updateContactInData:contact];
     });
 }
 
 - (void)saveDelete:(NSString *)accountId {
-    dispatch_async(self.contactServiceStorageQueue, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         [[ContactDataManager sharedInstance] deleteContactFromData:accountId];
     });
 }

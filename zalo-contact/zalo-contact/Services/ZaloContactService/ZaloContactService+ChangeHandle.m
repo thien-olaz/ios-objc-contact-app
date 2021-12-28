@@ -46,6 +46,11 @@ float const throttleTime = 0.75;
 
 #pragma mark - server actions handle
 
+- (void)addFootprintForContactId:(NSString *)accountId {
+    ChangeFootprint *footprint = [ChangeFootprint initChangeBy:accountId];
+    [self.footprintDict setObject:footprint forKey:accountId];
+}
+
 - (void)addContact:(ContactEntity*)contact {
     // exist -> turn into update contact
     if ([self.accountDictionary objectForKey:contact.accountId]) {
@@ -55,7 +60,7 @@ float const throttleTime = 0.75;
     // add to data source
     [self addContact:contact toContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
     
-    [self incommingAddMediator:contact];
+    [self addFootprintForContactId:contact.accountId];
     [self throttleUpdateDataSource];
 }
 
@@ -65,7 +70,7 @@ float const throttleTime = 0.75;
     // delete in data source
     if (![self deleteContact:contact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary]) return;
     // delete success
-    [self incommingRemoveWithContact:contact];
+    [self addFootprintForContactId:accountId];
     [self throttleUpdateDataSource];
 }
 
@@ -83,71 +88,8 @@ float const throttleTime = 0.75;
         [self deleteContact:oldContact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
         [self addContact:contact toContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
     }
-    
-    [self incommingUpdateMediator:contact];
+    [self addFootprintForContactId:contact.accountId];
     [self throttleUpdateDataSource];
-}
-
-#pragma mark - incomminincommingUpdateMediator change handle
-/*
- add, insert and remove is calculate base on the different between old list and new list
- */
-
-- (void)incommingAddMediator:(ContactEntity*)contact {
-    // old list has the same accountId item
-    if ([self.oldAccountDictionary objectForKey:contact.accountId]) {
-        // update animation
-        [self incommingUpdateMediator:contact];
-    } else {
-        // add animation
-        [self incommingAddWithContact:contact];
-    }
-}
-
-- (void)incommingAddWithContact:(ContactEntity*)contact {
-    ChangeFootprint *addFootprint = [ChangeFootprint initChangeBy:contact.accountId];
-    [self.removeSet removeObject:addFootprint];
-    [self.updateSet removeObject:addFootprint];
-    //    NSLog(@"add anim");
-    [self.addSet addObject:addFootprint];
-}
-
-- (void)incommingRemoveWithContact:(ContactEntity*)contact {
-    ChangeFootprint *removeFootprint = [ChangeFootprint initChangeBy:contact.accountId];
-    [self.addSet removeObject:removeFootprint];
-    [self.updateSet removeObject:removeFootprint];
-    //    NSLog(@"remove anim");
-    [self.removeSet addObject:removeFootprint];
-}
-
-- (void)incommingUpdateMediator:(ContactEntity*)contact {
-    ContactEntity *oldContact = [self.oldAccountDictionary objectForKey:contact.accountId];
-    // old list has the same accountId item
-    if (!oldContact) return;
-    // if not affect list order
-    if ([oldContact compare:contact] == NSOrderedSame) {
-        // update anim
-        [self incommingUpdateWithContact:contact];
-    } else {
-        // update reorder anim
-        [self incommingReorderWithContact:contact];
-    }
-}
-
-- (void)incommingUpdateWithContact:(ContactEntity*)contact {
-    ChangeFootprint *updateFootprint = [ChangeFootprint initChangeBy:contact.accountId];
-    [self.removeSet removeObject:updateFootprint];
-    [self.addSet removeObject:updateFootprint];
-    //    NSLog(@"update anim");
-    [self.updateSet addObject:updateFootprint];
-}
-
-- (void)incommingReorderWithContact:(ContactEntity*)contact {
-    ChangeFootprint *reorderFootprint = [ChangeFootprint initChangeBy:contact.accountId];
-    [self.updateSet removeObject:reorderFootprint];
-    //    NSLog(@"reorder anim");
-    [self.removeSet addObject:reorderFootprint];
-    [self.addSet addObject:reorderFootprint];
 }
 
 # pragma mark: Update data source
@@ -230,9 +172,7 @@ float const throttleTime = 0.75;
             ChangeFootprint *footprint = [ChangeFootprint initChangeBy:contact.accountId];
             if (curContact) {
                 [self deleteContact:curContact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
-                [self.addSet removeObject:footprint];
-                [self.removeSet removeObject:footprint];
-                [self.updateSet removeObject:footprint];
+                [self.footprintDict removeObjectForKey:footprint.accountId];
             }
             
             NSMutableArray *removeSection = [NSMutableArray new];
@@ -247,7 +187,6 @@ float const throttleTime = 0.75;
             
             [self notifyListenerWithAddSectionList:@[] removeSectionList:removeSection.copy addContact:[NSSet new]  removeContact:[NSSet setWithArray:@[footprint]] updateContact:[NSSet new] newContactDict:oldDictCopy newAccountDict:self.oldAccountDictionary.copy];
             self.bounceLastUpdate = YES;
-            
         }
     });
 }
@@ -268,7 +207,7 @@ float const throttleTime = 0.75;
         self.bounceLastUpdate = NO;
         return;
     }
-    
+    /// Header diff
     NSSet *oldSet = [NSSet setWithArray:self.oldContactDictionary.allKeys.copy];
     NSSet *newSet = [NSSet setWithArray:self.contactDictionary.allKeys.copy];
     
@@ -277,7 +216,45 @@ float const throttleTime = 0.75;
     NSMutableSet *addHeaderSet = newSet.mutableCopy;
     [addHeaderSet minusSet:oldSet];
     
-    [self notifyListenerWithAddSectionList:addHeaderSet.copy removeSectionList:removeHeaderSet.copy addContact:self.addSet.copy removeContact:self.removeSet.copy updateContact:self.updateSet.copy newContactDict:[self getContactDictCopy] newAccountDict:self.accountDictionary.copy];
+    /// Contact diff
+    NSSet *oldAccountSet = [NSSet setWithArray:self.oldAccountDictionary.allKeys.copy];
+    NSSet *newAccountSet = [NSSet setWithArray:self.accountDictionary.allKeys.copy];
+    
+    /// Remove footprint
+    NSMutableSet *removeAccountSet = oldAccountSet.mutableCopy;
+    [removeAccountSet minusSet:newAccountSet];
+    
+    NSMutableSet *removeFootprint = [NSMutableSet new];;
+    for (NSString *contactId in removeAccountSet) {
+        [removeFootprint addObject:self.footprintDict[contactId]];
+    }
+    
+    /// Add footprint
+    NSMutableSet *addContactIdSet = newAccountSet.mutableCopy;
+    [addContactIdSet minusSet:oldAccountSet];
+    
+    NSMutableSet *addFootprint = [NSMutableSet new];;
+    for (NSString *contactId in addContactIdSet) {
+        [addFootprint addObject:self.footprintDict[contactId]];
+    }
+    
+    /// Remove add and remove footprint from footprint dict to get the update part
+    [self.footprintDict removeObjectsForKeys:addContactIdSet.allObjects];
+    [self.footprintDict removeObjectsForKeys:removeAccountSet.allObjects];
+    
+    /// Update footprint
+    NSMutableSet *updateFootprint = [NSMutableSet new];;
+    for (NSString *contactId in self.footprintDict.allKeys) {
+        // not affect order
+        if ([self.oldAccountDictionary[contactId] compare: self.accountDictionary[contactId]] == NSOrderedSame) {
+            [updateFootprint addObject:self.footprintDict[contactId]];
+        } else {
+            [addFootprint addObject:self.footprintDict[contactId]];
+            [removeFootprint addObject:self.footprintDict[contactId]];
+        }
+    }
+    
+    [self notifyListenerWithAddSectionList:addHeaderSet.copy removeSectionList:removeHeaderSet.copy addContact:addFootprint.copy removeContact:removeFootprint.copy updateContact:updateFootprint.copy newContactDict:[self getContactDictCopy] newAccountDict:self.accountDictionary.copy];
     
     [self cacheChanges];
     [self cleanUpIncommingData];
@@ -294,9 +271,7 @@ float const throttleTime = 0.75;
 
 //clean up after all changed data is applied
 - (void)cleanUpIncommingData {
-    [self.addSet removeAllObjects];
-    [self.removeSet removeAllObjects];
-    [self.updateSet removeAllObjects];
+    [self.footprintDict removeAllObjects];
 }
 
 @end

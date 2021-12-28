@@ -81,14 +81,14 @@
     
     [_viewModel setDataBlock:^{
         [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
             [weakSelf.tableView reloadData];
         });
     }];
     
     [_viewModel setDataWithAnimationBlock:^{
         [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
-        dispatch_sync(dispatch_get_main_queue(), ^{
+        DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
             [UIView transitionWithView:weakSelf.tableView
                               duration:0.2
                                options:(UIViewAnimationOptionTransitionCrossDissolve)
@@ -136,7 +136,7 @@
     __unsafe_unretained typeof(self) weakSelf = self;
     // nhiều update => reload
     // UX
-    dispatch_async(dispatch_get_main_queue(), ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
         [weakSelf.tableView performBatchUpdates:^{
             [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
             [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
