@@ -8,8 +8,6 @@
 @import Foundation;
 @import UIKit;
 @import PureLayout;
-#import "UIConstants.h"
-#import "UIColorExt.h"
 #import "CommonHeaderAndFooterViews.h"
 
 NS_ASSUME_NONNULL_BEGIN

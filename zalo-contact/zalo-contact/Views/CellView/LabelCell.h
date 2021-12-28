@@ -5,9 +5,6 @@
 //  Created by Thiện on 08/12/2021.
 //
 
-
-#import "UIConstants.h"
-#import "UIColorExt.h"
 #import "CommonCellObject.h"
 @import UIKit;
 

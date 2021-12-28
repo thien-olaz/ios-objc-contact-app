@@ -33,7 +33,7 @@ static int _onlineCtIndex;
 }
 
 + (CGFloat)contactCellMinHorizontalInset {
-    return 20.0;
+    return 16.0;
 }
 
 + (CGFloat)contactMinHorizontalSpacing {
@@ -92,6 +92,10 @@ static int _onlineCtIndex;
 
 + (void)setOnlineContactIndex:(int)index {
     _onlineCtIndex = index;
+}
+
++ (CGFloat)borderWidth {
+    return 2;
 }
 
 @end

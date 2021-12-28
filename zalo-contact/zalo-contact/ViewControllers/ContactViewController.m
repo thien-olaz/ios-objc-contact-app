@@ -80,33 +80,41 @@
     [_viewModel setTableViewDataSource:self.tableViewDataSource];
     
     [_viewModel setDataBlock:^{
-        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
-        DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
-            [weakSelf.tableView reloadData];
-        });
+        ContactViewController *strongSelf = weakSelf;
+        [strongSelf reloadTableViewWithAnimationDuration:0];
     }];
     
     [_viewModel setDataWithAnimationBlock:^{
-        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
-        DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
-            [UIView transitionWithView:weakSelf.tableView
-                              duration:0.2
-                               options:(UIViewAnimationOptionTransitionCrossDissolve)
-                            animations:^{
-                [weakSelf.tableView reloadData];
-            } completion:nil];
-        });
+        ContactViewController *strongSelf = weakSelf;
+        [strongSelf reloadTableViewWithAnimationDuration:0.2];
     }];
     
     [_viewModel setUpdateBlock:^{
-        [weakSelf.tableViewDataSource compileDatasource:weakSelf.viewModel.data.copy];
+        ContactViewController *strongSelf = weakSelf;
+        [strongSelf.tableViewDataSource compileDatasource:strongSelf.viewModel.data.copy];
     }];
     
     [_viewModel setPresentBlock:^{
-        [weakSelf presentViewController:[UIAlertController contactPermisisonAlert]  animated:YES completion:nil];
+        ContactViewController *strongSelf = weakSelf;
+        [strongSelf presentViewController:[UIAlertController contactPermisisonAlert]  animated:YES completion:nil];
     }];
     
     [_viewModel setup];
+}
+
+- (void)reloadTableViewWithAnimationDuration:(float)duration {
+    [self.lock lock];
+    [self.tableViewDataSource compileDatasource:self.viewModel.data.copy];
+    DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
+        [UIView transitionWithView:self.tableView
+                          duration:duration
+                           options:(UIViewAnimationOptionTransitionCrossDissolve)
+                        animations:^{
+            [self.tableView reloadData];
+        } completion:^(BOOL finished) {
+            [self.lock unlock];
+        }];
+    });
 }
 
 - (void)viewWillLayoutSubviews {

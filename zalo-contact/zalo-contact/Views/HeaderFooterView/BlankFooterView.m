@@ -6,7 +6,7 @@
 //
 
 #import "BlankFooterView.h"
-#import "UIColorExt.h"
+
 @implementation BlankFooterView {
     UIView *separateLine;
 }

@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-@import IGListKit;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ContactEntity : NSObject

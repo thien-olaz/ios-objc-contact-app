@@ -49,7 +49,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     CGRect newFrame = CGRectZero;
-    newFrame.size = CGSizeMake(self.bounds.size.width * 3 / 2, UIConstants.addContactLabelHeight );
+    newFrame.size = CGSizeMake(self.bounds.size.width * 2 / 3, UIConstants.addContactLabelHeight );
 
     [_label setFrame:newFrame];
     _label.center = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);

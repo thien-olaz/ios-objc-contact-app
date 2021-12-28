@@ -50,19 +50,6 @@
    return YES;
 }
 
-#pragma mark - IGListDiffable
-
-- (id<NSObject>)diffIdentifier {
-    return self.header;
-}
-
-- (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object {
-    ContactGroupEntity *entity = (ContactGroupEntity *)object;
-    if (!entity) return NO;
-    if (![self.header isEqualToString:entity.header]) return NO;
-    return YES;
-}
-
 #pragma mark - array compare
 - (BOOL)isEqual:(id)object {
     ContactGroupEntity *entity = (ContactGroupEntity *)object;

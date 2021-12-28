@@ -6,7 +6,6 @@
 //
 
 #import "ContactFooterView.h"
-#import "UIColorExt.h"
 
 @implementation ContactFooterView {
     UIView *separateLine;

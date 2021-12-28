@@ -21,7 +21,6 @@ typedef void (^CallbackBlock) (void);
 
 - (id)initWithCompletionBlock:(CallbackBlock)callback;
 
-- (void)saveContactArrayToData:(NSArray<ContactEntity *> *)contacts;
 - (void)addContactToData:(ContactEntity *)contact;
 - (void)updateContactInData:(ContactEntity *)contact;
 - (void)deleteContactFromData:(NSString *)accountId;

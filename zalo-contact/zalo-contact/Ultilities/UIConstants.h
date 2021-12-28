@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (CGFloat)contactCellFontSize;
 + (CGFloat)addContactLabelHeight;
 + (CGFloat)addContactButtonHeight;
++ (CGFloat)borderWidth;
 
 + (int)getContactIndex;
 + (void)setContactIndex:(int)index;

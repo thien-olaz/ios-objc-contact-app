@@ -42,8 +42,10 @@
 		AF447F8D27762C6C0046C4AC /* default-contacts1.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF447F8C27762C6C0046C4AC /* default-contacts1.vcf */; };
 		AF447F8F27762C860046C4AC /* default-contacts2.vcf in Resources */ = {isa = PBXBuildFile; fileRef = AF447F8E27762C860046C4AC /* default-contacts2.vcf */; };
 		AF471B6F2761D732004C035A /* NullFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = AF471B6E2761D732004C035A /* NullFooterView.m */; };
+		AF49B64B277B19970074F230 /* TabCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AF49B64A277B19970074F230 /* TabCollectionCell.m */; };
 		AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */ = {isa = PBXBuildFile; fileRef = AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */; };
 		AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */ = {isa = PBXBuildFile; fileRef = AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */; };
+		AF548CC2277AFD4A00B37193 /* TabCellObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AF548CC1277AFD4A00B37193 /* TabCellObject.m */; };
 		AF632F862769A097001E88EC /* OnlineContactEntityAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = AF632F852769A097001E88EC /* OnlineContactEntityAdapter.m */; };
 		AF632F8A2769A22B001E88EC /* OnlineContactEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AF632F892769A22B001E88EC /* OnlineContactEntity.m */; };
 		AF632F8D2769CBDD001E88EC /* OnlineContactObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AF632F8C2769CBDD001E88EC /* OnlineContactObject.m */; };
@@ -69,6 +71,7 @@
 		AFA3B6A427610218003B198B /* UpdateContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6A327610218003B198B /* UpdateContactCell.m */; };
 		AFA3B6A727610361003B198B /* UpdateContactObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFA3B6A627610361003B198B /* UpdateContactObject.m */; };
 		AFB23AC7277067FD00387801 /* ChangeFootprint.m in Sources */ = {isa = PBXBuildFile; fileRef = AFB23AC6277067FD00387801 /* ChangeFootprint.m */; };
+		AFBD8568277AF1FC0031B3FF /* TabCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFBD8567277AF1FC0031B3FF /* TabCell.m */; };
 		AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4A72756093300FB5406 /* NullHeaderView.m */; };
 		AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */; };
 		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
@@ -145,10 +148,14 @@
 		AF447F8E27762C860046C4AC /* default-contacts2.vcf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "default-contacts2.vcf"; sourceTree = "<group>"; };
 		AF471B6D2761D732004C035A /* NullFooterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullFooterView.h; sourceTree = "<group>"; };
 		AF471B6E2761D732004C035A /* NullFooterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullFooterView.m; sourceTree = "<group>"; };
+		AF49B649277B19970074F230 /* TabCollectionCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TabCollectionCell.h; sourceTree = "<group>"; };
+		AF49B64A277B19970074F230 /* TabCollectionCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TabCollectionCell.m; sourceTree = "<group>"; };
 		AF5178442762FB2C00FC8BCA /* ZaloContactService+Storage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+Storage.h"; sourceTree = "<group>"; };
 		AF5178452762FB2C00FC8BCA /* ZaloContactService+Storage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+Storage.m"; sourceTree = "<group>"; };
 		AF517847276301BF00FC8BCA /* ZaloContactService+Observer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZaloContactService+Observer.h"; sourceTree = "<group>"; };
 		AF517848276301BF00FC8BCA /* ZaloContactService+Observer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ZaloContactService+Observer.m"; sourceTree = "<group>"; };
+		AF548CC0277AFD4A00B37193 /* TabCellObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TabCellObject.h; sourceTree = "<group>"; };
+		AF548CC1277AFD4A00B37193 /* TabCellObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TabCellObject.m; sourceTree = "<group>"; };
 		AF632F842769A097001E88EC /* OnlineContactEntityAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OnlineContactEntityAdapter.h; sourceTree = "<group>"; };
 		AF632F852769A097001E88EC /* OnlineContactEntityAdapter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OnlineContactEntityAdapter.m; sourceTree = "<group>"; };
 		AF632F882769A22B001E88EC /* OnlineContactEntity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OnlineContactEntity.h; sourceTree = "<group>"; };
@@ -195,6 +202,8 @@
 		AFB23AC6277067FD00387801 /* ChangeFootprint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChangeFootprint.m; sourceTree = "<group>"; };
 		AFBD8564277A40880031B3FF /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		AFBD8565277A40BE0031B3FF /* CommonMacro.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonMacro.h; sourceTree = "<group>"; };
+		AFBD8566277AF1FC0031B3FF /* TabCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TabCell.h; sourceTree = "<group>"; };
+		AFBD8567277AF1FC0031B3FF /* TabCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TabCell.m; sourceTree = "<group>"; };
 		AFC3D4A62756093300FB5406 /* NullHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NullHeaderView.h; sourceTree = "<group>"; };
 		AFC3D4A72756093300FB5406 /* NullHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullHeaderView.m; sourceTree = "<group>"; };
 		AFC3D4AC27560BFB00FB5406 /* CommonHeaderAndFooterViews.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHeaderAndFooterViews.h; sourceTree = "<group>"; };
@@ -341,6 +350,8 @@
 				AF426F632754DE91004C541E /* BaseCellObject */,
 				AFEB1CCE2754BA9F001636C6 /* ContactObject.h */,
 				AFEB1CCF2754BA9F001636C6 /* ContactObject.m */,
+				AF548CC0277AFD4A00B37193 /* TabCellObject.h */,
+				AF548CC1277AFD4A00B37193 /* TabCellObject.m */,
 				AF632F8B2769CBDD001E88EC /* OnlineContactObject.h */,
 				AF632F8C2769CBDD001E88EC /* OnlineContactObject.m */,
 				AFA3B6A527610361003B198B /* UpdateContactObject.h */,
@@ -369,9 +380,21 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
+		AF49B648277B19700074F230 /* TabCell */ = {
+			isa = PBXGroup;
+			children = (
+				AFBD8566277AF1FC0031B3FF /* TabCell.h */,
+				AFBD8567277AF1FC0031B3FF /* TabCell.m */,
+				AF49B649277B19970074F230 /* TabCollectionCell.h */,
+				AF49B64A277B19970074F230 /* TabCollectionCell.m */,
+			);
+			path = TabCell;
+			sourceTree = "<group>";
+		};
 		AF9201BC2746344A00E1581C /* CellView */ = {
 			isa = PBXGroup;
 			children = (
+				AF49B648277B19700074F230 /* TabCell */,
 				AF24F4CC274DE4A900A71E07 /* CommonCell.h */,
 				AF24F4CD274DE4A900A71E07 /* CommonCell.m */,
 				AF0BFBEC2743A071006E072B /* ContactCell.h */,
@@ -665,6 +688,7 @@
 				AF426F5F2754DC4C004C541E /* HeaderObject.m in Sources */,
 				AF8C76972771D415007710F5 /* ZaloContactService+API.m in Sources */,
 				AF24F4CE274DE4A900A71E07 /* CommonCell.m in Sources */,
+				AFBD8568277AF1FC0031B3FF /* TabCell.m in Sources */,
 				AFA3B6A12760F4F8003B198B /* LabelCellObject.m in Sources */,
 				AFA2BDD8275E54E000128996 /* GCDThrottle.m in Sources */,
 				AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */,
@@ -682,6 +706,7 @@
 				AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */,
 				AFA2BDC9275E092200128996 /* MockAPIService.m in Sources */,
 				AF368C4B27420F3800E17AEB /* AppDelegate.m in Sources */,
+				AF548CC2277AFD4A00B37193 /* TabCellObject.m in Sources */,
 				AF368C5C27420F3A00E17AEB /* main.m in Sources */,
 				AF632F8A2769A22B001E88EC /* OnlineContactEntity.m in Sources */,
 				AFCDDE5F2742875200500137 /* ContactEntity.m in Sources */,
@@ -701,6 +726,7 @@
 				AF8C769D2771DEBA007710F5 /* ZaloContactService+Private.m in Sources */,
 				AF368C4E27420F3800E17AEB /* SceneDelegate.m in Sources */,
 				AF632F862769A097001E88EC /* OnlineContactEntityAdapter.m in Sources */,
+				AF49B64B277B19970074F230 /* TabCollectionCell.m in Sources */,
 				AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */,
 				AFA3B69E2760F31C003B198B /* LabelCell.m in Sources */,
 			);

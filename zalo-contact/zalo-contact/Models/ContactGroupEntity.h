@@ -9,7 +9,7 @@
 #import "ContactEntity.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactGroupEntity : NSObject<NSSecureCoding, IGListDiffable>
+@interface ContactGroupEntity : NSObject<NSSecureCoding>
 
 @property NSString *header;
 @property BOOL *isOnlineGroup;
@@ -19,10 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)initWithHeader:(NSString *)header andContactArray:(NSArray<ContactEntity *> *)contacts;
 - (ContactEntity * _Nullable)getContactForIndex:(long)index;
 
-- (id<NSObject>)diffIdentifier;
-
-// Diff equal
-- (BOOL)isEqualToDiffableObject:(nullable id<IGListDiffable>)object;
 // Array equal
 - (BOOL)isEqual:(id)object;
 

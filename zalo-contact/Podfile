@@ -3,20 +3,10 @@ target 'zalo-contact' do
 
   # Pods for zalo-contact
  
- 
  # autolayout framework
   pod 'PureLayout'
   
-  #insane performance for tableview
-  pod 'IGListKit', '~> 4.0.0'
-  
-  
-  # array operation
-  pod 'FunctionalObjC', '~> 1.0'
-  
   #image cache
   pod 'SDWebImage'
-  
-  pod 'MessageThrottle'
-  
+
 end

@@ -8,7 +8,6 @@
 #import "SceneDelegate.h"
 #import "ContactViewController.h"
 #import "ContactTableViewDataSource.h"
-#import "UIColorExt.h"
 #import "ContactDataManager.h"
 
 @interface SceneDelegate ()

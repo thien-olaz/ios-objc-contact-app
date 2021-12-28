@@ -82,7 +82,9 @@ static ContactDataManager *sharedInstance = nil;
 - (void)throttleSave {
     __weak typeof(self) weakSelf = self;
     dispatch_throttle_by_type(1, GCDThrottleTypeInvokeAndIgnore, ^{
-        [weakSelf save];
+        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
+            [weakSelf save];
+        });
     });
 }
 
@@ -91,68 +93,63 @@ static ContactDataManager *sharedInstance = nil;
 }
 
 - (void)deleteWholeTable {
+    
     NSFetchRequest *request = [Contact fetchRequest];
     NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
     [self.managedObjectContext executeRequest:delete error:NULL];
     LOG(@"Deleted all contacts");
 }
 
-- (void)saveContactArrayToData:(NSArray<ContactEntity *> *)contacts {
-    // delete old dadta
-    [self deleteWholeTable];
-    //add new data
-    for (ContactEntity *contact in contacts) {
+- (void)addContactToData:(ContactEntity *)contact {
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
         Contact *ct = (Contact *)[NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
         [ct applyPropertiesFromContactEntity:contact];
         [self.storeContactDict setObject:ct forKey:ct.accountId];
-    }
-    
-    [self throttleSave];
-    LOG(@"Added new contact array");
-}
-
-- (void)addContactToData:(ContactEntity *)contact {
-    Contact *ct = (Contact *)[NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
-    [ct applyPropertiesFromContactEntity:contact];
-    [self.storeContactDict setObject:ct forKey:ct.accountId];
-    [self throttleSave];
-    LOG2(@"Add contact %@", contact.accountId);
+        [self throttleSave];
+        LOG2(@"Add contact %@", contact.accountId);
+    });
 }
 
 - (void)updateContactInData:(ContactEntity *)contact {
-    Contact *contactToUpdate = [self.storeContactDict objectForKey:contact.accountId];
-    [contactToUpdate applyPropertiesFromContactEntity:contact];
-    [self throttleSave];
-    LOG2(@"Updated contact %@", contact.accountId);
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
+        Contact *contactToUpdate = [self.storeContactDict objectForKey:contact.accountId];
+        [contactToUpdate applyPropertiesFromContactEntity:contact];
+        [self throttleSave];
+        LOG2(@"Updated contact %@", contact.accountId);
+    });
 }
 
 - (void)deleteContactFromData:(NSString *)accountId {
-    Contact *contactToDelete = [self.storeContactDict objectForKey:accountId];
-    if (contactToDelete) [self.managedObjectContext deleteObject:contactToDelete];
-    [self throttleSave];
-    LOG2(@"Removed contact %@", accountId);
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
+        Contact *contactToDelete = [self.storeContactDict objectForKey:accountId];
+        if (contactToDelete) [self.managedObjectContext deleteObject:contactToDelete];
+        [self throttleSave];
+        LOG2(@"Removed contact %@", accountId);
+    });
 }
 
 - (NSArray<ContactEntity *>*)getSavedData {
+    
     [self.storeContactDict removeAllObjects];
     NSMutableArray<ContactEntity*>* contactEntity = [NSMutableArray new];
     
     NSArray<Contact*>* objects = [self.managedObjectContext executeFetchRequest:Contact.fetchRequest error:NULL];
-    
-    for (Contact *contact in objects) {
-        CoreDataContactEntityAdapter *convertedContact = [[CoreDataContactEntityAdapter alloc] initWithContact:contact];
-        [contactEntity addObject:convertedContact];
-        [self.storeContactDict setObject:contact forKey:contact.accountId];
-    }
+    DISPATCH_SYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
+        for (Contact *contact in objects) {
+            CoreDataContactEntityAdapter *convertedContact = [[CoreDataContactEntityAdapter alloc] initWithContact:contact];
+            [contactEntity addObject:convertedContact];
+            [self.storeContactDict setObject:contact forKey:contact.accountId];
+        }
+    });
     
     return contactEntity;
 }
 
 - (void)logsAllSavedContact {
     LOG(@"All data");
-//    for (Contact *ct in self.storeContactDict.allValues) {
-//        LOG(ct.fullName);
-//    }
+    //    for (Contact *ct in self.storeContactDict.allValues) {
+    //        LOG(ct.fullName);
+    //    }
 }
 
 @end

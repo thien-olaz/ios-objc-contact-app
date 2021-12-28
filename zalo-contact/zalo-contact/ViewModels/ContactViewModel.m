@@ -20,6 +20,7 @@
 #import "ContactGroupEntity.h"
 #import "Contact+CoreDataClass.h"
 #import "ContactDataManager.h"
+#import "TabCellObject.h"
 
 @interface ContactViewModel () <ZaloContactEventListener>
 
@@ -43,16 +44,15 @@
     self.diffDelegate = diff;
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _datasourceQueue = dispatch_queue_create("_datasourceQueue", qos);
-    
-    [self setContactGroups:[ContactGroupEntity groupFromContacts:[[ZaloContactService sharedInstance] getContactDictCopy]]];
-    self.accountDictionary = [[ZaloContactService sharedInstance] getAccountDictCopy];
     return self;
 }
 
 - (void)setup {
-    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
-        if (self.dataBlock) self.dataBlock();
-    });
+//    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
+//        if (self.dataBlock) self.dataBlock();
+//    });
+    [self onChangeWithFullNewList:[[ZaloContactService sharedInstance] getContactDictCopy] andAccount:[[ZaloContactService sharedInstance] getAccountDictCopy]];
+    
     [ZaloContactService.sharedInstance subcribe:self];
 }
 
@@ -227,16 +227,16 @@
     [data addObject:BlankFooterObject.new];
     
     //MARK:  - bạn mới online
-    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn bè mới truy cập"]];
-    if (!onlineContacts || ![onlineContacts count]) {
-        
-    } else {
-        for (OnlineContactEntity *entity in [onlineContacts reverseObjectEnumerator]) {
-            [data addObject:[OnlineContactObject.alloc initWithContactEntity:entity]];
-        }
-        
-    }
-    [data addObject:BlankFooterObject.new];
+    [data addObject:[NullHeaderObject.alloc init]];
+    
+    NSMutableArray *array = [NSMutableArray new];
+    [array addObject:[[TabItem alloc] initWithName:@"Tất cả" andNumber:94]];
+    [array addObject:[[TabItem alloc] initWithName:@"Mới truy cập" andNumber:25]];
+    [array addObject:[[TabItem alloc] initWithName:@"Bạn mới" andNumber:1]];
+    
+    [data addObject:[[TabCellObject alloc] initWithTabItem:array]];
+    
+    [data addObject:ContactFooterObject.new];
     
     //MARK: - Contact
     ActionHeaderObject *contactHeaderObject = [[ActionHeaderObject alloc] initWithTitle:@"Danh bạ" andButtonTitle:@"CẬP NHẬP"];

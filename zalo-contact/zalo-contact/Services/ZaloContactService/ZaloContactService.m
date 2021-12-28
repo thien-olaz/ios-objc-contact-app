@@ -94,7 +94,7 @@ static ZaloContactService *sharedInstance = nil;
 - (void)throttleUpdateOnlineFriend {
     __weak typeof(self) weakSelf = self;
     dispatch_throttle_by_type(15, GCDThrottleTypeInvokeAndIgnore, ^{
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0ul), ^{
+        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(GLOBAL_QUEUE, ^{
             [weakSelf updateOnlineList];
         });
     });

@@ -33,7 +33,9 @@ typedef void(^ActionBlock) (void);
             LOG(@"SCHEDULED GET CONTACTS FROM SERVER");
             //dispatch work item
             dispatch_group_t group = dispatch_group_create();
-            dispatch_block_t leaveBlock = ^{dispatch_group_leave(group);};
+            dispatch_block_t leaveBlock = ^{
+                dispatch_group_leave(group);
+            };
             
             dispatch_group_enter(group);
             DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_fetchDataqueue, ^{
@@ -190,17 +192,15 @@ typedef void(^ActionBlock) (void);
     }
     
     // bind fetched data
-    if (![self.accountDictionary count]) {
-        dispatch_async(self.apiServiceQueue, ^{
-            [self applyDataFrom:tempContact andAccountDict:tempAccount];
-            [self cacheChanges];
-            for (id<ZaloContactEventListener> listener in self.listeners) {
-                if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
-                    [listener onChangeWithFullNewList:[self getContactDictCopy] andAccount:self.accountDictionary.mutableCopy];
-                }
+    dispatch_async(self.apiServiceQueue, ^{
+        [self applyDataFrom:tempContact andAccountDict:tempAccount];
+        [self cacheChanges];
+        for (id<ZaloContactEventListener> listener in self.listeners) {
+            if ([listener respondsToSelector:@selector(onChangeWithFullNewList:andAccount:)]) {
+                [listener onChangeWithFullNewList:[self getContactDictCopy] andAccount:self.accountDictionary.mutableCopy];
             }
-        });
-    }
+        }
+    });
     
     if (onCompleteBlock) onCompleteBlock();
     

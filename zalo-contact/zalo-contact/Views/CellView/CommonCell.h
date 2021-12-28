@@ -6,8 +6,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UIConstants.h"
-#import "UIColorExt.h"
 #import "CommonCellObject.h"
 @import PureLayout;
 @import UIKit;

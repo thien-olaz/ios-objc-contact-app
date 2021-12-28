@@ -7,7 +7,6 @@
 
 @import UIKit;
 @import CoreGraphics;
-@import IGListKit;
 #import "ContactViewController.h"
 #import "ContactEntity.h"
 #import "ContactTableViewDataSource.h"
