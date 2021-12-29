@@ -26,6 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property FootprintMutableDictionary *footprintDict;
 @property NSMutableArray<id<ZaloContactEventListener>> *listeners;
 
+
+@property NSMutableArray<ContactEntity *> *addOnlineList;
+@property NSMutableArray<ContactEntity *> *removeOnlineList;
+
 @end
 
 

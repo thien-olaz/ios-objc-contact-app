@@ -13,7 +13,7 @@
 @interface TabCell () {
     TabItem *selectedItem;
 }
-
+@property (copy) OnTabItemClick didClick;
 @property NSMutableArray<TabItem *>* tabItems;
 @property (nonatomic, assign) BOOL didSetupConstraints;
 @property (nonatomic, strong) UICollectionView *collectionView;
@@ -25,7 +25,7 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-        
+    
     [self setSelectionStyle:(UITableViewCellSelectionStyleNone)];
     [self setBackgroundColor:UIColor.zaloBackgroundColor];
     
@@ -38,7 +38,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.collectionView.frame = CGRectInset(self.bounds, UIConstants.contactCellMinHorizontalInset, UIConstants.contactCellMinHorizontalInset);
-
+    
 }
 
 - (void)prepareForReuse {
@@ -51,6 +51,8 @@
         [flowLayout setScrollDirection: UICollectionViewScrollDirectionHorizontal];
         flowLayout.estimatedItemSize = UICollectionViewFlowLayoutAutomaticSize;
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
+        [_collectionView setShowsHorizontalScrollIndicator:NO];
+        [_collectionView setShowsVerticalScrollIndicator:NO];
         [_collectionView setDelegate:self];
         [_collectionView setDataSource:self];
         
@@ -60,9 +62,8 @@
 
 - (void)setNeedsObject:(TabCellObject *)object {
     self.tabItems = object.tabItems;
-    if (!selectedItem && [self.tabItems count]) {
-        selectedItem = self.tabItems.firstObject;
-    }
+    selectedItem = self.tabItems[object.selectedIndex];
+    self.didClick = object.didClick;
     [self.collectionView reloadData];
 }
 
@@ -85,7 +86,9 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (selectedItem == self.tabItems[indexPath.item]) return;;
     selectedItem = self.tabItems[indexPath.item];
+    self.didClick((int)indexPath.item);
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {

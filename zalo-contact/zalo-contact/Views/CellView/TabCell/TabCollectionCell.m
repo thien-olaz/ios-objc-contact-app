@@ -46,14 +46,13 @@
 - (void)setLabelText:(NSString *)text andNumber:(int)number {
     [self.cellLabel setText:[NSString stringWithFormat:@"%@   %d", text, number]];
     [self setNeedsLayout];
-    [self layoutIfNeeded];
 }
 
 - (UILabel *)cellLabel {
     if (!_cellLabel) {
         _cellLabel = [UILabel new];
         [_cellLabel setFont:[UIFont systemFontOfSize:UIConstants.contactCellFontSize weight:UIFontWeightBold]];
-        [_cellLabel setTextColor:UIColor.zaloLightGrayColor];
+        [_cellLabel setTextColor:UIColor.lightGrayColor];
     }
     return _cellLabel;
 }

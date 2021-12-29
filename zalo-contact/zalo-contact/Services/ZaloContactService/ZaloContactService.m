@@ -22,13 +22,6 @@
  User for external and internal use
  */
 
-@interface ZaloContactService () {
-    NSMutableArray<ContactEntity *> *addOnlineList;
-    NSMutableArray<ContactEntity *> *removeOnlineList;
-}
-
-@end
-
 @implementation ZaloContactService
 
 static ZaloContactService *sharedInstance = nil;
@@ -54,8 +47,8 @@ static ZaloContactService *sharedInstance = nil;
     self.bounceLastUpdate = NO;
     
     onlineList = [NSMutableArray new];
-    addOnlineList = [NSMutableArray new];
-    removeOnlineList = [NSMutableArray new];
+    self.addOnlineList = [NSMutableArray new];
+    self.removeOnlineList = [NSMutableArray new];
     
     self.contactDictionary = [ContactMutableDictionary new];
     self.accountDictionary = [AccountMutableDictionary new];
@@ -88,42 +81,6 @@ static ZaloContactService *sharedInstance = nil;
 
 - (AccountMutableDictionary*)getAccountDictCopy {
     return self.accountDictionary.mutableCopy;
-}
-
-#pragma mark online friends handler
-- (void)throttleUpdateOnlineFriend {
-    __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(15, GCDThrottleTypeInvokeAndIgnore, ^{
-        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(GLOBAL_QUEUE, ^{
-            [weakSelf updateOnlineList];
-        });
-    });
-}
-
-- (void)updateOnlineList {
-    for (OnlineContactEntity *contact in removeOnlineList) {
-        if ([onlineList containsObject:contact]) [onlineList removeObject:contact];
-    }
-    
-    for (OnlineContactEntity *contact in addOnlineList) {
-        NSUInteger foundIndex = [onlineList indexOfObject:contact
-                                            inSortedRange:(NSRange){0, [onlineList count]} options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(OnlineContactEntity *obj1, OnlineContactEntity *obj2) {
-            return [obj1 compareTime:obj2];
-        }];
-        
-        if (foundIndex == NSNotFound) return;
-        [onlineList insertObject:contact atIndex:foundIndex];
-    }
-    
-    for (id<ZaloContactEventListener> listener in self.listeners) {
-        if ([listener respondsToSelector:@selector(onServerChangeOnlineFriendsWithAddContact:removeContact:updateContact:)]) {
-            [listener onServerChangeOnlineFriendsWithAddContact:addOnlineList.mutableCopy removeContact:removeOnlineList.mutableCopy updateContact:@[].mutableCopy];
-        }
-    }
-    
-    [removeOnlineList removeAllObjects];
-    [addOnlineList removeAllObjects];
-    
 }
 
 - (void)fetchLocalContact {

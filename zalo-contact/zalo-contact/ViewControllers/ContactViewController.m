@@ -138,6 +138,7 @@
 #pragma mark - diffing animation
 - (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
                   sectionRemove:(NSIndexSet *)sectionRemove
+                  sectionUpdate:(NSIndexSet *)sectionUpdate
                         addCell:(NSArray<NSIndexPath *> *)addIndexes
                      removeCell:(NSArray<NSIndexPath *> *)removeIndexes
                   andUpdateCell:(NSArray<NSIndexPath *> *)updateIndexes {
@@ -149,6 +150,7 @@
             [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
             [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
             
+            [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationNone)];
             [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
             [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
             
@@ -157,5 +159,22 @@
     });
     
 }
+
+- (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
+                  sectionRemove:(NSIndexSet *)sectionRemove
+                  sectionUpdate:(NSIndexSet *)sectionUpdate {
+    __unsafe_unretained typeof(self) weakSelf = self;
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
+        [UIView performWithoutAnimation:^{
+            [weakSelf.tableView performBatchUpdates:^{
+                [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationNone)];
+                [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationNone)];
+                [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationNone)];
+            } completion:nil];
+        }];
+    });
+    
+}
+
 @end
 

@@ -26,9 +26,17 @@ typedef void (^CompleteBlock)(void);
 
 - (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
                   sectionRemove:(NSIndexSet *)sectionRemove
+                  sectionUpdate:(NSIndexSet *)sectionUpdate
                         addCell:(NSArray<NSIndexPath *>*)addIndexes
                      removeCell:(NSArray<NSIndexPath *>*)removeIndexes
                   andUpdateCell:(NSArray<NSIndexPath *>*)updateIndexes;
+
+- (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
+                  sectionRemove:(NSIndexSet *)sectionRemove
+                  sectionUpdate:(NSIndexSet *)sectionUpdate;
+
+- (void)onDiffWithSectionUpdate:(NSIndexSet *)sectionUpdate;
+
 @end
 
 @interface ContactViewModel : NSObject<SwipeActionDelegate>

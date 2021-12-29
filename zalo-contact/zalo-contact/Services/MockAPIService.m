@@ -45,8 +45,8 @@
     addIndex = 0;
     updateIndex = 0;
     onlineIndex = 0;
-    secDevideConstant = 100.0;
-    getTime = 4;
+    secDevideConstant = 200.0;
+    getTime = 0;
     return self;
 }
 
@@ -68,7 +68,7 @@
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-        //       [self pushOnlineContact];
+               [self pushOnlineContact];
     });
 }
 
@@ -93,7 +93,7 @@
         strongSelf->dataToDelete = [strongSelf getDataFromFile:@"medium-contacts"];
         strongSelf->dataToUpdate = [strongSelf getDataFromFile:@"medium-contacts2"];
         
-        strongSelf->dataToPushToOnlineGroup = [strongSelf getDataFromFile:@"online-contacts"];
+        strongSelf->dataToPushToOnlineGroup = [strongSelf getDataFromFile:@"medium-contacts"];
         
         [strongSelf fakeServerUpdate];
     });
@@ -169,8 +169,8 @@
         if (onOnlineContactAdded) onOnlineContactAdded(contact);
         
         onlineIndex += 1;
-        int random = arc4random_uniform(70);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / 10.0) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+        int random = arc4random_uniform(700);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self pushOnlineContact];
         });
     };

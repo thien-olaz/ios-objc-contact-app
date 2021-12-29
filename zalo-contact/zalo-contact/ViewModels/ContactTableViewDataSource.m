@@ -67,7 +67,7 @@
 
 - (NSIndexPath * _Nullable)indexPathForOnlineContactEntity:(OnlineContactEntity *)contact {
     OnlineContactObject *object = [OnlineContactObject.alloc initWithContactEntity:contact];
-    NSUInteger sectionIndex = [UIConstants getOnlineContactIndex];
+    NSUInteger sectionIndex = [UIConstants getContactIndex] - 1;
     NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
     NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(OnlineContactObject *obj1, OnlineContactObject *obj2) {
         return [obj1 revertCompare:obj2];

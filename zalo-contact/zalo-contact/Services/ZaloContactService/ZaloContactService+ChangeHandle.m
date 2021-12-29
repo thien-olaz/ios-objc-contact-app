@@ -42,6 +42,20 @@ float const throttleTime = 0.75;
         });
     }];
     
+    [self.apiService setOnOnlineContactAdded:^(ContactEntity * newContact) {
+        dispatch_async(weakSelf.apiServiceQueue, ^{
+            ZaloContactService *strongSelf = weakSelf;
+            [strongSelf addOnlineContact:newContact];
+        });
+    }];
+    
+    [self.apiService setOnOnlineContactDeleted:^(ContactEntity * deleteContact) {
+        dispatch_async(weakSelf.apiServiceQueue, ^{
+            ZaloContactService *strongSelf = weakSelf;
+            [strongSelf removeOnlineContact:deleteContact];
+        });
+    }];
+    
 }
 
 #pragma mark - server actions handle
@@ -272,6 +286,59 @@ float const throttleTime = 0.75;
 //clean up after all changed data is applied
 - (void)cleanUpIncommingData {
     [self.footprintDict removeAllObjects];
+}
+
+
+#pragma mark online friends handle
+- (void)addOnlineContact:(ContactEntity *)contact {
+    if ([self.addOnlineList containsObject:contact]) {
+        [self.addOnlineList removeObject:contact];
+    }
+    [self.addOnlineList addObject:contact];
+    [self throttleUpdateOnlineFriend];
+}
+
+- (void)removeOnlineContact:(ContactEntity *)contact {
+    if ([self.removeOnlineList containsObject:contact]) {
+        [self.removeOnlineList removeObject:contact];
+    }
+    [self.removeOnlineList addObject:contact];
+    [self throttleUpdateOnlineFriend];
+}
+
+- (void)throttleUpdateOnlineFriend {
+    __weak typeof(self) weakSelf = self;
+    dispatch_throttle_by_type(5, GCDThrottleTypeInvokeAndIgnore, ^{
+        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(GLOBAL_QUEUE, ^{
+            [weakSelf updateOnlineList];
+        });
+    });
+}
+
+- (void)updateOnlineList {
+    for (OnlineContactEntity *contact in self.removeOnlineList) {
+        if ([onlineList containsObject:contact]) [onlineList removeObject:contact];
+    }
+    
+    for (OnlineContactEntity *contact in self.addOnlineList) {
+        NSUInteger foundIndex = [onlineList indexOfObject:contact
+                                            inSortedRange:(NSRange){0, [onlineList count]} options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(OnlineContactEntity *obj1, OnlineContactEntity *obj2) {
+            return [obj1 compareTime:obj2];
+        }];
+        
+        if (foundIndex == NSNotFound) return;
+        [onlineList insertObject:contact atIndex:foundIndex];
+    }
+    
+    for (id<ZaloContactEventListener> listener in self.listeners) {
+        if ([listener respondsToSelector:@selector(onServerChangeOnlineFriendsWithAddContact:removeContact:updateContact:)]) {
+            [listener onServerChangeOnlineFriendsWithAddContact:self.addOnlineList.mutableCopy removeContact:self.removeOnlineList.mutableCopy updateContact:@[].mutableCopy];
+        }
+    }
+    
+    [self.removeOnlineList removeAllObjects];
+    [self.addOnlineList removeAllObjects];
+    
 }
 
 @end

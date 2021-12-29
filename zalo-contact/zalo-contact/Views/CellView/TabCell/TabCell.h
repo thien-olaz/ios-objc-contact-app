@@ -8,6 +8,7 @@
 @import Foundation;
 @import UIKit;
 #import "CellObject.h"
+#import "TabCellObject.h"
 #import "CommonCellObject.h"
 
 NS_ASSUME_NONNULL_BEGIN

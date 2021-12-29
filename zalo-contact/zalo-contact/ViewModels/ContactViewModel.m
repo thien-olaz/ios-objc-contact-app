@@ -24,18 +24,18 @@
 
 @interface ContactViewModel () <ZaloContactEventListener>
 
+@property int selectedTabIndex;
+//@property NSMutableDictionary<NSString *, NSMutableArray<>> *selectedTabItem;
+@property NSMutableArray<TabItem * > *tabItems;
 @property AccountMutableDictionary *accountDictionary;
 @property dispatch_queue_t datasourceQueue;
 @property id<TableViewDiffDelegate> diffDelegate;
 @property id<TableViewActionDelegate> actionDelegate;
+@property NSMutableArray<ContactGroupEntity *> *contactGroups;
+@property OnlineContactEntityMutableArray *onlineContacts;
 @end
 
-@implementation ContactViewModel {
-    
-    NSMutableArray<ContactGroupEntity *> *contactGroups;
-    OnlineContactEntityMutableArray *onlineContacts;
-    
-}
+@implementation ContactViewModel
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff{
@@ -44,24 +44,28 @@
     self.diffDelegate = diff;
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _datasourceQueue = dispatch_queue_create("_datasourceQueue", qos);
+    self.tabItems = [self getTabItems];
+    self.selectedTabIndex = 0;
     return self;
 }
 
+- (NSMutableArray<TabItem*>*)getTabItems {
+    NSMutableArray<TabItem*> *array = [NSMutableArray new];
+    [array addObject:[[TabItem alloc] initWithName:@"Tất cả" andNumber:0]];
+    [array addObject:[[TabItem alloc] initWithName:@"Mới truy cập" andNumber:0]];
+    [array addObject:[[TabItem alloc] initWithName:@"Crash" andNumber:0]];    
+    return array;
+}
+
 - (void)setup {
-//    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
-//        if (self.dataBlock) self.dataBlock();
-//    });
     [self onChangeWithFullNewList:[[ZaloContactService sharedInstance] getContactDictCopy] andAccount:[[ZaloContactService sharedInstance] getAccountDictCopy]];
-    
     [ZaloContactService.sharedInstance subcribe:self];
 }
 
 - (void)onChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
         self.accountDictionary = loadAccount;
-        [self setContactGroups:[ContactGroupEntity groupFromContacts:loadContact]];
-        //        if (count) { if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();}
-        //        else if (self.dataBlock) self.dataBlock();
+        [self compileDataFromContactGroup:[ContactGroupEntity groupFromContacts:loadContact]];
         if (self.dataWithAnimationBlock) self.dataWithAnimationBlock();
     });
 }
@@ -80,14 +84,14 @@
         if (indexPath && ![indexes containsObject:indexPath]) {
             [indexes addObject:indexPath];
         } else {
-            NSLog(@"Not found contact with -- %@", contact.fullName);
+            NSLog(@"Not found contact name %@", contact.fullName);
         }
     }
     return indexes.copy;
 }
 
 - (NSIndexSet*)sectionIndexesFromHeaderArray:(NSArray<NSString*>*)array {
-    NSArray *headerList = [contactGroups valueForKey:@"header"];
+    NSArray *headerList = [self.contactGroups valueForKey:@"header"];
     NSMutableIndexSet *indexes = [NSMutableIndexSet new];
     for (NSString *header in array) {
         NSUInteger foundIndex = [headerList indexOfObject:header];
@@ -103,24 +107,31 @@
                            updateContact:(NSOrderedSet<ChangeFootprint *> *)updateContacts
                           newContactDict:(ContactMutableDictionary *)contactDict
                           newAccountDict:(AccountMutableDictionary *)accountDict {
-    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
-        NSArray<NSIndexPath *> *removeIndexes = [self indexesFromChangesArray:removeContacts.copy exceptInSecion:removeSectionList];
-        NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
-        
-        self.accountDictionary = accountDict;
-        [self setContactGroups:[ContactGroupEntity groupFromContacts:contactDict]];
-        
-        NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
-        //update view model data
-        if (self.updateBlock) self.updateBlock();
-        NSArray<NSIndexPath *> *addIndexes = [self indexesFromChangesArray:addContacts.copy exceptInSecion:addSectionList];
-        
-        NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];
-        
-        [self.diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
-        
-        NSLog(@"🔁🔁🔁🔁 New update cycle 🔁🔁🔁🔁");
-    });
+    if (self.selectedTabIndex == 0) {
+        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
+            NSArray<NSIndexPath *> *removeIndexes = [self indexesFromChangesArray:removeContacts.copy exceptInSecion:removeSectionList];
+            NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
+            
+            self.accountDictionary = accountDict;
+            [self compileDataFromContactGroup:[ContactGroupEntity groupFromContacts:contactDict]];
+            
+            NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
+            //update view model data
+            if (self.updateBlock) self.updateBlock();
+            NSArray<NSIndexPath *> *addIndexes = [self indexesFromChangesArray:addContacts.copy exceptInSecion:addSectionList];
+            
+            NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];
+            
+            [self.diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove sectionUpdate:[[NSIndexSet alloc] initWithIndex:2] addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
+            
+            NSLog(@"🔁🔁🔁🔁 New update cycle 🔁🔁🔁🔁");
+        });
+    } else {
+        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
+            self.accountDictionary = accountDict;
+            self.contactGroups = [NSMutableArray.alloc initWithArray:[ContactGroupEntity groupFromContacts:contactDict]];
+        });
+    }
 }
 
 - (NSArray<NSIndexPath*>*)getIndexesInTableViewFromOnlineContactArray:(OnlineContactEntityMutableArray*)array {
@@ -137,31 +148,36 @@
 - (void)onServerChangeOnlineFriendsWithAddContact:(OnlineContactEntityMutableArray*)addContacts
                                     removeContact:(OnlineContactEntityMutableArray*)removeContacts
                                     updateContact:(OnlineContactEntityMutableArray*)updateContacts {
+    if (self.selectedTabIndex == 1) {
+        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
+            NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTableViewFromOnlineContactArray:removeContacts];
+            [self setOnlineContact:ZaloContactService.sharedInstance.getOnlineContactList];
+            
+            //update view model data
+            if (self.updateBlock) self.updateBlock();
+            NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTableViewFromOnlineContactArray:addContacts];
+            
+            [self.diffDelegate onDiffWithSectionInsert:[NSIndexSet new] sectionRemove:[NSIndexSet new] sectionUpdate:[[NSIndexSet alloc] initWithIndex:2] addCell:addIndexes removeCell:removeIndexes andUpdateCell:@[]];
+            NSLog(@"♻️♻️♻️♻️ New update cycle ♻️♻️♻️♻️");
+        })
+    } else {
+        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
+            self.onlineContacts = ZaloContactService.sharedInstance.getOnlineContactList;
+        });
+    }
     
-    [_updateUILock lock];
-    NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTableViewFromOnlineContactArray:removeContacts];
-    [self setOnlineContact:ZaloContactService.sharedInstance.getOnlineContactList];
-    
-    //update view model data
-    if (_updateBlock) _updateBlock();
-    NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTableViewFromOnlineContactArray:addContacts];
-    
-    [self.diffDelegate onDiffWithSectionInsert:[NSIndexSet new] sectionRemove:[NSIndexSet new] addCell:addIndexes removeCell:removeIndexes andUpdateCell:@[]];
 }
-
-
 
 - (void)setOnlineContact:(OnlineContactEntityMutableArray*)contacts {
-    onlineContacts = contacts;
-    _data = [self compileGroupToTableData:contactGroups onlineContacts:onlineContacts];
+    self.onlineContacts = contacts;
+    _data = [self compileGroupToTableData:self.contactGroups onlineContacts:self.onlineContacts];
 }
 
-- (void)setContactGroups:(NSArray<ContactGroupEntity *>*)groups {
-    contactGroups = [NSMutableArray.alloc initWithArray: groups];
-    _data = [self compileGroupToTableData:contactGroups onlineContacts:onlineContacts];
+- (void)compileDataFromContactGroup:(NSArray<ContactGroupEntity *>*)groups {
+    self.contactGroups = [NSMutableArray.alloc initWithArray: groups];
+    _data = [self compileGroupToTableData:self.contactGroups onlineContacts:self.onlineContacts];
 }
 
-// MARK: - make it dynamic please
 - (NSArray<NSIndexPath *> *)getReloadIndexes:(NSArray<ContactGroupEntity *>*)newGroups {
     NSIndexPath *totalContactsIdp0;
     totalContactsIdp0 = [NSIndexPath indexPathForRow:0 inSection:[UIConstants getContactIndex] + newGroups.count];
@@ -187,58 +203,8 @@
     return arr.copy;
 }
 
-- (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups onlineContacts:(OnlineContactEntityMutableArray*)onlineContacts{
-    NSMutableArray *data = NSMutableArray.alloc.init;
-    //MARK:  -
-    [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
-    [data addObject:
-         [self.actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Clear saved data"
-                                                                             image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                      action:^{
-        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"contactDict"];
-        [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"accountDict"];
-        NSFetchRequest *request = [Contact fetchRequest];
-        NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
-                
-        [ContactDataManager.sharedInstance.managedObjectContext executeRequest:delete error:NULL];
-    }]
-    ];
-    
-    [data addObject:
-         [self.actionDelegate attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Xoá bớt"
-                                          image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                      action:^{} ]
-    ];
-    
-    [data addObject:[self.actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Tìm kiếm (866) 420-3189" image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor] action:^{
-        
-    }]];
-    
-    [data addObject:BlankFooterObject.new];
-    
-    //MARK:  - bạn thân
-    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn thân"]];
-    
-    [data addObject:[self.actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Chọn bạn thường liên lạc" image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.zaloPrimaryColor] action:^{
-        NSLog(@"Tapped");
-    }]];
-    
-    [data addObject:BlankFooterObject.new];
-    
-    //MARK:  - bạn mới online
-    [data addObject:[NullHeaderObject.alloc init]];
-    
-    NSMutableArray *array = [NSMutableArray new];
-    [array addObject:[[TabItem alloc] initWithName:@"Tất cả" andNumber:94]];
-    [array addObject:[[TabItem alloc] initWithName:@"Mới truy cập" andNumber:25]];
-    [array addObject:[[TabItem alloc] initWithName:@"Bạn mới" andNumber:1]];
-    
-    [data addObject:[[TabCellObject alloc] initWithTabItem:array]];
-    
-    [data addObject:ContactFooterObject.new];
-    
-    //MARK: - Contact
+- (NSArray *)compileContactSection:(NSMutableArray<ContactGroupEntity *>*)contactGroups {
+    NSMutableArray *data = [NSMutableArray new];
     ActionHeaderObject *contactHeaderObject = [[ActionHeaderObject alloc] initWithTitle:@"Danh bạ" andButtonTitle:@"CẬP NHẬP"];
     
     [contactHeaderObject setBlock:^{
@@ -247,11 +213,8 @@
     
     [data addObject:contactHeaderObject];
     
-    int totalContact = 0;
-    
-    for (ContactGroupEntity *group in groups) {
+    for (ContactGroupEntity *group in contactGroups) {
         
-        totalContact += group.contacts.count;
         // Header
         [data addObject:[ShortHeaderObject.alloc initWithTitle:group.header andTitleLetter:group.header]];
         
@@ -265,13 +228,114 @@
         // Footer
         [data addObject:ContactFooterObject.new];
     }
-    if (groups.count > 0) {
-        [data removeLastObject];
+    
+    return [data copy];
+    
+}
+
+- (NSArray *)compileOnlineSection:(OnlineContactEntityMutableArray*)onlineContacts {
+    NSMutableArray *data = [NSMutableArray new];
+    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn bè mới truy cập"]];
+    if (!onlineContacts || ![onlineContacts count]) {
+        
+    } else {
+        for (OnlineContactEntity *entity in [onlineContacts reverseObjectEnumerator]) {
+            [data addObject:[OnlineContactObject.alloc initWithContactEntity:entity]];
+        }
     }
     
+    return [data copy];
+    
+}
+
+- (NSArray *)compileTabSection {
+    NSMutableArray *data = [NSMutableArray new];
+    [data addObject:[[NullHeaderObject alloc] init]];
+    self.tabItems[0].number = (int)self.accountDictionary.count;
+    self.tabItems[1].number = (int)self.onlineContacts.count;
+    [data addObject:[[TabCellObject alloc] initWithTabItem:self.tabItems selectedIndex:self.selectedTabIndex withDidClickBlock:^(int selectedIndex) {
+        [self changeToTab:selectedIndex];
+    }]];
+    
+    [data addObject:ContactFooterObject.new];
+    return [data copy];
+}
+
+- (void)changeToTab:(int)index {
+    self.selectedTabIndex = index;
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
+        NSMutableIndexSet *insertSet = [NSMutableIndexSet new];
+        NSMutableIndexSet *removeSet = [NSMutableIndexSet new];
+        
+        if ([self.tabItems[self.selectedTabIndex].name isEqual:@"Tất cả"]) {
+            [removeSet addIndexesInRange:NSMakeRange(UIConstants.getContactIndex - 1, 1)];
+            [insertSet addIndexesInRange:NSMakeRange(UIConstants.getContactIndex - 1, self.contactGroups.count + 1)];
+        } else {
+            [removeSet addIndexesInRange:NSMakeRange(UIConstants.getContactIndex - 1, self.contactGroups.count + 1)];
+            [insertSet addIndexesInRange:NSMakeRange(UIConstants.getContactIndex - 1, 1)];
+        }
+        
+        self.data = [self compileGroupToTableData:self.contactGroups onlineContacts:self.onlineContacts];
+        
+        if (self.updateBlock) self.updateBlock();
+        
+        [self.diffDelegate onDiffWithSectionInsert:insertSet.copy sectionRemove:removeSet.copy sectionUpdate:[NSIndexSet new]];
+    });
+}
+
+
+- (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups onlineContacts:(OnlineContactEntityMutableArray*)onlineContacts{
+    NSMutableArray *data = NSMutableArray.alloc.init;
+    //MARK:  -
+    [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
+    [data addObject:
+         [self.actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Xoá dữ liệu"
+                                                                             image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
+                                      action:^{
+      
+        NSFetchRequest *request = [Contact fetchRequest];
+        NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
+        
+        [ContactDataManager.sharedInstance.managedObjectContext executeRequest:delete error:NULL];
+    }]
+    ];
+    
+    [data addObject:
+         [self.actionDelegate attachToObject:
+          [CommonCellObject.alloc initWithTitle:@"Cell trống thứ nhất"
+                                          image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
+                                      action:^{} ]
+    ];
+
+    [data addObject:BlankFooterObject.new];
+    
+    //MARK:  - bạn thân
+    [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn thân"]];
+    
+    [data addObject:[self.actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Chọn bạn thường liên lạc" image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.zaloPrimaryColor] action:^{
+        NSLog(@"Tapped");
+    }]];
+    
+    [data addObject:BlankFooterObject.new];
+    
+    //MARK:  - tab section
+    [data addObjectsFromArray:[self compileTabSection]];
+    
+    //MARK:  - switching section base on selected item
+    if (self.selectedTabIndex == 0) {
+        //MARK: - Contact
+        [data addObjectsFromArray:[self compileContactSection:groups]];
+    } else if (self.selectedTabIndex == 1) {
+        [data addObjectsFromArray:[self compileOnlineSection:onlineContacts]];
+    } else {
+        [data addObjectsFromArray:[self compileContactSection:groups]];
+    }
+    
+    
+    //MARK: - Footer section
     [data addObject:[NullHeaderObject.alloc init]];
     
-    [data addObject:[LabelCellObject.alloc initWithTitle:[NSString stringWithFormat:@"%d bạn", totalContact] andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloBackgroundColor cellType:shortCell]];
+    [data addObject:[LabelCellObject.alloc initWithTitle:[NSString stringWithFormat:@"%lu bạn", self.accountDictionary.count] andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloBackgroundColor cellType:shortCell]];
     
     [data addObject:[LabelCellObject.alloc initWithTitle:@"Nhanh chóng thêm bạn vào Zalo từ danh \nbạ điện thoại" andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloLightGrayColor cellType:tallCell]];
     
