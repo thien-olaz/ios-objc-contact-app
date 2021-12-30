@@ -31,6 +31,11 @@
     self.lock = [NSLock new];
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _tableViewQueue = dispatch_queue_create("_tableViewQueue", qos);
+    SET_SPECIFIC_FOR_QUEUE(_tableViewQueue);
+    
+    SET_SPECIFIC_FOR_QUEUE(MAIN_QUEUE);
+    SET_SPECIFIC_FOR_QUEUE(GLOBAL_QUEUE);
+    
     return self;
 }
 
@@ -136,6 +141,8 @@
 }
 
 #pragma mark - diffing animation
+/// use dispatch group to synchronize animation process
+
 - (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
                   sectionRemove:(NSIndexSet *)sectionRemove
                   sectionUpdate:(NSIndexSet *)sectionUpdate
@@ -144,8 +151,9 @@
                   andUpdateCell:(NSArray<NSIndexPath *> *)updateIndexes {
     __unsafe_unretained typeof(self) weakSelf = self;
     // nhiều update => reload
-    // UX
-    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_enter(group);
+    DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
         [weakSelf.tableView performBatchUpdates:^{
             [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
             [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
@@ -155,25 +163,31 @@
             [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
             
             [weakSelf.tableView  insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
-        } completion:nil];
+        } completion:^(BOOL finished) {
+            dispatch_group_leave(group);
+        }];
     });
-    
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 }
 
 - (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
                   sectionRemove:(NSIndexSet *)sectionRemove
                   sectionUpdate:(NSIndexSet *)sectionUpdate {
     __unsafe_unretained typeof(self) weakSelf = self;
-    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_enter(group);
+    DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
         [UIView performWithoutAnimation:^{
             [weakSelf.tableView performBatchUpdates:^{
                 [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationNone)];
                 [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationNone)];
                 [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationNone)];
-            } completion:nil];
+            } completion:^(BOOL finished) {
+                dispatch_group_leave(group);
+            }];
         }];
     });
-    
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 }
 
 @end

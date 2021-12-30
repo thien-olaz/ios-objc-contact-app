@@ -64,7 +64,9 @@
     self.tabItems = object.tabItems;
     selectedItem = self.tabItems[object.selectedIndex];
     self.didClick = object.didClick;
-    [self.collectionView reloadData];
+    [UIView performWithoutAnimation:^{
+        [self.collectionView reloadSections:[[NSIndexSet alloc] initWithIndex:0]];
+    }];
 }
 
 + (CGFloat)heightForRowWithObject:(nonnull TabCellObject *)object {

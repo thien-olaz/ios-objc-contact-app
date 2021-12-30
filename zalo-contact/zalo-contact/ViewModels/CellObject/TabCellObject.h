@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TabItem : NSObject
 
 @property NSUInteger indentity;
-@property NSString *name;
+@property (nonatomic) NSString *name;
 @property int number;
 
 - (instancetype)initWithName:(NSString *)name andNumber:(int)number;

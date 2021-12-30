@@ -7,12 +7,16 @@
 
 #import "OnlineContactObject.h"
 #import "ContactCell.h"
-
+@interface OnlineContactObject () {
+    NSUInteger cacheHash;
+}
+@end
 @implementation OnlineContactObject
 
 - (instancetype)initWithContactEntity:(OnlineContactEntity *)contact {
     self = [super initWithCellClass:[ContactCell class]];
     _contact = contact;
+    cacheHash = self.description.hash;
     return self;
 }
 
@@ -35,6 +39,10 @@
 - (NSComparisonResult)revertCompare:(OnlineContactObject *)object {
     OnlineContactObject *contact = (OnlineContactObject *)object;
     return [contact.contact compareTime:self.contact];
+}
+
+- (NSUInteger)hash {
+    return cacheHash;
 }
 
 @end

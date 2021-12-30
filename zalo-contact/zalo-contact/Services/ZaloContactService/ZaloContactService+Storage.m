@@ -27,38 +27,33 @@
     
     NSMutableSet *updateSet = [NSMutableSet setWithArray:newDict.allKeys];
     [updateSet minusSet:addSet];
-    LOG(@"Save full list of data");
-    LOG2(@"old count %lu", (unsigned long)oldDict.count);
-    LOG2(@"new count %lu", (unsigned long)newDict.count);
-    LOG2(@"add count %lu", (unsigned long)addSet.count);
-    LOG2(@"remove count %lu", (unsigned long)removeSet.count);
-    
+
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         for (NSString *accountId in removeSet) [[ContactDataManager sharedInstance] deleteContactFromData:accountId];
         for (NSString *accountId in addSet) [[ContactDataManager sharedInstance] addContactToData:newDict[accountId]];
-        int count = 0;
         for (NSString *accountId in updateSet.copy) {
             if (oldDict[accountId].diffHash != newDict[accountId].diffHash) {
-                count++;
                 [[ContactDataManager sharedInstance] updateContactInData:newDict[accountId]];
             }
         }
-        LOG2(@"update count %d", count);
     });
 }
 
+// báo lại cho server lưu được hay chưa
 - (void)saveAdd:(ContactEntity *)contact {
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         [[ContactDataManager sharedInstance] addContactToData:contact];
     });
 }
 
+// báo lại cho server lưu được hay chưa
 - (void)saveUpdate:(ContactEntity *)contact {
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         [[ContactDataManager sharedInstance] updateContactInData:contact];
     });
 }
 
+// báo lại cho server lưu được hay chưa
 - (void)saveDelete:(NSString *)accountId {
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         [[ContactDataManager sharedInstance] deleteContactFromData:accountId];
@@ -66,3 +61,4 @@
 }
 
 @end
+

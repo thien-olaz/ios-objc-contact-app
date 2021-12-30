@@ -70,7 +70,7 @@
 }
 
 + (CGSize)calculateTextSize:(NSString *)text andNumber:(int)number {
-    CGSize textSize = [[NSString stringWithFormat:@"%@  %d", text, number] sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:UIConstants.contactCellFontSize]}];
+    CGSize textSize = [[NSString stringWithFormat:@"%@  %d", text, number] sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:UIConstants.contactCellFontSize weight:UIFontWeightBold]}];
     return textSize;
 }
 

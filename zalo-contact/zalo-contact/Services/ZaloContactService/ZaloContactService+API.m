@@ -24,16 +24,17 @@ typedef void(^ActionBlock) (void);
     
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_CONCURRENT, QOS_CLASS_USER_INITIATED, -1);
     dispatch_queue_t _fetchDataqueue = dispatch_queue_create("_fetchDataqueue", qos);
-    
+    SET_SPECIFIC_FOR_QUEUE(_fetchDataqueue);
     if (self.checkDate) {
         NSTimeInterval secondsBetween = [now timeIntervalSinceDate:self.checkDate];
         double numberOfDays = secondsBetween / 86400.0;
         
-        if (numberOfDays > 0.0000001) {
+        if (numberOfDays > 1) {
             LOG(@"SCHEDULED GET CONTACTS FROM SERVER");
             //dispatch work item
             dispatch_group_t group = dispatch_group_create();
             dispatch_block_t leaveBlock = ^{
+                LOG(@"GET LOCAL DATA SUCCESS");
                 dispatch_group_leave(group);
             };
             
@@ -44,7 +45,10 @@ typedef void(^ActionBlock) (void);
             
             dispatch_group_enter(group);
             DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_fetchDataqueue, ^{
-                [self autoRetryGetServerData:leaveBlock];
+                [self autoRetryGetServerData:^{
+                    LOG(@"GET SV DATA SUCCESS");
+                    dispatch_group_leave(group);
+                }];
             });
             
             DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_fetchDataqueue, ^{
@@ -80,6 +84,8 @@ typedef void(^ActionBlock) (void);
         else [self setUp];
     } andOnFailedHandler:^{
         LOG(@"GET SERVER DATA FAILED");
+        // quá nhiều timer -> ko tốt
+        // invalidate
         [NSTimer scheduledTimerWithTimeInterval:(10 * 60 * NSEC_PER_SEC) repeats:NO block:^(NSTimer * _Nonnull timer){
             [self autoRetryGetServerData:nil];
         }];
@@ -211,9 +217,6 @@ typedef void(^ActionBlock) (void);
     NSData *checkedDateDecord = [NSUserDefaults.standardUserDefaults objectForKey:@"checkedDate"];
     NSSet *classes = [NSSet setWithObjects:[NSDate class], nil];
     NSDate *date = (NSDate*)[NSKeyedUnarchiver unarchivedObjectOfClasses:classes fromData:checkedDateDecord error:&err];
-    if (err) {
-        LOG(err.description);
-    }
     return date;
 }
 

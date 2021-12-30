@@ -26,7 +26,7 @@
 
 @property int selectedTabIndex;
 //@property NSMutableDictionary<NSString *, NSMutableArray<>> *selectedTabItem;
-@property NSMutableArray<TabItem * > *tabItems;
+@property NSMutableOrderedSet<TabItem * > *tabItems;
 @property AccountMutableDictionary *accountDictionary;
 @property dispatch_queue_t datasourceQueue;
 @property id<TableViewDiffDelegate> diffDelegate;
@@ -44,16 +44,16 @@
     self.diffDelegate = diff;
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _datasourceQueue = dispatch_queue_create("_datasourceQueue", qos);
+    SET_SPECIFIC_FOR_QUEUE(_datasourceQueue);
     self.tabItems = [self getTabItems];
     self.selectedTabIndex = 0;
     return self;
 }
 
-- (NSMutableArray<TabItem*>*)getTabItems {
-    NSMutableArray<TabItem*> *array = [NSMutableArray new];
+- (NSMutableOrderedSet<TabItem*>*)getTabItems {
+    NSMutableOrderedSet<TabItem*> *array = [NSMutableOrderedSet new];
     [array addObject:[[TabItem alloc] initWithName:@"Tất cả" andNumber:0]];
     [array addObject:[[TabItem alloc] initWithName:@"Mới truy cập" andNumber:0]];
-    [array addObject:[[TabItem alloc] initWithName:@"Crash" andNumber:0]];    
     return array;
 }
 
@@ -116,15 +116,12 @@
             [self compileDataFromContactGroup:[ContactGroupEntity groupFromContacts:contactDict]];
             
             NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
-            //update view model data
             if (self.updateBlock) self.updateBlock();
             NSArray<NSIndexPath *> *addIndexes = [self indexesFromChangesArray:addContacts.copy exceptInSecion:addSectionList];
             
             NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];
-            
+
             [self.diffDelegate onDiffWithSectionInsert:sectionInsert sectionRemove:sectionRemove sectionUpdate:[[NSIndexSet alloc] initWithIndex:2] addCell:addIndexes removeCell:removeIndexes andUpdateCell:updateIndexes];
-            
-            NSLog(@"🔁🔁🔁🔁 New update cycle 🔁🔁🔁🔁");
         });
     } else {
         DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
@@ -152,13 +149,9 @@
         DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
             NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTableViewFromOnlineContactArray:removeContacts];
             [self setOnlineContact:ZaloContactService.sharedInstance.getOnlineContactList];
-            
-            //update view model data
             if (self.updateBlock) self.updateBlock();
             NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTableViewFromOnlineContactArray:addContacts];
-            
             [self.diffDelegate onDiffWithSectionInsert:[NSIndexSet new] sectionRemove:[NSIndexSet new] sectionUpdate:[[NSIndexSet alloc] initWithIndex:2] addCell:addIndexes removeCell:removeIndexes andUpdateCell:@[]];
-            NSLog(@"♻️♻️♻️♻️ New update cycle ♻️♻️♻️♻️");
         })
     } else {
         DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
@@ -243,17 +236,22 @@
             [data addObject:[OnlineContactObject.alloc initWithContactEntity:entity]];
         }
     }
-    
     return [data copy];
-    
 }
 
 - (NSArray *)compileTabSection {
     NSMutableArray *data = [NSMutableArray new];
     [data addObject:[[NullHeaderObject alloc] init]];
+    
     self.tabItems[0].number = (int)self.accountDictionary.count;
     self.tabItems[1].number = (int)self.onlineContacts.count;
-    [data addObject:[[TabCellObject alloc] initWithTabItem:self.tabItems selectedIndex:self.selectedTabIndex withDidClickBlock:^(int selectedIndex) {
+    
+    NSMutableArray *tabArray = [NSMutableArray arrayWithArray:[self.tabItems array]];
+    if (self.tabItems[1].number == 0) {
+        [tabArray removeObjectAtIndex:1];
+    }
+    
+    [data addObject:[[TabCellObject alloc] initWithTabItem:tabArray.copy selectedIndex:self.selectedTabIndex withDidClickBlock:^(int selectedIndex) {
         [self changeToTab:selectedIndex];
     }]];
     
@@ -262,8 +260,9 @@
 }
 
 - (void)changeToTab:(int)index {
-    self.selectedTabIndex = index;
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(_datasourceQueue, ^{
+        if (self.selectedTabIndex == index) return;;
+        self.selectedTabIndex = index;
         NSMutableIndexSet *insertSet = [NSMutableIndexSet new];
         NSMutableIndexSet *removeSet = [NSMutableIndexSet new];
         
@@ -276,7 +275,6 @@
         }
         
         self.data = [self compileGroupToTableData:self.contactGroups onlineContacts:self.onlineContacts];
-        
         if (self.updateBlock) self.updateBlock();
         
         [self.diffDelegate onDiffWithSectionInsert:insertSet.copy sectionRemove:removeSet.copy sectionUpdate:[NSIndexSet new]];
@@ -323,15 +321,13 @@
     
     //MARK:  - switching section base on selected item
     if (self.selectedTabIndex == 0) {
-        //MARK: - Contact
         [data addObjectsFromArray:[self compileContactSection:groups]];
     } else if (self.selectedTabIndex == 1) {
         [data addObjectsFromArray:[self compileOnlineSection:onlineContacts]];
     } else {
         [data addObjectsFromArray:[self compileContactSection:groups]];
     }
-    
-    
+        
     //MARK: - Footer section
     [data addObject:[NullHeaderObject.alloc init]];
     

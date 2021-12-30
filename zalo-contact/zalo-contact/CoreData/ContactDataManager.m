@@ -38,6 +38,7 @@ static ContactDataManager *sharedInstance = nil;
     self.storeContactDict = [NSMutableDictionary new];
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _contactCoreDataQueue = dispatch_queue_create("_contactCoreDataQueue", qos);
+    SET_SPECIFIC_FOR_QUEUE(_contactCoreDataQueue);
     return self;
 }
 
@@ -57,16 +58,15 @@ static ContactDataManager *sharedInstance = nil;
     [moc setPersistentStoreCoordinator:coordinator];
     [self setManagedObjectContext:moc];
     
-    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(GLOBAL_QUEUE, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
         NSPersistentStoreCoordinator *psc = [[self managedObjectContext] persistentStoreCoordinator];
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSURL *documentsURL = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
         NSURL *storeURL = [documentsURL URLByAppendingPathComponent:@"DataModel.sqlite"];
-        
         NSError *error = nil;
         NSPersistentStore *store = [psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error];
         if (!store) {
-            NSLog(@"Failed to initalize persistent store: %@\n%@", [error localizedDescription], [error userInfo]);
+            NSLog(@"Error in ContactDataManager : Failed to initalize persistent store: %@\n%@", [error localizedDescription], [error userInfo]);
             abort();
         }
         if (!callback) {
@@ -76,6 +76,7 @@ static ContactDataManager *sharedInstance = nil;
             callback();
         });
     });
+    
     return self;
 }
 
@@ -90,14 +91,6 @@ static ContactDataManager *sharedInstance = nil;
 
 - (void)save {
     [self.managedObjectContext save:NULL];
-}
-
-- (void)deleteWholeTable {
-    
-    NSFetchRequest *request = [Contact fetchRequest];
-    NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
-    [self.managedObjectContext executeRequest:delete error:NULL];
-    LOG(@"Deleted all contacts");
 }
 
 - (void)addContactToData:(ContactEntity *)contact {

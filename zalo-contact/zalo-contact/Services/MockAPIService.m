@@ -22,6 +22,7 @@
     int deleteIndex;
     int updateIndex;
     int onlineIndex;
+    int deleteOnlineIndex;
     int getTime;
 }
 @synthesize onOnlineContactAdded;
@@ -69,6 +70,10 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
                [self pushOnlineContact];
+    });
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+//               [self deleteOnlineContact];
     });
 }
 
@@ -172,6 +177,23 @@
         int random = arc4random_uniform(700);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self pushOnlineContact];
+        });
+    };
+}
+
+- (void)deleteOnlineContact {
+    if (deleteOnlineIndex < dataToPushToOnlineGroup.count) {
+        OnlineContactEntityAdapter *contact = [[OnlineContactEntityAdapter alloc] initWithCNContact:dataToPushToOnlineGroup[deleteOnlineIndex]];
+        
+        [contact setOnlineTime:[NSDate date]];
+        //NSLog(@"☁️ Server:: @@ %@", contact.fullName);
+        
+        if (onOnlineContactDeleted) onOnlineContactDeleted(contact);
+        
+        deleteOnlineIndex += 1;
+        int random = arc4random_uniform(700);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+            [self deleteOnlineContact];
         });
     };
 }
