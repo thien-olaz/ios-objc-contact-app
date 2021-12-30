@@ -35,8 +35,6 @@ typedef void (^CompleteBlock)(void);
                   sectionRemove:(NSIndexSet *)sectionRemove
                   sectionUpdate:(NSIndexSet *)sectionUpdate;
 
-- (void)onDiffWithSectionUpdate:(NSIndexSet *)sectionUpdate;
-
 @end
 
 @interface ContactViewModel : NSObject<SwipeActionDelegate>

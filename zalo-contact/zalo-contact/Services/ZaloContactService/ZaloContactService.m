@@ -16,6 +16,7 @@
 #import "ZaloContactService+ChangeHandle.h"
 #import "ZaloContactService+Private.h"
 #import "GCDThrottle.h"
+#import "ContactDataManager.h"
 
 //MARK: - Usage
 /*
@@ -53,7 +54,7 @@ static ZaloContactService *sharedInstance = nil;
     
     self.contactDictionary = [ContactMutableDictionary new];
     self.accountDictionary = [AccountMutableDictionary new];
-    
+    [self setUpStorageErrorHandler];
     [self cacheChanges];
     
     self.footprintDict = [FootprintMutableDictionary new];
@@ -94,14 +95,3 @@ static ZaloContactService *sharedInstance = nil;
 }
 
 @end
-
-// pragma mark - log for contact dict
-//
-//NSLog(@" add section : %@", addSectionList);
-//NSLog(@" remove section : %@", removeSectionList);
-//for (NSString *key in contactDictionary.keyEnumerator) {
-//    NSLog(@" section : %@", key);
-//    for (ContactEntity *contact in contactDictionary[key]) {
-//        NSLog(@" %d : %@", count, contact.fullName);
-//    }
-//}

@@ -151,44 +151,58 @@
                   andUpdateCell:(NSArray<NSIndexPath *> *)updateIndexes {
     __unsafe_unretained typeof(self) weakSelf = self;
     // nhiều update => reload
-    dispatch_group_t group = dispatch_group_create();
-    dispatch_group_enter(group);
     DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
         [weakSelf.tableView performBatchUpdates:^{
             [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
             [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
             
-            [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationNone)];
-            [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationLeft)];
-            [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationLeft)];
+//            [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationNone)];
+            [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationFade)];
+            [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationFade)];
             
-            [weakSelf.tableView  insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
+            [weakSelf.tableView  insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationMiddle)];
         } completion:^(BOOL finished) {
-            dispatch_group_leave(group);
+//            dispatch_group_leave(group);
         }];
     });
-    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    
+    DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
+        [UIView transitionWithView:weakSelf.tableView
+                          duration:0
+                           options:(UIViewAnimationOptionTransitionNone)
+                        animations:^{
+            [weakSelf.tableView performBatchUpdates:^{
+            [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationNone)];
+            } completion:nil];
+        } completion:nil];
+    });
+//    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 }
 
 - (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
                   sectionRemove:(NSIndexSet *)sectionRemove
                   sectionUpdate:(NSIndexSet *)sectionUpdate {
     __unsafe_unretained typeof(self) weakSelf = self;
-    dispatch_group_t group = dispatch_group_create();
-    dispatch_group_enter(group);
+//    dispatch_group_t group = dispatch_group_create();
+//    dispatch_group_enter(group);
+    
     DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
-        [UIView performWithoutAnimation:^{
+        [UIView transitionWithView:weakSelf.tableView
+                          duration:0
+                           options:(UIViewAnimationOptionTransitionNone)
+                        animations:^{
             [weakSelf.tableView performBatchUpdates:^{
-                [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationNone)];
-                [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationNone)];
-                [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationNone)];
+                [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationFade)];
+                [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationFade)];
             } completion:^(BOOL finished) {
-                dispatch_group_leave(group);
+//                dispatch_group_leave(group);
             }];
-        }];
+            [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationFade)];
+        } completion:nil];
     });
-    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+//    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 }
 
 @end
+
 

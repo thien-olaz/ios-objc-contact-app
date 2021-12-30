@@ -46,7 +46,7 @@
     addIndex = 0;
     updateIndex = 0;
     onlineIndex = 0;
-    secDevideConstant = 200.0;
+    secDevideConstant = 1000.0;
     getTime = 0;
     return self;
 }
@@ -68,11 +68,11 @@
         //       [self updateContactWithPhoneNumber];
     });
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
                [self pushOnlineContact];
     });
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
 //               [self deleteOnlineContact];
     });
 }
@@ -174,7 +174,7 @@
         if (onOnlineContactAdded) onOnlineContactAdded(contact);
         
         onlineIndex += 1;
-        int random = arc4random_uniform(700);
+        int random = arc4random_uniform(800);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self pushOnlineContact];
         });
@@ -191,7 +191,7 @@
         if (onOnlineContactDeleted) onOnlineContactDeleted(contact);
         
         deleteOnlineIndex += 1;
-        int random = arc4random_uniform(700);
+        int random = arc4random_uniform(800);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self deleteOnlineContact];
         });

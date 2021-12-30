@@ -13,9 +13,17 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef void (^CallbackBlock) (void);
 
+@protocol ContactDataErrorManager <NSObject>
+
+- (void)onStorageError:(NSArray*)failedToSaveContactArray;
+
+@end
+
 @interface ContactDataManager : NSObject
 
 + (ContactDataManager *)sharedInstance;
+
+@property id<ContactDataErrorManager> errorManager;
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 

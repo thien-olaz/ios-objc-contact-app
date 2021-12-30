@@ -9,8 +9,12 @@
 #import "ZaloContactService+Observer.h"
 #import "ZaloContactService+Storage.h"
 #import "GCDThrottle.h"
-
-float const throttleTime = 0.75;
+//
+//float const throttleTime = 0.1;
+//float const onlineThrottleTime = 0.1;
+//
+float const throttleTime = 0.5;
+float const onlineThrottleTime = 0.75;
 
 @interface ZaloContactService (ChangeHandle)
 
@@ -73,7 +77,7 @@ float const throttleTime = 0.75;
     }
     // add to data source
     [self addContact:contact toContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
-    
+    [self saveAdd:contact];
     [self addFootprintForContactId:contact.accountId];
     [self throttleUpdateDataSource];
 }
@@ -84,6 +88,7 @@ float const throttleTime = 0.75;
     // delete in data source
     if (![self deleteContact:contact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary]) return;
     // delete success
+    [self saveDelete:contact.accountId];
     [self addFootprintForContactId:accountId];
     [self throttleUpdateDataSource];
 }
@@ -102,6 +107,7 @@ float const throttleTime = 0.75;
         [self deleteContact:oldContact inContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
         [self addContact:contact toContactDict:self.contactDictionary andAccountDict:self.accountDictionary];
     }
+    [self saveUpdate:contact];
     [self addFootprintForContactId:contact.accountId];
     [self throttleUpdateDataSource];
 }
@@ -127,8 +133,6 @@ float const throttleTime = 0.75;
         [accountDict setObject:contact forKey:contact.accountId];
         [sortedContactArray insertObject:contact atIndex:insertIndex];
     }
-    
-    [self saveAdd:contact];
 }
 
 // if not exist -> do nothing. if exist -> replace
@@ -151,7 +155,6 @@ float const throttleTime = 0.75;
     
     // add to section
     [sortedContactArray replaceObjectAtIndex:replaceIndex withObject:contact];
-    [self saveUpdate:contact];
 }
 
 // return YES if exist and deleted, return NO if not exist
@@ -170,7 +173,6 @@ float const throttleTime = 0.75;
     if (deleteIndex == NSNotFound) return NO;
     
     [[contactDict objectForKey:contact.header] removeObjectAtIndex:deleteIndex];
-    [self saveDelete:contact.accountId];
     // section become e mpty after delete -> remove section then YES
     if ([contactDict objectForKey:contact.header].count) return YES;
     [contactDict removeObjectForKey:contact.header];
@@ -291,25 +293,29 @@ float const throttleTime = 0.75;
 
 #pragma mark online friends handle
 - (void)addOnlineContact:(ContactEntity *)contact {
-    if ([self.addOnlineList containsObject:contact]) {
-        [self.addOnlineList removeObject:contact];
-    }
-    [self.addOnlineList addObject:contact];
-    [self throttleUpdateOnlineFriend];
+    dispatch_async(self.apiServiceQueue, ^{
+        if ([self.addOnlineList containsObject:contact]) {
+            [self.addOnlineList removeObject:contact];
+        }
+        [self.addOnlineList addObject:contact];
+        [self throttleUpdateOnlineFriend];
+    });
 }
 
 - (void)removeOnlineContact:(ContactEntity *)contact {
-    if ([self.removeOnlineList containsObject:contact]) {
-        [self.removeOnlineList removeObject:contact];
-    }
-    [self.removeOnlineList addObject:contact];
-    [self throttleUpdateOnlineFriend];
+    dispatch_async(self.apiServiceQueue, ^{
+        if ([self.removeOnlineList containsObject:contact]) {
+            [self.removeOnlineList removeObject:contact];
+        }
+        [self.removeOnlineList addObject:contact];
+        [self throttleUpdateOnlineFriend];
+    });
 }
 
 - (void)throttleUpdateOnlineFriend {
     __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(5, GCDThrottleTypeInvokeAndIgnore, ^{
-        DISPATCH_ASYNC_IF_NOT_IN_QUEUE(GLOBAL_QUEUE, ^{
+    dispatch_throttle_by_type(onlineThrottleTime, GCDThrottleTypeInvokeAndIgnore, ^{
+        dispatch_async(weakSelf.apiServiceQueue, ^{
             [weakSelf updateOnlineList];
         });
     });
@@ -331,8 +337,8 @@ float const throttleTime = 0.75;
     }
     
     for (id<ZaloContactEventListener> listener in self.listeners) {
-        if ([listener respondsToSelector:@selector(onServerChangeOnlineFriendsWithAddContact:removeContact:updateContact:)]) {
-            [listener onServerChangeOnlineFriendsWithAddContact:self.addOnlineList.mutableCopy removeContact:self.removeOnlineList.mutableCopy updateContact:@[].mutableCopy];
+        if ([listener respondsToSelector:@selector(onServerChangeOnlineFriendsWithAddContact:removeContact:updateContact:onlineList:)]) {
+            [listener onServerChangeOnlineFriendsWithAddContact:self.addOnlineList.mutableCopy removeContact:self.removeOnlineList.mutableCopy updateContact:@[].mutableCopy onlineList:onlineList.copy];
         }
     }
     

@@ -17,6 +17,7 @@
 
 @property (strong, nonatomic) dispatch_queue_t contactCoreDataQueue;
 @property (strong, nonatomic) NSMutableDictionary<NSString *, Contact *> *storeContactDict;
+@property (strong, nonatomic) NSMutableSet<NSString*> *changeSet;
 
 @end
 
@@ -35,6 +36,7 @@ static ContactDataManager *sharedInstance = nil;
 
 - (id)init {
     self = [super init];
+    self.changeSet = [NSMutableSet new];
     self.storeContactDict = [NSMutableDictionary new];
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _contactCoreDataQueue = dispatch_queue_create("_contactCoreDataQueue", qos);
@@ -62,7 +64,7 @@ static ContactDataManager *sharedInstance = nil;
         NSPersistentStoreCoordinator *psc = [[self managedObjectContext] persistentStoreCoordinator];
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSURL *documentsURL = [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-        NSURL *storeURL = [documentsURL URLByAppendingPathComponent:@"DataModel.sqlite"];
+        NSURL *storeURL = [documentsURL URLByAppendingPathComponent:@"ContactDataModel.sqlite"];
         NSError *error = nil;
         NSPersistentStore *store = [psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error];
         if (!store) {
@@ -82,7 +84,7 @@ static ContactDataManager *sharedInstance = nil;
 
 - (void)throttleSave {
     __weak typeof(self) weakSelf = self;
-    dispatch_throttle_by_type(1, GCDThrottleTypeInvokeAndIgnore, ^{
+    dispatch_throttle_by_type(0.5, GCDThrottleTypeInvokeAndIgnore, ^{
         DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
             [weakSelf save];
         });
@@ -90,7 +92,14 @@ static ContactDataManager *sharedInstance = nil;
 }
 
 - (void)save {
-    [self.managedObjectContext save:NULL];
+    NSError *error = nil;
+    [self.managedObjectContext save:&error];
+    if (error) {
+        NSLog(@"CoreData: Save Error %@", error.description);
+        [self.managedObjectContext undo];
+        if (self.errorManager) [self.errorManager onStorageError:self.changeSet.copy];
+    }
+    [self.changeSet removeAllObjects];
 }
 
 - (void)addContactToData:(ContactEntity *)contact {
@@ -98,6 +107,7 @@ static ContactDataManager *sharedInstance = nil;
         Contact *ct = (Contact *)[NSEntityDescription insertNewObjectForEntityForName:@"Contact" inManagedObjectContext:self.managedObjectContext];
         [ct applyPropertiesFromContactEntity:contact];
         [self.storeContactDict setObject:ct forKey:ct.accountId];
+        [self.changeSet addObject:ct.accountId];
         [self throttleSave];
         LOG2(@"Add contact %@", contact.accountId);
     });
@@ -107,6 +117,7 @@ static ContactDataManager *sharedInstance = nil;
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
         Contact *contactToUpdate = [self.storeContactDict objectForKey:contact.accountId];
         [contactToUpdate applyPropertiesFromContactEntity:contact];
+        [self.changeSet addObject:contactToUpdate.accountId];
         [self throttleSave];
         LOG2(@"Updated contact %@", contact.accountId);
     });
@@ -116,13 +127,13 @@ static ContactDataManager *sharedInstance = nil;
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactCoreDataQueue, ^{
         Contact *contactToDelete = [self.storeContactDict objectForKey:accountId];
         if (contactToDelete) [self.managedObjectContext deleteObject:contactToDelete];
+        [self.changeSet addObject:contactToDelete.accountId];
         [self throttleSave];
         LOG2(@"Removed contact %@", accountId);
     });
 }
 
 - (NSArray<ContactEntity *>*)getSavedData {
-    
     [self.storeContactDict removeAllObjects];
     NSMutableArray<ContactEntity*>* contactEntity = [NSMutableArray new];
     
@@ -136,13 +147,6 @@ static ContactDataManager *sharedInstance = nil;
     });
     
     return contactEntity;
-}
-
-- (void)logsAllSavedContact {
-    LOG(@"All data");
-    //    for (Contact *ct in self.storeContactDict.allValues) {
-    //        LOG(ct.fullName);
-    //    }
 }
 
 @end

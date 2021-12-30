@@ -9,11 +9,15 @@
 #import "ZaloContactService+Private.h"
 #import "ContactDataManager.h"
 
-@interface ZaloContactService (Storage)
+@interface ZaloContactService (Storage) <ContactDataErrorManager>
 
 @end
 
 @implementation ZaloContactService (Storage)
+
+- (void)setUpStorageErrorHandler {
+    [[ContactDataManager sharedInstance] setErrorManager:self];
+}
 
 - (void)saveFull {
     AccountMutableDictionary *newDict = self.accountDictionary.mutableCopy;
@@ -58,6 +62,13 @@
     DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactServiceStorageQueue, ^{
         [[ContactDataManager sharedInstance] deleteContactFromData:accountId];
     });
+}
+
+/// This function will be called when data save failed
+/// param is a list of failed to save contact
+- (void)onStorageError:(NSArray*)failedToSaveContactArray {
+    NSLog(@"onStorageError");
+    NSLog(@"%@",failedToSaveContactArray);
 }
 
 @end

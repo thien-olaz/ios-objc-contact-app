@@ -44,7 +44,6 @@
 - (instancetype)initWithTabItem:(NSMutableArray<TabItem *>*)tabItems {
     self = [super initWithCellClass:[TabCell class]];
     self.tabItems = tabItems;
-    self.selectedIndex = 0;
     return self;
 }
 

@@ -11,7 +11,7 @@
 
 
 @interface TabCell () {
-    TabItem *selectedItem;
+    int selectedIndex;
 }
 @property (copy) OnTabItemClick didClick;
 @property NSMutableArray<TabItem *>* tabItems;
@@ -55,14 +55,14 @@
         [_collectionView setShowsVerticalScrollIndicator:NO];
         [_collectionView setDelegate:self];
         [_collectionView setDataSource:self];
-        
+        [_collectionView registerClass:TabCollectionCell.class forCellWithReuseIdentifier:@"cell"];
     }
     return _collectionView;
 }
 
 - (void)setNeedsObject:(TabCellObject *)object {
     self.tabItems = object.tabItems;
-    selectedItem = self.tabItems[object.selectedIndex];
+    selectedIndex = object.selectedIndex;
     self.didClick = object.didClick;
     [UIView performWithoutAnimation:^{
         [self.collectionView reloadSections:[[NSIndexSet alloc] initWithIndex:0]];
@@ -75,23 +75,24 @@
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     TabCollectionCell *cell = nil;
-    [collectionView registerClass:TabCollectionCell.class forCellWithReuseIdentifier:@"cell"];
     cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     TabItem *item = self.tabItems[indexPath.item];
     [cell setLabelText:item.name andNumber:item.number];
-    
-    if ([selectedItem.name isEqualToString: item.name]) {
+    if (selectedIndex == indexPath.item) {
         [collectionView selectItemAtIndexPath:indexPath animated:false scrollPosition:(UICollectionViewScrollPositionNone)];
     }
-    
     return cell;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (selectedItem == self.tabItems[indexPath.item]) return;;
-    selectedItem = self.tabItems[indexPath.item];
-    self.didClick((int)indexPath.item);
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (selectedIndex == indexPath.item) return true;
+    selectedIndex = (int)indexPath.item;
+    dispatch_async(GLOBAL_QUEUE, ^{
+        self.didClick((int)indexPath.item);
+    });
+    return true;
 }
+
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;

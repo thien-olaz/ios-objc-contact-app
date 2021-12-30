@@ -30,7 +30,8 @@ typedef NSMutableDictionary<NSString *, ChangeFootprint*> FootprintMutableDictio
                           newAccountDict:(AccountMutableDictionary*)accountDict;
 - (void)onServerChangeOnlineFriendsWithAddContact:(ContactEntityMutableArray*)addContacts
                                     removeContact:(ContactEntityMutableArray*)removeContacts
-                                    updateContact:(ContactEntityMutableArray*)updateContacts;
+                                    updateContact:(ContactEntityMutableArray*)updateContacts
+                                       onlineList:(OnlineContactEntityMutableArray *)onlineList;
 @end
 
 
