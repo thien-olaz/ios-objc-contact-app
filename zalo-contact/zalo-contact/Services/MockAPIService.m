@@ -46,8 +46,8 @@
     addIndex = 0;
     updateIndex = 0;
     onlineIndex = 0;
-    secDevideConstant = 1000.0;
-    getTime = 0;
+    secDevideConstant = 100.0;
+    getTime = 7;
     return self;
 }
 

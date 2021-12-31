@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSMutableArray<ContactEntity *> *addOnlineList;
 @property NSMutableArray<ContactEntity *> *removeOnlineList;
 
+@property dispatch_queue_t fetchDataqueue;
+@property dispatch_block_t fetchDataBlock;
+
 @end
 
 
