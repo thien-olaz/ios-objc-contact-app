@@ -74,6 +74,8 @@
 		AFBD8568277AF1FC0031B3FF /* TabCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AFBD8567277AF1FC0031B3FF /* TabCell.m */; };
 		AFC3D4A82756093300FB5406 /* NullHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4A72756093300FB5406 /* NullHeaderView.m */; };
 		AFC3D4AE27560BFB00FB5406 /* CommonHeaderAndFooterViews.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */; };
+		AFC610FC277ECB22006D1699 /* ContactTabViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC610FB277ECB22006D1699 /* ContactTabViewModel.m */; };
+		AFC610FF277ECCEF006D1699 /* ContactViewModelState.m in Sources */ = {isa = PBXBuildFile; fileRef = AFC610FE277ECCEF006D1699 /* ContactViewModelState.m */; };
 		AFCDDE5727427A4E00500137 /* ContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5627427A4E00500137 /* ContactViewController.m */; };
 		AFCDDE5F2742875200500137 /* ContactEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = AFCDDE5E2742875200500137 /* ContactEntity.m */; };
 		AFE4C9FE2755D73B00A0190F /* SectionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFE4C9FD2755D73B00A0190F /* SectionObject.m */; };
@@ -82,6 +84,7 @@
 		AFEB1CCA2754B670001636C6 /* CellFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEB1CC92754B670001636C6 /* CellFactory.m */; };
 		AFEB1CCD2754B80F001636C6 /* CellObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEB1CCC2754B80F001636C6 /* CellObject.m */; };
 		AFEB1CD02754BA9F001636C6 /* ContactObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEB1CCF2754BA9F001636C6 /* ContactObject.m */; };
+		AFEC2895277ED6B8006C6DA6 /* OnlineTabViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEC2894277ED6B8006C6DA6 /* OnlineTabViewModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -208,6 +211,10 @@
 		AFC3D4A72756093300FB5406 /* NullHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NullHeaderView.m; sourceTree = "<group>"; };
 		AFC3D4AC27560BFB00FB5406 /* CommonHeaderAndFooterViews.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHeaderAndFooterViews.h; sourceTree = "<group>"; };
 		AFC3D4AD27560BFB00FB5406 /* CommonHeaderAndFooterViews.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommonHeaderAndFooterViews.m; sourceTree = "<group>"; };
+		AFC610FA277ECB22006D1699 /* ContactTabViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactTabViewModel.h; sourceTree = "<group>"; };
+		AFC610FB277ECB22006D1699 /* ContactTabViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactTabViewModel.m; sourceTree = "<group>"; };
+		AFC610FD277ECCEF006D1699 /* ContactViewModelState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactViewModelState.h; sourceTree = "<group>"; };
+		AFC610FE277ECCEF006D1699 /* ContactViewModelState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactViewModelState.m; sourceTree = "<group>"; };
 		AFCDDE5527427A4E00500137 /* ContactViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactViewController.h; sourceTree = "<group>"; };
 		AFCDDE5627427A4E00500137 /* ContactViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactViewController.m; sourceTree = "<group>"; };
 		AFCDDE5D2742875200500137 /* ContactEntity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactEntity.h; sourceTree = "<group>"; };
@@ -224,6 +231,10 @@
 		AFEB1CCC2754B80F001636C6 /* CellObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CellObject.m; sourceTree = "<group>"; };
 		AFEB1CCE2754BA9F001636C6 /* ContactObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactObject.h; sourceTree = "<group>"; };
 		AFEB1CCF2754BA9F001636C6 /* ContactObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactObject.m; sourceTree = "<group>"; };
+		AFEC2893277ED6B8006C6DA6 /* OnlineTabViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OnlineTabViewModel.h; sourceTree = "<group>"; };
+		AFEC2894277ED6B8006C6DA6 /* OnlineTabViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OnlineTabViewModel.m; sourceTree = "<group>"; };
+		AFEC2896277EDACB006C6DA6 /* ContactStateProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactStateProtocol.h; sourceTree = "<group>"; };
+		AFEC2897277EDEC9006C6DA6 /* ContactViewModelState+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ContactViewModelState+Private.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -493,6 +504,14 @@
 				AF426F662754E915004C541E /* ContactTableViewAction.m */,
 				AF3E8BE52757295C00BB8AE4 /* ContactViewModel.h */,
 				AF3E8BE62757295C00BB8AE4 /* ContactViewModel.m */,
+				AFC610FA277ECB22006D1699 /* ContactTabViewModel.h */,
+				AFC610FB277ECB22006D1699 /* ContactTabViewModel.m */,
+				AFEC2893277ED6B8006C6DA6 /* OnlineTabViewModel.h */,
+				AFEC2894277ED6B8006C6DA6 /* OnlineTabViewModel.m */,
+				AFC610FD277ECCEF006D1699 /* ContactViewModelState.h */,
+				AFC610FE277ECCEF006D1699 /* ContactViewModelState.m */,
+				AFEC2897277EDEC9006C6DA6 /* ContactViewModelState+Private.h */,
+				AFEC2896277EDACB006C6DA6 /* ContactStateProtocol.h */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -676,12 +695,14 @@
 				AF447F872774ECC20046C4AC /* Contact+CoreDataClass.m in Sources */,
 				AF517849276301BF00FC8BCA /* ZaloContactService+Observer.m in Sources */,
 				AF5178462762FB2C00FC8BCA /* ZaloContactService+Storage.m in Sources */,
+				AFC610FF277ECCEF006D1699 /* ContactViewModelState.m in Sources */,
 				AF24F4C8274C9E5900A71E07 /* ContactTableViewDataSource.m in Sources */,
 				AFB23AC7277067FD00387801 /* ChangeFootprint.m in Sources */,
 				AFA2BDCD275E094300128996 /* ZaloContactService.m in Sources */,
 				AF0BFBF727456B88006E072B /* CNContactEntityAdapter.m in Sources */,
 				AF426F622754DE41004C541E /* FooterObject.m in Sources */,
 				AF447F8B277597630046C4AC /* CoreDataContactEntityAdapter.m in Sources */,
+				AFC610FC277ECB22006D1699 /* ContactTabViewModel.m in Sources */,
 				AF9201B827460EB300E1581C /* UIConstants.m in Sources */,
 				AF24F4D7274F375B00A71E07 /* UIAlertControllerExt.m in Sources */,
 				AF426F672754E915004C541E /* ContactTableViewAction.m in Sources */,
@@ -721,6 +742,7 @@
 				AF9201B52746004500E1581C /* ContactGroupEntity.m in Sources */,
 				AF632F8D2769CBDD001E88EC /* OnlineContactObject.m in Sources */,
 				AFA3B6A727610361003B198B /* UpdateContactObject.m in Sources */,
+				AFEC2895277ED6B8006C6DA6 /* OnlineTabViewModel.m in Sources */,
 				AF24F4CB274DDFBD00A71E07 /* ActionHeaderView.m in Sources */,
 				AFEB1CCD2754B80F001636C6 /* CellObject.m in Sources */,
 				AF8C769D2771DEBA007710F5 /* ZaloContactService+Private.m in Sources */,

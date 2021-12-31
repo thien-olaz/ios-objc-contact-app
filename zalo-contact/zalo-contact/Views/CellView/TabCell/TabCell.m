@@ -31,6 +31,7 @@
     
     self.tabItems = [NSMutableArray new];
     [self.contentView addSubview:self.collectionView];
+    [self.contentView setBackgroundColor: UIColor.zaloBackgroundColor];
     [self.contentView setNeedsUpdateConstraints];
     return self;
 }

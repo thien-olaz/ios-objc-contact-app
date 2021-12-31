@@ -38,7 +38,7 @@
 @implementation ContactViewModel
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
-                       andDiffDelegate:(id<TableViewDiffDelegate>)diff{
+                       andDiffDelegate:(id<TableViewDiffDelegate>)diff {
     self = super.init;
     self.actionDelegate = action;
     self.diffDelegate = diff;
@@ -299,7 +299,7 @@
 
 - (NSMutableArray *)compileGroupToTableData:(NSMutableArray<ContactGroupEntity *>*)groups
                              onlineContacts:(OnlineContactEntityMutableArray*)onlineContacts
-                           selectedTabIndex:(int)tabIndex{
+                           selectedTabIndex:(int)tabIndex {
     NSMutableArray *data = NSMutableArray.alloc.init;
     //MARK:  -
     [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];

@@ -9,33 +9,12 @@
 #import "CellObject.h"
 #import "ContactTableViewAction.h"
 #import "MockAPIService.h"
+#import "ContactStateProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^BindDataBlock)(void);
 typedef void (^CompleteBlock)(void);
-@protocol TableViewActionDelegate
-
-- (CellObject *)attachToObject:(CellObject *)object action:(TapBlock)tapped;
-- (CellObject *)attachToObject:(CellObject *)object swipeAction:(NSArray<SwipeActionObject *> *)actionList;
-- (void) scrollTo:(NSIndexPath *)indexPath;
-
-@end
-
-@protocol TableViewDiffDelegate
-
-- (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
-                  sectionRemove:(NSIndexSet *)sectionRemove
-                  sectionUpdate:(NSIndexSet *)sectionUpdate
-                        addCell:(NSArray<NSIndexPath *>*)addIndexes
-                     removeCell:(NSArray<NSIndexPath *>*)removeIndexes
-                  andUpdateCell:(NSArray<NSIndexPath *>*)updateIndexes;
-
-- (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
-                  sectionRemove:(NSIndexSet *)sectionRemove
-                  sectionUpdate:(NSIndexSet *)sectionUpdate;
-
-@end
 
 @interface ContactViewModel : NSObject<SwipeActionDelegate>
 
