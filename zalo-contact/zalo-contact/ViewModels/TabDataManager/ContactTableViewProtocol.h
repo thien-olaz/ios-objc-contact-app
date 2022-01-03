@@ -1,32 +1,14 @@
 //
-//  ContactStateProtocol.h
+//  ContactTableViewProtocol.h
 //  zalo-contact
 //
-//  Created by Thiện on 31/12/2021.
+//  Created by Thiện on 03/01/2022.
 //
 
 #import <Foundation/Foundation.h>
 #import "CellObject.h"
-#import "SwipeActionObject.h"
-#import "ContactTableViewAction.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-@protocol StateProtocol <SwipeActionDelegate>
-
-- (void)switchToContactTab;
-- (void)switchToOnlineTab;
-
-@end
-
-@protocol ContextProtocol
-
-- (void)changeToState:(Class)state;
-
-@end
-
-typedef void (^TapBlock)(void);
-
 
 @protocol TableViewActionDelegate
 
@@ -50,7 +32,4 @@ typedef void (^TapBlock)(void);
                   sectionUpdate:(NSIndexSet *)sectionUpdate;
 
 @end
-
-
-
 NS_ASSUME_NONNULL_END

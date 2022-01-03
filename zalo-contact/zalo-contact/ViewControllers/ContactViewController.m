@@ -20,10 +20,9 @@
 @property UITableView *tableView;
 @property ContactTableViewAction *tableViewAction;
 @property ContactTableViewDataSource *tableViewDataSource;
-//@property ContactViewModel *viewModel;
+@property ContactViewModel *viewModel;
 @property dispatch_queue_t tableViewQueue;
-@property ContactViewModelState* state;
-@property NSMutableDictionary<Class, id<StateProtocol>> *vmDictionary;
+
 @end
 
 @implementation ContactViewController
@@ -34,7 +33,6 @@
     self.lock = [NSLock new];
     dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
     _tableViewQueue = dispatch_queue_create("_tableViewQueue", qos);
-    self.vmDictionary = [NSMutableDictionary new];
     SET_SPECIFIC_FOR_QUEUE(_tableViewQueue);
     
     SET_SPECIFIC_FOR_QUEUE(MAIN_QUEUE);
@@ -50,14 +48,6 @@
     [self addView];
     
     [self bindViewModel];
-}
-
-- (void)changeToState:(Class)state {
-    [self.state stopUI];
-    self.state = [self.vmDictionary objectForKey:state];
-    [self.state reload];
-    [self.state startUI];
-    [_tableViewAction setSwipeActionDelegate:self.state];
 }
 
 - (void)addView {
@@ -80,56 +70,45 @@
     [_tableView setBackgroundColor:UIColor.zaloLightGrayColor];
     
     _tableView.sectionIndexColor = UIColor.lightGrayColor;
-    _tableViewAction = ContactTableViewAction.new;
+    _tableViewAction = [ContactTableViewAction new];
 }
 
 - (void)bindViewModel {
-    ContactTabViewModel *contactVM = [[ContactTabViewModel alloc] initWithContext:self actionDelegate:self andDiffDelegate:self];
-    [contactVM startUI];
-    [self configViewModel:contactVM];
-    [self.vmDictionary setObject:contactVM forKey:ContactTabViewModel.self];
-    
-    OnlineTabViewModel *onlineVM = [[OnlineTabViewModel alloc] initWithContext:self actionDelegate:self andDiffDelegate:self];
-    [self configViewModel:onlineVM];
-    [self.vmDictionary setObject:onlineVM forKey:OnlineTabViewModel.self];
-    
-    self.state = contactVM;
-    
-    [_tableView setDataSource:_tableViewDataSource];
-    [_tableView setDelegate:_tableViewAction];
-    
-    [_tableViewAction setSwipeActionDelegate:self.state];
-}
-
-- (void)configViewModel:(ContactViewModelState*)vm {
+    self.viewModel = [[ContactViewModel alloc] initWithActionDelegate:self andDiffDelegate:self];
+    [self.viewModel setTableViewDataSource:self.tableViewDataSource];
     __unsafe_unretained typeof(self) weakSelf = self;
-    [vm setTableViewDataSource:self.tableViewDataSource];
     
-    [vm setDataBlock:^{
+    
+    [self.viewModel setDataBlock:^{
         ContactViewController *strongSelf = weakSelf;
         [strongSelf reloadTableViewWithAnimationDuration:0];
     }];
     
-    [vm setDataWithAnimationBlock:^{
+    [self.viewModel setDataWithTransitionBlock:^{
         ContactViewController *strongSelf = weakSelf;
-        [strongSelf reloadTableViewWithAnimationDuration:0.2];
+        [strongSelf reloadTableViewWithTransitionDuration:0.2];
     }];
     
-    [vm setUpdateBlock:^{
+    [self.viewModel setDataWithAnimationBlock:^{
         ContactViewController *strongSelf = weakSelf;
-        [strongSelf.tableViewDataSource compileDatasource:strongSelf.state.data.copy];
+        [strongSelf reloadTableViewWithAnimationDuration:0.4];
     }];
     
-    [vm setPresentBlock:^{
+    [self.viewModel setUpdateBlock:^{
         ContactViewController *strongSelf = weakSelf;
-        [strongSelf presentViewController:[UIAlertController contactPermisisonAlert]  animated:YES completion:nil];
+        [strongSelf.tableViewDataSource compileDatasource:strongSelf.viewModel.data.copy];
     }];
-    [vm setup];
+    
+    [_tableView setDataSource:_tableViewDataSource];
+    [_tableView setDelegate:_tableViewAction];
+    
+    [_tableViewAction setSwipeActionDelegate:self.viewModel];
+    [self.viewModel setup];
 }
 
 - (void)reloadTableViewWithAnimationDuration:(float)duration {
     [self.lock lock];
-    [self.tableViewDataSource compileDatasource:self.state.data.copy];
+    [self.tableViewDataSource compileDatasource:self.viewModel.data.copy];
     DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
         [UIView animateWithDuration:duration animations:^{
             [self.tableView reloadData];
@@ -139,7 +118,19 @@
             }
         } completion:^(BOOL finished) {
             [self.lock unlock];
-        }];        
+        }];
+    });
+}
+
+- (void)reloadTableViewWithTransitionDuration:(float)duration {
+    [self.lock lock];
+    [self.tableViewDataSource compileDatasource:self.viewModel.data.copy];
+    DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
+        [UIView transitionWithView:self.tableView duration:duration options:(UIViewAnimationOptionTransitionCrossDissolve) animations:^{
+            [self.tableView reloadData];
+        } completion:^(BOOL finished) {
+            [self.lock unlock];
+        }];
     });
 }
 
@@ -162,8 +153,6 @@
 }
 
 #pragma mark - diffing animation
-/// use dispatch group to synchronize animation process
-
 - (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
                   sectionRemove:(NSIndexSet *)sectionRemove
                   sectionUpdate:(NSIndexSet *)sectionUpdate
@@ -171,19 +160,15 @@
                      removeCell:(NSArray<NSIndexPath *> *)removeIndexes
                   andUpdateCell:(NSArray<NSIndexPath *> *)updateIndexes {
     __unsafe_unretained typeof(self) weakSelf = self;
-    // nhiều update => reload
     DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
         [weakSelf.tableView performBatchUpdates:^{
             [weakSelf.tableView reloadRowsAtIndexPaths:updateIndexes withRowAnimation:UITableViewRowAnimationFade];
             [weakSelf.tableView deleteRowsAtIndexPaths:removeIndexes withRowAnimation:(UITableViewRowAnimationLeft)];
-            //            [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationNone)];
             [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationFade)];
             [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationFade)];
             
             [weakSelf.tableView  insertRowsAtIndexPaths:addIndexes withRowAnimation:(UITableViewRowAnimationMiddle)];
-        } completion:^(BOOL finished) {
-            //            dispatch_group_leave(group);
-        }];
+        } completion:nil];
     });
     
     DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
@@ -196,16 +181,12 @@
             } completion:nil];
         } completion:nil];
     });
-    //    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
 }
 
 - (void)onDiffWithSectionInsert:(NSIndexSet *)sectionInsert
                   sectionRemove:(NSIndexSet *)sectionRemove
                   sectionUpdate:(NSIndexSet *)sectionUpdate {
     __unsafe_unretained typeof(self) weakSelf = self;
-    //    dispatch_group_t group = dispatch_group_create();
-    //    dispatch_group_enter(group);
-    
     DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
         [UIView transitionWithView:weakSelf.tableView
                           duration:0
@@ -214,13 +195,11 @@
             [weakSelf.tableView performBatchUpdates:^{
                 [weakSelf.tableView deleteSections:sectionRemove withRowAnimation:(UITableViewRowAnimationFade)];
                 [weakSelf.tableView insertSections:sectionInsert withRowAnimation:(UITableViewRowAnimationFade)];
-            } completion:^(BOOL finished) {
-                //                dispatch_group_leave(group);
-            }];
+            } completion:nil];
             [weakSelf.tableView reloadSections:sectionUpdate withRowAnimation:(UITableViewRowAnimationFade)];
         } completion:nil];
     });
-    //    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    
 }
 
 @end

@@ -24,6 +24,7 @@
 - (instancetype)initWithName:(NSString *)name andNumber:(int)number {
     self = [super init];
     self.name = name;
+    self.number = number;
     cacheHash = name.hash;
     self.indentity = self.name.hash;
     return self;

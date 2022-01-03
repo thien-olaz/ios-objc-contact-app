@@ -10,14 +10,10 @@
 #import "ContactViewController.h"
 #import "ContactEntity.h"
 #import "ContactTableViewDataSource.h"
-#import "ContactStateProtocol.h"
-#import "ContactTabViewModel.h"
-#import "OnlineTabViewModel.h"
-
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ContactViewController : UIViewController<ContextProtocol>
+@interface ContactViewController : UIViewController
 
 - (id)initWithViewModel:(ContactTableViewDataSource *)vm;
 

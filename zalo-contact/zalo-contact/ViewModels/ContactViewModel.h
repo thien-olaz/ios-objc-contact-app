@@ -1,15 +1,15 @@
 //
-//  ContactViewModel.h
+//  ContactVM.h
 //  zalo-contact
 //
-//  Created by Thiện on 01/12/2021.
+//  Created by Thiện on 03/01/2022.
 //
 
 @import Foundation;
 #import "CellObject.h"
 #import "ContactTableViewAction.h"
 #import "MockAPIService.h"
-#import "ContactStateProtocol.h"
+#import "ContactTableViewProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,18 +20,23 @@ typedef void (^CompleteBlock)(void);
 
 @property (nonatomic, copy) BindDataBlock dataBlock;
 @property (nonatomic, copy) BindDataBlock dataWithAnimationBlock;
+@property (nonatomic, copy) BindDataBlock dataWithTransitionBlock;
 @property (nonatomic, copy) BindDataBlock updateBlock;
-@property (nonatomic, copy) CompleteBlock presentBlock;
 
 @property ContactTableViewDataSource *tableViewDataSource;
+
 @property NSMutableArray *data;
-@property NSLock *updateUILock;
+
+@property id<TableViewDiffDelegate> diffDelegate;
+@property id<TableViewActionDelegate> actionDelegate;
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff;
 
 - (void)setup;
-- (NSArray<SwipeActionObject *>*)getActionListForContact;
+- (void)bindNewData;
+
+- (void)changeToObjectManagerState:(Class)classState;
 
 @end
 
