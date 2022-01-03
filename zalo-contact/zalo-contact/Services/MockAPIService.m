@@ -174,7 +174,7 @@
         if (onOnlineContactAdded) onOnlineContactAdded(contact);
         
         onlineIndex += 1;
-        int random = arc4random_uniform(800);
+        int random = arc4random_uniform(1000);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
             [self pushOnlineContact];
         });

@@ -131,14 +131,15 @@
     [self.lock lock];
     [self.tableViewDataSource compileDatasource:self.state.data.copy];
     DISPATCH_SYNC_IF_NOT_IN_QUEUE(dispatch_get_main_queue(), ^{
-        [UIView transitionWithView:self.tableView
-                          duration:duration
-                           options:(UIViewAnimationOptionTransitionCrossDissolve)
-                        animations:^{
+        [UIView animateWithDuration:duration animations:^{
             [self.tableView reloadData];
+            if (self.tableView.contentSize.height < self.tableView.frame.size.height) {
+                NSIndexPath *firstIndex = self.tableView.indexPathsForVisibleRows.firstObject;
+                [self.tableView scrollToRowAtIndexPath:firstIndex atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
+            }
         } completion:^(BOOL finished) {
             [self.lock unlock];
-        }];
+        }];        
     });
 }
 
@@ -156,7 +157,7 @@
     return [_tableViewAction attachToObject:object swipeAction:actionList];
 }
 
-- (void) scrollTo:(NSIndexPath *)indexPath {
+- (void)scrollTo:(NSIndexPath *)indexPath {
     [_tableView scrollToRowAtIndexPath:indexPath atScrollPosition:(UITableViewScrollPositionTop) animated:YES];
 }
 
