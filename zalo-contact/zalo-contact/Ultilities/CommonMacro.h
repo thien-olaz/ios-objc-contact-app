@@ -31,4 +31,7 @@ if(dispatch_get_specific(dispatch_queue_get_label(queue))) { \
 }
 
 
+#define SERIAL_QOS dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1)
+
+
 #endif /* commonMacro_h */

@@ -11,12 +11,20 @@
 
 - (instancetype)initWithContext:(ContactViewModel *)context {
     self = [super init];
+    
     self.context = context;
     self.tableViewDataSource = context.tableViewDataSource;
     self.updateUI = NO;
+    
+    NSString *queueName = NSStringFromClass([self class]);
+    self.managerQueue = dispatch_queue_create([queueName cStringUsingEncoding:NSASCIIStringEncoding], SERIAL_QOS);
+    SET_SPECIFIC_FOR_QUEUE(self.managerQueue);
+    
     [[ZaloContactService sharedInstance] subcribe:self];
+    
     return self;
 }
+
 
 - (NSIndexSet*)getSectionUpdate:(int)selectedIndex {
     NSMutableIndexSet *updateSet = [NSMutableIndexSet new];

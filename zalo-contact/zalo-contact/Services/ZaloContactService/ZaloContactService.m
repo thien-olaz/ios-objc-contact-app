@@ -40,10 +40,9 @@ static ZaloContactService *sharedInstance = nil;
     self = super.init;
     
     self.apiService = [MockAPIService new];
-    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
-    _contactServiceStorageQueue = dispatch_queue_create("_contactServiceStorageQueue", qos);
+    _contactServiceStorageQueue = dispatch_queue_create("_contactServiceStorageQueue", SERIAL_QOS);
     SET_SPECIFIC_FOR_QUEUE(_contactServiceStorageQueue);
-    _apiServiceQueue = dispatch_queue_create("_apiServicesQueue", qos);
+    _apiServiceQueue = dispatch_queue_create("_apiServicesQueue", SERIAL_QOS);
     SET_SPECIFIC_FOR_QUEUE(_apiServiceQueue);
     
     self.bounceLastUpdate = NO;

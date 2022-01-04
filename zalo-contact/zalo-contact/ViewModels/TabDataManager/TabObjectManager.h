@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property ContactTableViewDataSource *tableViewDataSource;
 @property BOOL updateUI;
+@property dispatch_queue_t managerQueue;
 
 - (instancetype)initWithContext:(ContactViewModel *)context;
 

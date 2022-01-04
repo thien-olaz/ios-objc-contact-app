@@ -21,9 +21,8 @@ typedef void(^ActionBlock) (void);
 - (void)setupInitData {
     self.checkDate = [self getSavedCheckDate];
     NSDate *now = [NSDate now];
-    
-    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_CONCURRENT, QOS_CLASS_USER_INITIATED, -1);
-    self.fetchDataqueue = dispatch_queue_create("_fetchDataqueue", qos);
+        
+    self.fetchDataqueue = dispatch_queue_create("_fetchDataqueue", SERIAL_QOS);
     SET_SPECIFIC_FOR_QUEUE(self.fetchDataqueue);
     if (self.checkDate) {
         NSTimeInterval secondsBetween = [now timeIntervalSinceDate:self.checkDate];

@@ -11,16 +11,12 @@
 
 @interface OnlineTabObjectManager ()
 @property OnlineContactEntityMutableArray *onlineContacts;
-@property dispatch_queue_t onlineTabObjectManagerQueue;
 @end
 
 @implementation OnlineTabObjectManager
 
 - (instancetype)initWithContext:(ContactViewModel *)context {
     self = [super initWithContext:context];
-    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
-    _onlineTabObjectManagerQueue = dispatch_queue_create("_onlineTabObjectManagerQueue", qos);
-    SET_SPECIFIC_FOR_QUEUE(_onlineTabObjectManagerQueue);
     self.onlineContacts = @[].mutableCopy;
     return self;
 }
@@ -34,7 +30,7 @@
 }
 
 - (void)reloadUI {
-    dispatch_async(self.onlineTabObjectManagerQueue, ^{
+    dispatch_async(self.managerQueue, ^{
         [self.context bindNewData];
         if (self.context.dataWithAnimationBlock) self.context.dataWithAnimationBlock();
     });
@@ -63,7 +59,7 @@
                                     removeContact:(OnlineContactEntityMutableArray*)removeContacts
                                     updateContact:(OnlineContactEntityMutableArray*)updateContacts
                                        onlineList:(OnlineContactEntityMutableArray *)onlineList {
-    dispatch_async(self.onlineTabObjectManagerQueue, ^{
+    dispatch_async(self.managerQueue, ^{
         if (self.updateUI) {
             if (labs((long)([onlineList count] - [self.onlineContacts count])) > 3) {
                 [self reloadDataWithNewOnlineList:onlineList];

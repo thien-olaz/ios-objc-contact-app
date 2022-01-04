@@ -13,7 +13,6 @@
 @interface ContactTabObjectManager ()
 
 @property NSMutableArray<ContactGroupEntity *> *contactGroups;
-@property dispatch_queue_t contactTabObjectManagerQueue;
 @property AccountMutableDictionary *accountDictionary;
 
 @end
@@ -22,9 +21,6 @@
 
 - (instancetype)initWithContext:(ContactViewModel *)context {
     self = [super initWithContext:context];
-    dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
-    _contactTabObjectManagerQueue = dispatch_queue_create("_contactTabObjectManagerQueue", qos);
-    SET_SPECIFIC_FOR_QUEUE(_contactTabObjectManagerQueue);
     self.accountDictionary = @{}.mutableCopy;
     self.contactGroups = @[].mutableCopy;
     return self;
@@ -39,7 +35,7 @@
 }
 
 - (void)reloadUI {
-    dispatch_async(self.contactTabObjectManagerQueue, ^{
+    dispatch_async(self.managerQueue, ^{
         [self.context bindNewData];
         if (self.context.dataWithAnimationBlock) self.context.dataWithAnimationBlock();
     });
@@ -54,7 +50,7 @@
 }
 
 - (void)onChangeWithFullNewList:(ContactMutableDictionary *)loadContact andAccount:(AccountMutableDictionary *)loadAccount {
-    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.contactTabObjectManagerQueue, ^{
+    DISPATCH_ASYNC_IF_NOT_IN_QUEUE(self.managerQueue, ^{
         self.accountDictionary = loadAccount;
         [self setContactGroup:[ContactGroupEntity groupFromContacts:loadContact]];
         if (self.context.dataWithTransitionBlock) self.context.dataWithTransitionBlock();
@@ -94,7 +90,7 @@
                            updateContact:(NSOrderedSet<ChangeFootprint *> *)updateContacts
                           newContactDict:(ContactMutableDictionary *)contactDict
                           newAccountDict:(AccountMutableDictionary *)accountDict {
-    dispatch_async(self.contactTabObjectManagerQueue, ^{
+    dispatch_async(self.managerQueue, ^{
         if (self.updateUI) {
             BOOL isLargeCellChange = (addContacts.count + removeContacts.count + updateContacts.count) > 3;
             BOOL isLargeSectionChange = (addSectionList.count + removeSectionList.count) > 3;
