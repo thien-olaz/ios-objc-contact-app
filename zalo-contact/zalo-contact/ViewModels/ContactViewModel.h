@@ -21,7 +21,7 @@ typedef void (^CompleteBlock)(void);
 @property (nonatomic, copy) BindDataBlock dataBlock;
 @property (nonatomic, copy) BindDataBlock dataWithAnimationBlock;
 @property (nonatomic, copy) BindDataBlock dataWithTransitionBlock;
-@property (nonatomic, copy) BindDataBlock updateBlock;
+//@property (nonatomic, copy) BindDataBlock updateBlock;
 
 @property ContactTableViewDataSource *tableViewDataSource;
 

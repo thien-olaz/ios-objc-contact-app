@@ -47,12 +47,21 @@
 - (NSArray<NSIndexPath*>*)getIndexesInTableViewFromOnlineContactArray:(OnlineContactEntityMutableArray*)array {
     NSMutableArray<NSIndexPath *> *indexes = [NSMutableArray new];
     for (OnlineContactEntity *contact in array) {
-        NSIndexPath *indexPath = [self.context.tableViewDataSource indexPathForOnlineContactEntity:contact];
+        NSIndexPath *indexPath = [self indexPathForOnlineContactEntity:contact];
         if (indexPath && ![indexes containsObject:indexPath]) {
             [indexes addObject:indexPath];
         }
     }
     return indexes.copy;
+}
+
+- (NSIndexPath * _Nullable)indexPathForOnlineContactEntity:(OnlineContactEntity *)contact {
+    NSUInteger sectionIndex = [UIConstants getContactIndex] - 1;
+    NSUInteger foundIndex = [self.onlineContacts indexOfObject:contact inSortedRange:NSMakeRange(0, [self.onlineContacts count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(OnlineContactEntity *online1, OnlineContactEntity *online2) {
+        return [online2 compareTime:online1];
+    }];
+    if (foundIndex == NSNotFound) return nil;
+    return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
 }
 
 - (void)onServerChangeOnlineFriendsWithAddContact:(OnlineContactEntityMutableArray*)addContacts
@@ -67,7 +76,6 @@
                 OnlineContactEntityMutableArray *oldOnlineList = self.onlineContacts.copy;
                 NSArray<NSIndexPath *> *removeIndexes = [self getIndexesInTableViewFromOnlineContactArray:removeContacts];
                 [self setOnlineContact:onlineList];
-                if (self.context.updateBlock) self.context.updateBlock();
                 NSArray<NSIndexPath *> *addIndexes = [self getIndexesInTableViewFromOnlineContactArray:addContacts.copy];
                 if ([self verifyCalculatedIndexesWithOldList:oldOnlineList newList:onlineList addCount:addIndexes.count deleteCount:removeIndexes.count]) {
                     [self.context.diffDelegate onDiffWithSectionInsert:[NSIndexSet new]
@@ -99,7 +107,6 @@
     self.onlineContacts = contacts;
     [self.context bindNewData];
 }
-
 
 - (NSArray*)compileSection {
     return  [self compileOnlineSection:self.onlineContacts];

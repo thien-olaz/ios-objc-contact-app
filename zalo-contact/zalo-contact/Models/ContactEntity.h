@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString * __nullable)imageUrl;
 
 - (NSComparisonResult)compare:(ContactEntity *)entity;
+- (NSComparisonResult)compareToSearch:(ContactEntity *)entity;
 - (BOOL)isEqual:(id)object;
 
 // MARK: Class method

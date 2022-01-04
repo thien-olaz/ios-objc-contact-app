@@ -46,7 +46,7 @@
     addIndex = 0;
     updateIndex = 0;
     onlineIndex = 0;
-    secDevideConstant = 200.0;
+    secDevideConstant = 400.0;
     getTime = 2;
     return self;
 }
@@ -131,10 +131,16 @@
         //NSLog(@"☁️ Server:: ++ %@", enity.fullName);
         if (onContactAdded) onContactAdded(enity);
         addIndex += 1;
-        int random = arc4random_uniform(300);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-            [self addNewContact];
-        });
+        int random = arc4random_uniform(400);
+        if (random <= 50) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, arc4random_uniform(20) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+                [self addNewContact];
+            });
+        } else {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+                [self addNewContact];
+            });
+        }
     };
 }
 
@@ -144,10 +150,16 @@
         //NSLog(@"☁️ Server:: -- %@", entity.fullName);
         if (onContactDeleted) onContactDeleted(entity.accountId);
         deleteIndex += 1;
-        int random = arc4random_uniform(300);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-            [self deleteContact];
-        });
+        int random = arc4random_uniform(400);
+        if (random <= 50) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, arc4random_uniform(25) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+                [self deleteContact];
+            });
+        } else {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+                [self deleteContact];
+            });
+        }
     };
 }
 
@@ -157,10 +169,16 @@
         //NSLog(@"☁️ Server:: ~~ %@", enity.fullName);
         if (onContactUpdated) onContactUpdated(enity);
         updateIndex += 1;
-        int random = arc4random_uniform(300);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
-            [self updateContact];
-        });
+        int random = arc4random_uniform(400);
+        if (random <= 50) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, arc4random_uniform(25) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+                [self updateContact];
+            });
+        } else {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (random / secDevideConstant) * NSEC_PER_SEC), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul), ^{
+                [self updateContact];
+            });
+        }
     };
 }
 

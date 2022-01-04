@@ -65,12 +65,31 @@
             continue;
         }
         if ([exception containsObject:contact.header]) continue;
-        NSIndexPath *indexPath = [self.context.tableViewDataSource indexPathForContactEntity:contact];
+        NSIndexPath *indexPath = [self indexPathForContactEntity:contact];
         if (indexPath && ![indexes containsObject:indexPath]) {
             [indexes addObject:indexPath];
         }
     }
     return indexes.copy;
+}
+
+- (nullable NSIndexPath *)indexPathForContactEntity:(ContactEntity *)contactEntity {
+    ContactGroupEntity *contactGroup;
+    int sectionIndex = [UIConstants getContactIndex];
+    
+    for (ContactGroupEntity *group in self.contactGroups) {
+        if (group.header == contactEntity.header) {
+            contactGroup = group;
+            break;
+        }
+        sectionIndex++;
+    }
+    if (!contactGroup) return nil;
+    NSUInteger foundIndex = [contactGroup.contacts indexOfObject:contactEntity inSortedRange:NSMakeRange(0, [contactGroup.contacts count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(ContactEntity *ct1, ContactEntity *ct2) {
+                return [ct1 compareToSearch:ct2];
+            }];
+    if (foundIndex == NSNotFound) return nil;
+    return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
 }
 
 - (NSIndexSet*)sectionIndexesFromHeaderArray:(NSArray<NSString*>*)array {
@@ -100,13 +119,10 @@
                 AccountMutableDictionary *oldAccountDict = self.accountDictionary.copy;
                 NSArray<NSIndexPath *> *removeIndexes = [self indexesFromChangesArray:removeContacts.copy exceptInSecion:removeSectionList];
                 NSIndexSet *sectionRemove = [self sectionIndexesFromHeaderArray:removeSectionList];
+                NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
                 
                 self.accountDictionary = accountDict;
                 [self setContactGroup:[ContactGroupEntity groupFromContacts:contactDict]];
-                
-                NSArray<NSIndexPath *> *updateIndexes = [self indexesFromChangesArray:updateContacts.copy exceptInSecion:@[]];
-                
-                if (self.context.updateBlock) self.context.updateBlock();
                 
                 NSArray<NSIndexPath *> *addIndexes = [self indexesFromChangesArray:addContacts.copy exceptInSecion:addSectionList];
                 NSIndexSet *sectionInsert = [self sectionIndexesFromHeaderArray:addSectionList];

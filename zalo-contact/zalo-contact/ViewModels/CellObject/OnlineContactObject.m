@@ -36,11 +36,6 @@
     return [self.contact compareTime:contact.contact];
 }
 
-- (NSComparisonResult)revertCompare:(OnlineContactObject *)object {
-    OnlineContactObject *contact = (OnlineContactObject *)object;
-    return [contact.contact compareTime:self.contact];
-}
-
 - (NSUInteger)hash {
     return cacheHash;
 }

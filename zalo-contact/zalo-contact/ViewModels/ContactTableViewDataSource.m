@@ -65,33 +65,6 @@
     return [section getObjectForRow:indexPath.row];
 }
 
-- (NSIndexPath * _Nullable)indexPathForOnlineContactEntity:(OnlineContactEntity *)contact {
-    OnlineContactObject *object = [OnlineContactObject.alloc initWithContactEntity:contact];
-    NSUInteger sectionIndex = [UIConstants getContactIndex] - 1;
-    NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
-    NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(OnlineContactObject *obj1, OnlineContactObject *obj2) {
-        return [obj1 revertCompare:obj2];
-    }];
-    if (foundIndex == NSNotFound) {
-        return nil;
-    }
-    return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
-}
-
-- (NSIndexPath * _Nullable)indexPathForContactEntity:(ContactEntity *)contact {
-    ContactObject *object = [ContactObject.alloc initWithContactEntity:contact];
-    for (NSUInteger sectionIndex = [UIConstants getContactIndex]; sectionIndex < [sections count]; sectionIndex++) {
-        if (![[contact header] isEqualToString: sections[sectionIndex].header.letterTitle]) continue;
-        NSArray* rows = [[sections objectAtIndex:sectionIndex] rows];
-        NSUInteger foundIndex = [rows indexOfObject:object inSortedRange:NSMakeRange(0, [rows count]) options:NSBinarySearchingFirstEqual usingComparator:^NSComparisonResult(ContactObject *obj1, ContactObject *obj2) {
-            return [obj1 compareToSearch:obj2];
-        }];
-        if (foundIndex == NSNotFound) return nil;
-        return [NSIndexPath indexPathForRow:foundIndex inSection:sectionIndex];
-    }
-    return nil;
-}
-
 - (nullable HeaderObject *)headerObjectInSection:(NSInteger)index {
     SectionObject *section = sections[index];
     return section.header;
@@ -101,7 +74,6 @@
     SectionObject *section = sections[index];
     return section.footer;
 }
-
 
 // MARK: UITableViewDataSource
 

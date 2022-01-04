@@ -85,6 +85,30 @@
     return [self.accountId compare:entity.accountId];
 }
 
+//compare to get toSearch
+- (NSComparisonResult)compareToSearch:(ContactEntity *)entity {
+    NSComparisonResult res;
+    res = [self.accountId compare:entity.accountId];
+    if (res == NSOrderedSame) return NSOrderedSame;
+    
+    res = [self.lastName compare:entity.lastName];
+    if ( res != NSOrderedSame) {
+        return res;
+    }
+    
+    res = [self.firstName compare:entity.firstName];
+    if ( res != NSOrderedSame) {
+        return res;
+    }
+
+    res = [self.phoneNumber compare:entity.phoneNumber];
+    if ( res != NSOrderedSame) {
+        return res;
+    }
+
+    return [self.accountId compare:entity.accountId];
+}
+
 - (BOOL)isEqual:(id)object {
     ContactEntity *entity = (ContactEntity *)object;
     if (!entity) return false;

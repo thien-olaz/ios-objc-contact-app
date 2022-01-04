@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isEqual:(id)object;
 
 - (NSComparisonResult)compare:(OnlineContactObject *)object;
-- (NSComparisonResult)revertCompare:(OnlineContactObject *)object;
 
 @end
 

@@ -29,7 +29,6 @@
 
 @property NSMutableArray<Class> *tabOrder;
 @property NSMutableDictionary<Class, TabObjectManager*> *objectManagerDict;
-
 @property TabObjectManager *tabObjectManager;
 
 @end
@@ -38,7 +37,7 @@
 
 - (instancetype)initWithActionDelegate:(id<TableViewActionDelegate>)action
                        andDiffDelegate:(id<TableViewDiffDelegate>)diff {
-    self = super.init;
+    self = [super init];
     self.actionDelegate = action;
     self.diffDelegate = diff;
     
@@ -75,25 +74,34 @@
     [self configTabObject];
 }
 
-- (NSArray<NSIndexPath *> *)getReloadIndexes:(NSArray<ContactGroupEntity *>*)newGroups {
-    NSIndexPath *totalContactsIdp0;
-    totalContactsIdp0 = [NSIndexPath indexPathForRow:0 inSection:[UIConstants getContactIndex] + newGroups.count];
-    return @[totalContactsIdp0];
-}
-
 - (void)deleteContactWithId:(NSString *)accountId {
     [ZaloContactService.sharedInstance deleteContactWithId:accountId];
 }
 
 - (void)performAction:(SwipeActionType)type forObject:(CellObject *)object {
     ContactObject *contactObject = (ContactObject*)object;
-    if (contactObject) {
-        [self performSelectorInBackground:@selector(deleteContactWithId:) withObject:contactObject.contact.accountId];
-    }
+    if (contactObject) [self performSelectorInBackground:@selector(deleteContactWithId:) withObject:contactObject.contact.accountId];
 }
 
 - (void)bindNewData {
     self.data = [self compileData];
+    [self.tableViewDataSource compileDatasource:self.data];
+}
+
+- (NSMutableArray *)compileData {
+    NSMutableArray *data = NSMutableArray.alloc.init;
+    //MARK: top section
+    [data addObjectsFromArray:[self compileTopSection]];
+    
+    //MARK:  - tab section
+    if (!self.tabObjectManager)  return data;
+    
+    [data addObjectsFromArray:[self compileTabObject]];
+    [data addObjectsFromArray:[self.tabObjectManager compileSection]];
+    
+    //MARK: - bottom section
+    [data addObjectsFromArray:[self compileBottomSection]];
+    return data;
 }
 
 - (NSArray *)compileTabObject {
@@ -114,47 +122,33 @@
     return [data copy];
 }
 
-- (NSMutableArray *)compileData {
-    NSMutableArray *data = NSMutableArray.alloc.init;
-    //MARK:  -
+- (NSArray*)compileTopSection {
+    NSMutableArray *data = @[].mutableCopy;
     [data addObject:[NullHeaderObject.alloc initWithLeter:UITableViewIndexSearch]];
-    [data addObject:
-         [self.actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Xoá dữ liệu"
-                                                                             image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                      action:^{
+    [data addObject:[self.actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Xoá dữ liệu" image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor] action:^{
         
         NSFetchRequest *request = [Contact fetchRequest];
         NSBatchDeleteRequest *delete = [[NSBatchDeleteRequest alloc] initWithFetchRequest:request];
         
         [ContactDataManager.sharedInstance.managedObjectContext executeRequest:delete error:NULL];
-    }]
-    ];
+    }]];
     
-    [data addObject:
-         [self.actionDelegate attachToObject:
-          [CommonCellObject.alloc initWithTitle:@"Cell trống thứ nhất"
-                                          image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor]
-                                      action:^{} ]
-    ];
+    [data addObject:[self.actionDelegate attachToObject:[CommonCellObject.alloc initWithTitle:@"Cell trống thứ nhất" image:[UIImage imageNamed:@"ct_people"] tintColor:UIColor.blackColor] action:^{}]];
     
     [data addObject:BlankFooterObject.new];
     
     //MARK:  - bạn thân
     [data addObject:[ShortHeaderObject.alloc initWithTitle:@"Bạn thân"]];
     
-    [data addObject:[self.actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Chọn bạn thường liên lạc" image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.zaloPrimaryColor] action:^{
-        
-    }]];
+    [data addObject:[self.actionDelegate attachToObject:[[CommonCellObject alloc] initWithTitle:@"Chọn bạn thường liên lạc" image:[UIImage imageNamed:@"ct_plus"] tintColor:UIColor.zaloPrimaryColor] action:^{}]];
     
     [data addObject:BlankFooterObject.new];
     
-    //MARK:  - tab section
-    if (!self.tabObjectManager)  return data;
-    
-    [data addObjectsFromArray:[self compileTabObject]];
-    [data addObjectsFromArray:[self.tabObjectManager compileSection]];        
-    
-    //MARK: - Footer section
+    return data;
+}
+
+- (NSArray*)compileBottomSection {
+    NSMutableArray *data = @[].mutableCopy;
     [data addObject:[[NullHeaderObject alloc] initWithLeter:@"#"]];
     
     [data addObject:[LabelCellObject.alloc initWithTitle:[NSString stringWithFormat:@"%d bạn", [[self.objectManagerDict objectForKey:ContactTabObjectManager.self] getTabCount]] andTextAlignment:NSTextAlignmentCenter color:UIColor.zaloBackgroundColor cellType:shortCell]];
@@ -166,8 +160,6 @@
     }]];
     
     [data addObject:BlankFooterObject.new];
-    
-    
     return data;
 }
 

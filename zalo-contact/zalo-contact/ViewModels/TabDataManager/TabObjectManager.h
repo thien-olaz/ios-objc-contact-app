@@ -25,8 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContext:(ContactViewModel *)context;
 
-- (int)getTabCount;
 - (TabItem*)getTabItem;
+- (int)getTabCount;
 - (NSString*)getTabTitle;
 - (NSArray*)compileSection;
 - (NSIndexSet*)getSectionUpdate:(int)selectedIndex;
@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startUI;
 - (void)stopUI;
 - (void)reloadUI;
+
 @end
 
 NS_ASSUME_NONNULL_END
